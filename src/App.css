@@ -1,21 +1,9 @@
-@font-face {
-  font-family: 'C';
-  font-weight: 500;
-  src: url('/fonts/cr.ttf');
-}
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
 @font-face {
-  font-family: 'C';
-  font-weight: 900;
-  src: url('/fonts/cb.ttf');
-}
-
-@font-face {
-  src: url('/fonts/hun2.ttf');
+  src: url('/fonts/HunDIN1451.ttf');
   font-family: 'HUN';
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
 body,
 html {
@@ -169,7 +157,7 @@ main {
   width: max-content;
   color: white;
   padding: 10px;
-  font-family: "C";
+  font-family: 'Roboto', sans-serif;
   font-size: 20px;
 }
 
