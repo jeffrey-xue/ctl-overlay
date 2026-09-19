@@ -37,6 +37,7 @@ const PlayerIcon = (props) => {
 
   const teamColor = props.teamColor || "white";
   const style = { ...props.pos };
+  const banned = props.banned;
 
   return (
     <div className="player-icon" style={style}>
@@ -44,6 +45,7 @@ const PlayerIcon = (props) => {
         <img className="player-icon-img" alt="icon" src={avatarUrl} style={{ borderColor: teamColor, opacity: props.eliminated ? 0.3 : 1 }} /> :
         <div className="player-icon-img" style={{ borderColor: teamColor }}></div>
       }
+      {banned && <img className="banned-icon" src={`${import.meta.env.BASE_URL}Banned_Icon.png`} alt="Banned" />}
       <div className="label" style={{ opacity: props.eliminated ? 0.6 : 1 }}>
         <svg
           width="200%"
