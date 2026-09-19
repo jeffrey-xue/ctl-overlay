@@ -38,6 +38,15 @@ const PlayerOverlayConfig = () => {
 
   }
 
+  const banPlayer = (teamIndex, playerIndex, banned) => {
+    const newPlayers = [...playerData].map(e => [...e]);
+    newPlayers[teamIndex][playerIndex] = {
+      ...newPlayers[teamIndex][playerIndex],
+      banned
+    };
+    setPlayerData(newPlayers);
+  }
+
   const setSelectedPlayer = (teamIndex, playerIndex) => {
 
     const newSelectedPlayers = [...selectedPlayerIndices];
@@ -85,6 +94,12 @@ const PlayerOverlayConfig = () => {
         {playerData.map((players, teamIndex) =>
           <div className={`player-col player-col-team-${teamIndex + 1}`}>
             <h3>Team {teamIndex + 1}</h3>
+            <div className={`player-row player-row-header player-row-team-${teamIndex + 1}`}>
+              <span className="player-row-checkbox-label">E</span>
+              <span className="player-row-checkbox-label">B</span>
+              <span className="player-row-header-spacer"></span>
+              <span className="player-row-checkbox-label">S</span>
+            </div>
             {players.map((player, playerIndex) =>
               <div className={`player-row player-row-team-${teamIndex + 1}`} key={`${playerIndex} ${teamIndex}`}>
 
@@ -92,6 +107,13 @@ const PlayerOverlayConfig = () => {
                   type="checkbox" onChange={e => eliminatePlayer(teamIndex, playerIndex, e.target.checked)}
                   name={`team${teamIndex}`}
                   checked={player.eliminated ?? false}
+                />
+                <input
+                  type="checkbox" onChange={e => banPlayer(teamIndex, playerIndex, e.target.checked)}
+                  name={`team${teamIndex}-banned`}
+                  checked={player.banned ?? false}
+                  disabled={!player.banned && players.filter(player => player.banned).length >= 2}
+                  aria-label={`Ban Team ${teamIndex + 1} Player ${playerIndex + 1}`}
                 />
                 <input
                   onChange={e => changePlayerName(teamIndex, playerIndex, e.target.value)}

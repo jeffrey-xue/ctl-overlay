@@ -177,6 +177,20 @@ main {
   display: flex;
 }
 
+.player-row-header {
+  height: 18px;
+}
+
+.player-row-checkbox-label {
+  width: 20px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.player-row-header-spacer {
+  flex: 1;
+}
+
 .player-row-text-input {
   flex: 1;
 }
