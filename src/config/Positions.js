@@ -12,18 +12,19 @@ const focusedSize = 350;
 const width = 1920;
 const height = 1080;
 
+const MAX_TEAM_SIZE = 5;
+
+const yStart = yPadding;
+const yEnd = yPadding + (height - yPadding * 2) / MAX_TEAM_SIZE * (MAX_TEAM_SIZE - 1);
 
 const spacedYCoords = (n) => {
-  let ys = []
-  for (let index = 0; index < n; index++) {
-    const y = (height - yPadding * 2) / n * index + yPadding;
-    ys.push(y);
-  } 
-  return ys;
-}
+  if (n <= 0) return [];
+  if (n === 1) return [yStart];
+  const step = (yEnd - yStart) / (n - 1);
+  return Array.from({ length: n }, (_, i) => yStart + step * i);
+};
 
-
-const createPositions = (teamSizes = [5, 5]) => {
+const createPositions = (teamSizes = [MAX_TEAM_SIZE, MAX_TEAM_SIZE]) => {
   const [leftSize, rightSize] = teamSizes
   const leftBench = leftSize - 1
   const rightBench = rightSize - 1

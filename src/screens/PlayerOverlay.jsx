@@ -5,7 +5,6 @@ import { useInterval } from '../hooks/useInterval';
 
 const TRACKED_SCENES = ["player-select", "players-chosen", "game-scene"];
 
-
 const isActive = player => (player?.name ?? "").trim() !== "";
 
 // Remove trailing empty names on the team
@@ -62,8 +61,6 @@ const PlayerOverlay = () => {
   const trimmedData = playerData.map(trimTeam);
   const teamSizes = trimmedData.map(team => team.length);
   const Positions = createPositions(teamSizes);
-
-  // Derived on every render, so it can't go stale
   const playerPositions = buildPositions(scene, Positions, teamSizes, selectedPlayerIndices);
 
   useInterval(() => {
