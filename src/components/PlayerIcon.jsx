@@ -6,6 +6,8 @@ const PlayerIcon = (props) => {
   const [avatarUrl, setAvatarUrl] = useState(null);
   const [leagueStats, setLeagueStats] = useState(null);
   useEffect(() => {
+    setAvatarUrl(null);
+    setLeagueStats(null);
     (async () => {
       if (!props.username)
         return;
