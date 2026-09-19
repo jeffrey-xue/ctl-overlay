@@ -112,7 +112,6 @@ const PlayerOverlayConfig = () => {
                   type="checkbox" onChange={e => banPlayer(teamIndex, playerIndex, e.target.checked)}
                   name={`team${teamIndex}-banned`}
                   checked={player.banned ?? false}
-                  disabled={!player.banned && players.filter(player => player.banned).length >= 2}
                   aria-label={`Ban Team ${teamIndex + 1} Player ${playerIndex + 1}`}
                 />
                 <input
