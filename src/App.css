@@ -76,6 +76,14 @@ main {
   transition: opacity 0.4s;
 }
 
+.banned-icon {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
 /* league stat style */
 .league-stats {
   position: absolute;
@@ -175,6 +183,20 @@ main {
 
 .player-row {
   display: flex;
+}
+
+.player-row-header {
+  height: 18px;
+}
+
+.player-row-checkbox-label {
+  width: 20px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.player-row-header-spacer {
+  flex: 1;
 }
 
 .player-row-text-input {
