@@ -11,7 +11,9 @@ html {
 }
 
 :root {
-  --ease: 2s cubic-bezier(0.9, 0, 0.1, 1);
+  --player-transition: 2s cubic-bezier(0.9, 0, 0.1, 1);
+  --fade-transition: 0.4s;
+  --detail-transition: 1s;
   --default-icon-size: 150px;
 }
 
@@ -36,15 +38,14 @@ main {
   justify-content: space-around;
   width: var(--default-icon-size);
   height: var(--default-icon-size);
-  transition: top var(--ease),
-    left var(--ease),
-    right var(--ease),
-    bottom var(--ease),
-    width var(--ease),
-    height var(--ease);
+  transition:
+    top var(--player-transition),
+    left var(--player-transition),
+    right var(--player-transition),
+    bottom var(--player-transition),
+    width var(--player-transition),
+    height var(--player-transition);
   /*background-color: green;*/
-
-
 }
 
 .player-icon .label {
@@ -60,8 +61,7 @@ main {
   top: -50%;
   left: 50%;
   transform: translate(-50%);
-  transition: opacity 0.4s;
-
+  transition: opacity var(--fade-transition);
 }
 
 .player-icon-img {
@@ -73,7 +73,7 @@ main {
   border-style: solid;
   padding: 0px;
   border-width: 3px;
-  transition: opacity 0.4s;
+  transition: opacity var(--fade-transition);
 }
 
 .banned-icon {
@@ -93,14 +93,14 @@ main {
   width: 300px;
   overflow: hidden;
   top: 0px;
-  transition: top 1s;
+  transition: top var(--detail-transition);
 }
 
 .league-stats .line {
   height: 0px;
   width: 0px;
   border-top: solid 1px white;
-  transition: width 1s;
+  transition: width var(--detail-transition);
   margin: auto;
   margin-bottom: 10px;
 }
@@ -110,13 +110,15 @@ main {
   align-items: center;
   justify-content: center;
   color: #fff;
-  text-shadow: 0 2px #ddd, 0 0 16px #fff4;
-  margin: .15em;
+  text-shadow:
+    0 2px #ddd,
+    0 0 16px #fff4;
+  margin: 0.15em;
   margin-bottom: 0;
   height: 60px;
 
   clip-path: inset(65px 0px 0px 0px);
-  transition: clip-path 1s;
+  transition: clip-path var(--detail-transition);
 }
 
 .rank {
@@ -140,7 +142,7 @@ main {
   justify-content: center;
 
   clip-path: inset(0px 0px 65px 0px);
-  transition: clip-path 1s;
+  transition: clip-path var(--detail-transition);
 }
 
 .stats div {
@@ -154,7 +156,7 @@ main {
 }
 
 .blurb {
-  transition: 1s;
+  transition: var(--detail-transition);
   background-color: rgba(0, 0, 0, 0.5);
   border-radius: 20px;
   position: absolute;
@@ -168,7 +170,6 @@ main {
   font-family: 'Roboto', sans-serif;
   font-size: 20px;
 }
-
 
 /* config styles */
 
@@ -203,7 +204,6 @@ main {
   flex: 1;
 }
 
-
 .player-row-team-2 {
   flex-direction: row-reverse;
 }
@@ -232,7 +232,6 @@ main {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-
   }
 
   .player-config {

@@ -1,97 +1,112 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState } from 'react';
+import { PRESETS } from '../config/presets';
 
 const PlayerOverlayConfig = () => {
-
-  const [playerData, setPlayerData] = useState([[{}, {}, {}, {}, {}], [{}, {}, {}, {}, {}]]);
+  const [playerData, setPlayerData] = useState([
+    [{}, {}, {}, {}, {}],
+    [{}, {}, {}, {}, {}],
+  ]);
   const [selectedPlayerIndices, setSelectedPlayerIndices] = useState([-1, -1]);
-  const [teamColors, setTeamColors] = useState(["", ""]);
-
+  const [teamColors, setTeamColors] = useState(['', '']);
+  const [presetId, setPresetId] = useState('ctl');
 
   const [showPlayerBlurbs, setShowPlayerBlurbs] = useState({ 0: false, 1: false });
 
   const changePlayerName = (teamIndex, playerIndex, name) => {
-    const newPlayers = [...playerData].map(e => [...e]);
+    const newPlayers = [...playerData].map((e) => [...e]);
     newPlayers[teamIndex][playerIndex] = {
       ...newPlayers[teamIndex][playerIndex],
       name,
     };
     setPlayerData(newPlayers);
-  }
+  };
 
   const changePlayerBlurb = (teamIndex, playerIndex, blurb) => {
-    const newPlayers = [...playerData].map(e => [...e]);
+    const newPlayers = [...playerData].map((e) => [...e]);
     newPlayers[teamIndex][playerIndex] = {
       ...newPlayers[teamIndex][playerIndex],
       blurb,
     };
     setPlayerData(newPlayers);
-  }
+  };
 
   const eliminatePlayer = (teamIndex, playerIndex, eliminated) => {
-
-    const newPlayers = [...playerData].map(e => [...e]);
+    const newPlayers = [...playerData].map((e) => [...e]);
     newPlayers[teamIndex][playerIndex] = {
       ...newPlayers[teamIndex][playerIndex],
-      eliminated
+      eliminated,
     };
     setPlayerData(newPlayers);
-
-  }
+  };
 
   const banPlayer = (teamIndex, playerIndex, banned) => {
-    const newPlayers = [...playerData].map(e => [...e]);
+    const newPlayers = [...playerData].map((e) => [...e]);
     newPlayers[teamIndex][playerIndex] = {
       ...newPlayers[teamIndex][playerIndex],
-      banned
+      banned,
     };
     setPlayerData(newPlayers);
-  }
+  };
 
   const setSelectedPlayer = (teamIndex, playerIndex) => {
-
     const newSelectedPlayers = [...selectedPlayerIndices];
     newSelectedPlayers[teamIndex] = playerIndex;
-    setSelectedPlayerIndices(newSelectedPlayers)
-
-  }
+    setSelectedPlayerIndices(newSelectedPlayers);
+  };
 
   const createTeamColorInputOnChange = (teamIndex, color) => {
     const newTeamColors = [...teamColors];
     newTeamColors[teamIndex] = color;
-    setTeamColors(newTeamColors)
-  }
+    setTeamColors(newTeamColors);
+  };
 
   const saveToLocalStorage = () => {
-    window.localStorage.setItem('ctl-player-overlay-config', JSON.stringify({
-      playerData,
-      selectedPlayerIndices,
-      teamColors
-    }));
-    console.log("saved");
-  }
+    window.localStorage.setItem(
+      'ctl-player-overlay-config',
+      JSON.stringify({
+        playerData,
+        selectedPlayerIndices,
+        teamColors,
+        presetId,
+      })
+    );
+    console.log('saved');
+  };
 
   const loadFromLocalStorage = () => {
     try {
       const {
         playerData: newPlayerData,
         selectedPlayerIndices: newSelectedPlayers,
-        teamColors: newTeamColors
+        teamColors: newTeamColors,
+        presetId: newPresetId,
       } = JSON.parse(localStorage.getItem('ctl-player-overlay-config'));
-      setPlayerData(playerData => newPlayerData ?? playerData);
-      setSelectedPlayerIndices(selectedIndices => newSelectedPlayers ?? selectedIndices);
-      setTeamColors(teamColors => newTeamColors ?? teamColors);
-      console.log("successfully fetched from localstorage");
+      setPlayerData((playerData) => newPlayerData ?? playerData);
+      setSelectedPlayerIndices((selectedIndices) => newSelectedPlayers ?? selectedIndices);
+      setTeamColors((teamColors) => newTeamColors ?? teamColors);
+      setPresetId((presetId) => (PRESETS[newPresetId] ? newPresetId : presetId));
+      console.log('successfully fetched from localstorage');
     } catch (e) {
       console.log('failed to fetch from localstorage');
     }
-  }
+  };
 
   useEffect(loadFromLocalStorage, []);
 
   return (
     <div className="config-container">
+      <label>
+        Preset{' '}
+        <select value={presetId} onChange={(event) => setPresetId(event.target.value)}>
+          {Object.entries(PRESETS).map(([id, preset]) => (
+            <option key={id} value={id}>
+              {preset.label}
+            </option>
+          ))}
+        </select>
+      </label>
       <div className="player-config">
-        {playerData.map((players, teamIndex) =>
+        {playerData.map((players, teamIndex) => (
           <div className={`player-col player-col-team-${teamIndex + 1}`}>
             <h3>Team {teamIndex + 1}</h3>
             <div className={`player-row player-row-header player-row-team-${teamIndex + 1}`}>
@@ -100,69 +115,83 @@ const PlayerOverlayConfig = () => {
               <span className="player-row-header-spacer"></span>
               <span className="player-row-checkbox-label">S</span>
             </div>
-            {players.map((player, playerIndex) =>
-              <div className={`player-row player-row-team-${teamIndex + 1}`} key={`${playerIndex} ${teamIndex}`}>
-
+            {players.map((player, playerIndex) => (
+              <div
+                className={`player-row player-row-team-${teamIndex + 1}`}
+                key={`${playerIndex} ${teamIndex}`}
+              >
                 <input
-                  type="checkbox" onChange={e => eliminatePlayer(teamIndex, playerIndex, e.target.checked)}
+                  type="checkbox"
+                  onChange={(e) => eliminatePlayer(teamIndex, playerIndex, e.target.checked)}
                   name={`team${teamIndex}`}
                   checked={player.eliminated ?? false}
                 />
                 <input
-                  type="checkbox" onChange={e => banPlayer(teamIndex, playerIndex, e.target.checked)}
+                  type="checkbox"
+                  onChange={(e) => banPlayer(teamIndex, playerIndex, e.target.checked)}
                   name={`team${teamIndex}-banned`}
                   checked={player.banned ?? false}
                   aria-label={`Ban Team ${teamIndex + 1} Player ${playerIndex + 1}`}
                 />
                 <input
-                  onChange={e => changePlayerName(teamIndex, playerIndex, e.target.value)}
-                  value={player?.name ?? ""}
+                  onChange={(e) => changePlayerName(teamIndex, playerIndex, e.target.value)}
+                  value={player?.name ?? ''}
                   placeholder={`Team ${teamIndex + 1} Player ${playerIndex + 1} name`}
                   className="player-row-text-input"
                 />
                 <input
-                  type="radio" onChange={e => setSelectedPlayer(teamIndex, playerIndex)}
+                  type="radio"
+                  onChange={(e) => setSelectedPlayer(teamIndex, playerIndex)}
                   name={`team${teamIndex}`}
                   checked={selectedPlayerIndices[teamIndex] === playerIndex}
                 />
               </div>
-            )}
-
-            <button style={{
-              marginTop: 5,
-              marginBottom: 5,
-            }} onClick={() => setSelectedPlayer(teamIndex, -1)}>Clear Selected Player</button>
+            ))}
 
             <button
-              onClick={() => setShowPlayerBlurbs(showBlurbs => ({
-                ...showBlurbs,
-                [teamIndex]: !showBlurbs[teamIndex]
-              }))}
-            >{showPlayerBlurbs[teamIndex] ? "Hide" : "Show"} player blurbs</button>
-            {showPlayerBlurbs[teamIndex] && players.map((player, playerIndex) =>
-              <input
-                onChange={e => changePlayerBlurb(teamIndex, playerIndex, e.target.value)}
-                value={player?.blurb ?? ""}
-                placeholder={`Team ${teamIndex + 1} Player ${playerIndex + 1} blurb`}
-                className="player-row-text-input"
-              />
-            )}
+              style={{
+                marginTop: 5,
+                marginBottom: 5,
+              }}
+              onClick={() => setSelectedPlayer(teamIndex, -1)}
+            >
+              Clear Selected Player
+            </button>
+
+            <button
+              onClick={() =>
+                setShowPlayerBlurbs((showBlurbs) => ({
+                  ...showBlurbs,
+                  [teamIndex]: !showBlurbs[teamIndex],
+                }))
+              }
+            >
+              {showPlayerBlurbs[teamIndex] ? 'Hide' : 'Show'} player blurbs
+            </button>
+            {showPlayerBlurbs[teamIndex] &&
+              players.map((player, playerIndex) => (
+                <input
+                  onChange={(e) => changePlayerBlurb(teamIndex, playerIndex, e.target.value)}
+                  value={player?.blurb ?? ''}
+                  placeholder={`Team ${teamIndex + 1} Player ${playerIndex + 1} blurb`}
+                  className="player-row-text-input"
+                />
+              ))}
 
             <span>Team Color Hex:</span>
             <input
               placeholder={`Team ${teamIndex + 1} Color Hex`}
               value={teamColors[teamIndex]}
-              onChange={e => createTeamColorInputOnChange(teamIndex, e.target.value)}
+              onChange={(e) => createTeamColorInputOnChange(teamIndex, e.target.value)}
             />
           </div>
-        )}
-
-
+        ))}
       </div>
-      <button className="save-button" onClick={saveToLocalStorage}>Save</button>
+      <button className="save-button" onClick={saveToLocalStorage}>
+        Save
+      </button>
     </div>
-  )
-}
-
+  );
+};
 
 export default PlayerOverlayConfig;

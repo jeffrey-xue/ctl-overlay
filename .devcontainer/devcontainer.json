@@ -16,14 +16,14 @@
     "vscode": {
       "settings": {
         "terminal.integrated.shell.linux": "/bin/bash",
-        "workbench.colorTheme": "Catppuccin Macchiato",
+        "workbench.colorTheme": "Dark Modern",
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.formatOnSave": true,
         "[javascript]": {
           "editor.defaultFormatter": "esbenp.prettier-vscode"
         }
       },
-      "extensions": ["esbenp.prettier-vscode", "Catppuccin.catppuccin-vsc"]
+      "extensions": ["esbenp.prettier-vscode"]
     }
   },
   "userEnvProbe": "loginInteractiveShell",
