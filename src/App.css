@@ -177,6 +177,13 @@ main {
   max-width: 800px;
 }
 
+.layout-dropdown select {
+  font-size: 1rem;
+}
+.layout-dropdown option {
+  font-size: 1rem;
+}
+
 .player-config {
   display: flex;
   justify-content: space-between;
@@ -225,6 +232,12 @@ main {
   width: 80%;
   display: block;
   padding: 5px;
+}
+
+.layout-dropdown {
+  padding: 5px;
+  display: block;
+  margin: 10px;
 }
 
 @media screen and (max-width: 300px) {

@@ -95,8 +95,8 @@ const PlayerOverlayConfig = () => {
 
   return (
     <div className="config-container">
-      <label>
-        Preset{' '}
+      <label className="layout-dropdown">
+        Current Layout{' '}
         <select value={presetId} onChange={(event) => setPresetId(event.target.value)}>
           {Object.entries(PRESETS).map(([id, preset]) => (
             <option key={id} value={id}>
