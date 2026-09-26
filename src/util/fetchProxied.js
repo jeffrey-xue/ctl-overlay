@@ -6,12 +6,12 @@
  */
 export async function fetchProxied(url) {
   return fetch(`https://cors.io/?url=${encodeURIComponent(url)}`)
-    .then(e => e.json())
-    .then(e => ({
-      ...JSON.parse(e?.body)
+    .then((e) => e.json())
+    .then((e) => ({
+      ...JSON.parse(e?.body),
     }))
     .catch(() => ({
       success: false,
-      data: undefined
-    }))
+      data: undefined,
+    }));
 }

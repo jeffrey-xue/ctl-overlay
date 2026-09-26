@@ -25,7 +25,7 @@ export function useInterval(callback, delay) {
       return () => window.clearInterval(intervalRef.current);
     }
   }, [delay]);
-  
+
   // Returns a ref to the interval ID in case you want to clear it manually:
   return intervalRef;
 }
