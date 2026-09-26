@@ -9,16 +9,18 @@ const LeagueStats = (props) => {
 
   if (!props.leagueStats) return;
 
+  const isSideLayout = props.layout === 'side';
+  const clippingHeight = isSideLayout ? 85 : 65;
   const containerStyle = {
-    top: props.show ? -120 : -68,
+    top: isSideLayout ? '50%' : props.show ? -120 : -68,
     transitionDelay: props.show ? '0.5s' : undefined,
   };
   const rankClippingStyle = {
-    clipPath: props.show ? 'inset(0px 0px 0px 0px)' : 'inset(65px 0px 0px 0px)',
+    clipPath: props.show ? 'inset(0px 0px 0px 0px)' : `inset(${clippingHeight}px 0px 0px 0px)`,
     transitionDelay: props.show ? '0.5s' : undefined,
   };
   const statsClippingStyle = {
-    clipPath: props.show ? 'inset(0px 0px 0px 0px)' : 'inset(0px 0px 65px 0px)',
+    clipPath: props.show ? 'inset(0px 0px 0px 0px)' : `inset(0px 0px ${clippingHeight}px 0px)`,
     transitionDelay: props.show ? '0.5s' : undefined,
   };
   const lineStyle = {
@@ -27,7 +29,10 @@ const LeagueStats = (props) => {
   };
 
   return (
-    <div class="league-stats" style={containerStyle}>
+    <div
+      className={`league-stats${isSideLayout ? ` league-stats-side league-stats-side-${props.playerSide}` : ''}`}
+      style={containerStyle}
+    >
       <div style={rankClippingStyle} class="rank-rating">
         <img class="rank" src={`https://tetr.io/res/league-ranks/${props.leagueStats.rank}.png`} />
         <div class="rating">

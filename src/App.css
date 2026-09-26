@@ -27,7 +27,7 @@ main {
 
   position: relative;
   /* set for testing */
-  /* background-color: #555; */
+  background-color: #555;
 }
 
 .player-icon {
@@ -94,6 +94,40 @@ main {
   overflow: hidden;
   top: 0px;
   transition: top var(--detail-transition);
+}
+
+.league-stats-side {
+  width: 400px;
+  transform: translateY(-70%);
+  scale: 1.2;
+  margin: 8px;
+}
+
+.league-stats-side-left {
+  left: 100%;
+}
+
+.league-stats-side-right {
+  right: 100%;
+}
+
+.league-stats-side .rank-rating {
+  height: 80px;
+  font-size: 64px;
+}
+
+.league-stats-side .rank {
+  padding-bottom: 4px;
+  width: 80px;
+  height: 80px;
+}
+
+.league-stats-side .tr-label {
+  font-size: 48px;
+}
+
+.league-stats-side .stats {
+  font-size: 28px;
 }
 
 .league-stats .line {

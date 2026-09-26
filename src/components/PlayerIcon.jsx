@@ -82,7 +82,12 @@ const PlayerIcon = (props) => {
           </text>
         </svg>
       </div>
-      <LeagueStats leagueStats={leagueStats} show={props.selected} />
+      <LeagueStats
+        leagueStats={leagueStats}
+        show={props.selected}
+        layout={props.leagueStatsLayout}
+        playerSide={props.pos.left !== undefined ? 'left' : 'right'}
+      />
       <div
         className="blurb"
         style={{

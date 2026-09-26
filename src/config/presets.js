@@ -13,6 +13,7 @@ const defaultPreset = {
     defaultSize: 150,
     focusedSize: 350,
   },
+  leagueStatsLayout: 'top',
 };
 
 export const PRESETS = {
@@ -23,10 +24,15 @@ export const PRESETS = {
   one_vs_one: {
     ...defaultPreset,
     label: '1 vs 1',
+    leagueStatsLayout: 'side',
     css: {
       '--player-transition': '0s',
       '--fade-transition': '0s',
       '--detail-transition': '0s',
+    },
+    layout: {
+      ...defaultPreset.layout,
+      focusedXPadding: 100,
     },
   },
 };

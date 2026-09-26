@@ -129,6 +129,7 @@ const PlayerOverlay = () => {
               eliminated={player.eliminated}
               banned={player.banned}
               blurb={player.blurb}
+              leagueStatsLayout={preset.leagueStatsLayout}
             />
           ))
         )}
