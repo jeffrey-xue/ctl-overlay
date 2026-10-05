@@ -32,16 +32,16 @@ Add the config window to the OBS as a custom browser dock through **Docks > Cust
 
 ## Using the config
 
-![](https://i.imgur.com/bOrTgqy.png) 
+![](https://i.imgur.com/bOrTgqy.png)
 
 - Enter the **tetrio usernames** of each player in each of the specified text inputs.
 - If desired, enter a small blurb in the input next to the player name. This will appear under the player icon in the chosen players scene.
 - To select the player that will be playing, click one the radio inputs (the dots) next to the player you would like to select.
 - To mark a player as eliminated / already played, click one of the checkbox inputs (the squares) next to the player you would like to eliminate.
 - Hit **Clear Selected Player** if you would like no player to be selected.
-- Enter a color under **Team Color Hex** inputs to change the colors of the image borders and text. If none is provided, white will be used. You can find the hex color of a code [here](https://rgbacolorpicker.com/hex-color-picker) or you can google it 
+- Enter a color under **Team Color Hex** inputs to change the colors of the image borders and text. If none is provided, white will be used. You can find the hex color of a code [here](https://rgbacolorpicker.com/hex-color-picker) or you can google it
 - The overlay is able to handle cases in the "player chosen" and "game scene" where the selected player is absent / changed midway through.
-- Any updates that you make to the will be reflected in the overlay once you hit **Save**. 
+- Any updates that you make to the will be reflected in the overlay once you hit **Save**.
 
 Here is a sample config:
 
