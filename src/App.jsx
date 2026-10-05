@@ -10,7 +10,7 @@ const App = () => {
         <Route path="/config" element={<PlayerOverlayConfig />} />
       </Routes>
     </HashRouter>
-  )
-}
+  );
+};
 
 export default App;
