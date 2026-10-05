@@ -1,6 +1,20 @@
 import { useEffect, useState } from 'react';
 import { PRESETS } from '../config/presets';
-import { connectObs, disconnectObs } from '../util/obs';
+import MatchupHistoryConfig from '../components/MatchupHistoryConfig';
+import { connectObs, disconnectObs, setMatchupScores } from '../util/obs';
+
+const createEmptyMatchupHistory = () => ({
+  bans: [
+    ['', ''],
+    ['', ''],
+  ],
+  matchups: Array.from({ length: 5 }, () => ({
+    leftPlayer: '',
+    leftScore: '',
+    rightScore: '',
+    rightPlayer: '',
+  })),
+});
 
 const PlayerOverlayConfig = () => {
   const [playerData, setPlayerData] = useState([
@@ -12,33 +26,42 @@ const PlayerOverlayConfig = () => {
   const [presetId, setPresetId] = useState('ctl');
 
   const [showPlayerBlurbs, setShowPlayerBlurbs] = useState({ 0: false, 1: false });
-  const [obsIp, setObsIp] = useState('127.0.0.1');
-  const [obsPort, setObsPort] = useState('4455');
-  const [obsStatus, setObsStatus] = useState('disconnected');
-  const [obsError, setObsError] = useState('');
-  const portNumber = Number(obsPort);
+  const [matchupHistory, setMatchupHistory] = useState(createEmptyMatchupHistory);
+  const [obsConnection, setObsConnection] = useState({
+    ip: '127.0.0.1',
+    port: '4455',
+    status: 'disconnected',
+    error: '',
+  });
+  const portNumber = Number(obsConnection.port);
   const validObsPort = Number.isInteger(portNumber) && portNumber >= 1 && portNumber <= 65535;
 
   const toggleObsConnection = async () => {
-    setObsError('');
+    setObsConnection((connection) => ({ ...connection, error: '' }));
 
-    if (obsStatus === 'connected') {
+    if (obsConnection.status === 'connected') {
       try {
         await disconnectObs();
-        setObsStatus('disconnected');
+        setObsConnection((connection) => ({ ...connection, status: 'disconnected' }));
       } catch (error) {
-        setObsError(error.message || 'Could not disconnect from OBS.');
+        setObsConnection((connection) => ({
+          ...connection,
+          error: error.message || 'Could not disconnect from OBS.',
+        }));
       }
       return;
     }
 
-    setObsStatus('connecting');
+    setObsConnection((connection) => ({ ...connection, status: 'connecting' }));
     try {
-      await connectObs(`ws://${obsIp.trim()}:${obsPort.trim()}`);
-      setObsStatus('connected');
+      await connectObs(`ws://${obsConnection.ip.trim()}:${obsConnection.port.trim()}`);
+      setObsConnection((connection) => ({ ...connection, status: 'connected' }));
     } catch (error) {
-      setObsStatus('disconnected');
-      setObsError(error.message || 'Could not connect to OBS.');
+      setObsConnection((connection) => ({
+        ...connection,
+        status: 'disconnected',
+        error: error.message || 'Could not connect to OBS.',
+      }));
     }
   };
 
@@ -98,6 +121,7 @@ const PlayerOverlayConfig = () => {
         selectedPlayerIndices,
         teamColors,
         presetId,
+        matchupHistory,
       })
     );
     console.log('saved');
@@ -110,11 +134,15 @@ const PlayerOverlayConfig = () => {
         selectedPlayerIndices: newSelectedPlayers,
         teamColors: newTeamColors,
         presetId: newPresetId,
+        matchupHistory: newMatchupHistory,
       } = JSON.parse(localStorage.getItem('ctl-player-overlay-config'));
       setPlayerData((playerData) => newPlayerData ?? playerData);
       setSelectedPlayerIndices((selectedIndices) => newSelectedPlayers ?? selectedIndices);
       setTeamColors((teamColors) => newTeamColors ?? teamColors);
       setPresetId((presetId) => (PRESETS[newPresetId] ? newPresetId : presetId));
+      if (newMatchupHistory?.bans?.length === 2 && newMatchupHistory?.matchups?.length === 5) {
+        setMatchupHistory(newMatchupHistory);
+      }
       console.log('successfully fetched from localstorage');
     } catch (e) {
       console.log('failed to fetch from localstorage');
@@ -123,10 +151,21 @@ const PlayerOverlayConfig = () => {
 
   useEffect(loadFromLocalStorage, []);
 
+  useEffect(() => {
+    if (obsConnection.status !== 'connected') return;
+
+    setMatchupScores(matchupHistory.matchups).catch((error) => {
+      setObsConnection((connection) => ({
+        ...connection,
+        error: error.message || 'Could not update OBS scores.',
+      }));
+    });
+  }, [obsConnection.status, matchupHistory.matchups]);
+
   return (
     <div className="config-container">
       <label className="layout-dropdown">
-        Current Layout{' '}
+        Current Layout:{' '}
         <select value={presetId} onChange={(event) => setPresetId(event.target.value)}>
           {Object.entries(PRESETS).map(([id, preset]) => (
             <option key={id} value={id}>
@@ -140,10 +179,12 @@ const PlayerOverlayConfig = () => {
           IP address
           <input
             type="text"
-            value={obsIp}
-            onChange={(event) => setObsIp(event.target.value)}
+            value={obsConnection.ip}
+            onChange={(event) =>
+              setObsConnection((connection) => ({ ...connection, ip: event.target.value }))
+            }
             placeholder="127.0.0.1"
-            disabled={obsStatus === 'connected' || obsStatus === 'connecting'}
+            disabled={obsConnection.status === 'connected' || obsConnection.status === 'connecting'}
           />
         </label>
         <label>
@@ -152,34 +193,36 @@ const PlayerOverlayConfig = () => {
             type="number"
             min="1"
             max="65535"
-            value={obsPort}
-            onChange={(event) => setObsPort(event.target.value)}
+            value={obsConnection.port}
+            onChange={(event) =>
+              setObsConnection((connection) => ({ ...connection, port: event.target.value }))
+            }
             placeholder="4455"
-            disabled={obsStatus === 'connected' || obsStatus === 'connecting'}
+            disabled={obsConnection.status === 'connected' || obsConnection.status === 'connecting'}
           />
         </label>
         <button
           type="button"
           onClick={toggleObsConnection}
-          disabled={obsStatus === 'connecting' || !obsIp.trim() || !validObsPort}
+          disabled={
+            obsConnection.status === 'connecting' || !obsConnection.ip.trim() || !validObsPort
+          }
         >
-          {obsStatus === 'connecting'
+          {obsConnection.status === 'connecting'
             ? 'Connecting…'
-            : obsStatus === 'connected'
+            : obsConnection.status === 'connected'
               ? 'Disconnect'
               : 'Connect to OBS'}
         </button>
-        <span className="obs-connection-status" aria-live="polite">
-          {obsStatus === 'connected'
+        <span className="obs-connection-status">
+          {obsConnection.status === 'connected'
             ? 'Connected'
-            : obsStatus === 'connecting'
+            : obsConnection.status === 'connecting'
               ? 'Connecting…'
               : 'Disconnected'}
           <br />
-          {obsError && (
-            <span className="obs-connection-error" role="alert">
-              {obsError}
-            </span>
+          {obsConnection.error && (
+            <span className="obs-connection-error">{obsConnection.error}</span>
           )}
         </span>
       </div>
@@ -209,7 +252,6 @@ const PlayerOverlayConfig = () => {
                   onChange={(e) => banPlayer(teamIndex, playerIndex, e.target.checked)}
                   name={`team${teamIndex}-banned`}
                   checked={player.banned ?? false}
-                  aria-label={`Ban Team ${teamIndex + 1} Player ${playerIndex + 1}`}
                 />
                 <input
                   onChange={(e) => changePlayerName(teamIndex, playerIndex, e.target.value)}
@@ -265,6 +307,11 @@ const PlayerOverlayConfig = () => {
           </div>
         ))}
       </div>
+      <MatchupHistoryConfig
+        value={matchupHistory}
+        onChange={setMatchupHistory}
+        teamPlayerNames={playerData.map((team) => team.map((player) => player.name?.trim() ?? ''))}
+      />
       <button className="save-button" onClick={saveToLocalStorage}>
         Save
       </button>

@@ -16,3 +16,21 @@ export async function setText(inputName, text) {
     inputSettings: { text },
   });
 }
+
+export async function setMatchupScores(matchups) {
+  const totals = matchups.reduce(
+    (result, matchup) => {
+      const leftScore = Number(matchup.leftScore);
+      const rightScore = Number(matchup.rightScore);
+      result.left += Number.isFinite(leftScore) ? leftScore : 0;
+      result.right += Number.isFinite(rightScore) ? rightScore : 0;
+      return result;
+    },
+    { left: 0, right: 0 }
+  );
+
+  await Promise.all([
+    setText('scoreleft', String(totals.left)),
+    setText('scoreright', String(totals.right)),
+  ]);
+}
