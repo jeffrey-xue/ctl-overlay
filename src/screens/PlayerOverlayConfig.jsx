@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { PRESETS } from '../config/presets';
+import { connectObs, disconnectObs } from '../util/obs';
 
 const PlayerOverlayConfig = () => {
   const [playerData, setPlayerData] = useState([
@@ -11,6 +12,35 @@ const PlayerOverlayConfig = () => {
   const [presetId, setPresetId] = useState('ctl');
 
   const [showPlayerBlurbs, setShowPlayerBlurbs] = useState({ 0: false, 1: false });
+  const [obsIp, setObsIp] = useState('127.0.0.1');
+  const [obsPort, setObsPort] = useState('4455');
+  const [obsStatus, setObsStatus] = useState('disconnected');
+  const [obsError, setObsError] = useState('');
+  const portNumber = Number(obsPort);
+  const validObsPort = Number.isInteger(portNumber) && portNumber >= 1 && portNumber <= 65535;
+
+  const toggleObsConnection = async () => {
+    setObsError('');
+
+    if (obsStatus === 'connected') {
+      try {
+        await disconnectObs();
+        setObsStatus('disconnected');
+      } catch (error) {
+        setObsError(error.message || 'Could not disconnect from OBS.');
+      }
+      return;
+    }
+
+    setObsStatus('connecting');
+    try {
+      await connectObs(`ws://${obsIp.trim()}:${obsPort.trim()}`);
+      setObsStatus('connected');
+    } catch (error) {
+      setObsStatus('disconnected');
+      setObsError(error.message || 'Could not connect to OBS.');
+    }
+  };
 
   const changePlayerName = (teamIndex, playerIndex, name) => {
     const newPlayers = [...playerData].map((e) => [...e]);
@@ -105,6 +135,54 @@ const PlayerOverlayConfig = () => {
           ))}
         </select>
       </label>
+      <div className="obs-connection">
+        <label>
+          IP address
+          <input
+            type="text"
+            value={obsIp}
+            onChange={(event) => setObsIp(event.target.value)}
+            placeholder="127.0.0.1"
+            disabled={obsStatus === 'connected' || obsStatus === 'connecting'}
+          />
+        </label>
+        <label>
+          Port
+          <input
+            type="number"
+            min="1"
+            max="65535"
+            value={obsPort}
+            onChange={(event) => setObsPort(event.target.value)}
+            placeholder="4455"
+            disabled={obsStatus === 'connected' || obsStatus === 'connecting'}
+          />
+        </label>
+        <button
+          type="button"
+          onClick={toggleObsConnection}
+          disabled={obsStatus === 'connecting' || !obsIp.trim() || !validObsPort}
+        >
+          {obsStatus === 'connecting'
+            ? 'Connecting…'
+            : obsStatus === 'connected'
+              ? 'Disconnect'
+              : 'Connect to OBS'}
+        </button>
+        <span className="obs-connection-status" aria-live="polite">
+          {obsStatus === 'connected'
+            ? 'Connected'
+            : obsStatus === 'connecting'
+              ? 'Connecting…'
+              : 'Disconnected'}
+          <br />
+          {obsError && (
+            <span className="obs-connection-error" role="alert">
+              {obsError}
+            </span>
+          )}
+        </span>
+      </div>
       <div className="player-config">
         {playerData.map((players, teamIndex) => (
           <div className={`player-col player-col-team-${teamIndex + 1}`}>

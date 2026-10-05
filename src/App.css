@@ -218,6 +218,31 @@ main {
   font-size: 1rem;
 }
 
+.obs-connection {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 8px;
+  margin: 10px;
+  padding: 10px;
+}
+
+.obs-connection h3 {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.obs-connection label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.obs-connection-error {
+  flex-basis: 100%;
+  color: #b00020;
+}
+
 .player-config {
   display: flex;
   justify-content: space-between;
