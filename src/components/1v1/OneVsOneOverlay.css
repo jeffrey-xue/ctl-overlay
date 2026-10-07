@@ -1,0 +1,255 @@
+.one-v-one-overlay {
+  max-width: 1920px;
+  max-height: 1080px;
+  min-width: 1920px;
+  min-height: 1080px;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+.one-v-one-player-card {
+  display: flex;
+  position: absolute;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  width: var(--default-icon-size);
+  height: var(--default-icon-size);
+  transition:
+    top var(--player-transition),
+    left var(--player-transition),
+    right var(--player-transition),
+    bottom var(--player-transition),
+    width var(--player-transition),
+    height var(--player-transition);
+}
+
+.one-v-one-player-card .player-avatar {
+  position: relative;
+  flex: 0 0 70%;
+  width: 70%;
+  height: 70%;
+}
+
+.one-v-one-player-card .player-avatar-image {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: solid 3px white;
+  object-fit: cover;
+  transition: opacity var(--fade-transition);
+}
+
+.one-v-one-player-card .player-avatar-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+}
+
+.one-v-one-player-card .player-avatar-ban-icon {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.one-v-one-player-name {
+  position: relative;
+  width: 100%;
+  height: 50%;
+}
+
+.one-v-one-player-name svg {
+  position: absolute;
+  top: -50%;
+  left: 50%;
+  transform: translate(-50%);
+  transition: opacity var(--fade-transition);
+}
+
+.one-v-one-overlay--animate-names .one-v-one-player-name.is-focused {
+  animation: one-v-one-name-focus var(--name-transition, 400ms) ease-out both;
+}
+
+.one-v-one-overlay--animate-names .one-v-one-player-name:not(.is-focused) {
+  animation: one-v-one-name-unfocus var(--name-transition, 400ms) ease-out both;
+}
+
+@keyframes one-v-one-name-focus {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 12px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes one-v-one-name-unfocus {
+  from {
+    opacity: 0.35;
+    transform: translate(-50%, -8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.one-v-one-player-blurb {
+  position: absolute;
+  top: 350px;
+  overflow: hidden;
+  max-width: 400px;
+  width: max-content;
+  padding: 10px;
+  border-radius: 20px;
+  background-color: rgb(0 0 0 / 50%);
+  color: white;
+  text-align: center;
+  font-family: Roboto, sans-serif;
+  font-size: 20px;
+  opacity: 0;
+  clip-path: inset(0 0 100% 0);
+  transition: var(--detail-transition);
+}
+
+.one-v-one-player-blurb.is-focused {
+  opacity: 1;
+  clip-path: inset(0);
+  transition-delay: 1s;
+}
+
+.one-v-one-overlay .league-stats {
+  position: absolute;
+  top: -68px;
+  overflow: hidden;
+  width: 300px;
+  color: white;
+  font-family: 'HUN', sans-serif;
+  font-size: 50px;
+  transition: top var(--detail-transition);
+}
+
+.one-v-one-overlay .league-stats--side {
+  top: 50%;
+  width: 400px;
+  margin: 8px;
+  --clip-height: 85px;
+  transform: translateY(-70%);
+  scale: 1.2;
+}
+
+.one-v-one-overlay .league-stats--side.league-stats--visible {
+  transition-delay: 0s;
+}
+
+.one-v-one-overlay .league-stats--left-player {
+  left: 100%;
+}
+
+.one-v-one-overlay .league-stats--right-player {
+  right: 100%;
+}
+
+.one-v-one-overlay .league-stats-rank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  margin: 0.15em 0.15em 0;
+  color: #fff;
+  text-shadow:
+    0 2px #ddd,
+    0 0 16px #fff4;
+  clip-path: inset(var(--clip-height) 0 0);
+  transition: clip-path var(--detail-transition);
+}
+
+.one-v-one-overlay .league-stats-rank.is-visible {
+  clip-path: inset(0);
+  transition-delay: 0.5s;
+}
+
+.one-v-one-overlay .league-stats-icon {
+  display: block;
+  flex: 0 0 auto;
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+}
+
+.one-v-one-overlay .league-stats-rating {
+  font-weight: 800;
+  line-height: 1;
+}
+
+.one-v-one-overlay .league-stats-tr-label {
+  display: inline-block;
+  margin-left: 5px;
+  font-size: 40px;
+  line-height: 1;
+}
+
+.one-v-one-overlay .league-stats-line {
+  width: 0;
+  height: 0;
+  margin: auto auto 10px;
+  border-top: solid 1px white;
+  transition: width var(--detail-transition);
+}
+
+.one-v-one-overlay .league-stats-line.is-visible {
+  width: 100%;
+  transition-delay: 0.5s;
+}
+
+.one-v-one-overlay .league-stats-details {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  font-size: 20px;
+  clip-path: inset(0 0 var(--clip-height) 0);
+  transition: clip-path var(--detail-transition);
+}
+
+.one-v-one-overlay .league-stats-details.is-visible {
+  clip-path: inset(0);
+  transition-delay: 0.5s;
+}
+
+.one-v-one-overlay .league-stats-details > div {
+  margin: 0 5px;
+  text-align: center;
+}
+
+.one-v-one-overlay .league-stats-details span {
+  font-weight: 800;
+}
+
+.one-v-one-overlay .league-stats--side .league-stats-rank {
+  height: 80px;
+  font-size: 64px;
+}
+
+.one-v-one-overlay .league-stats--side .league-stats-icon {
+  width: 80px;
+  height: 80px;
+  padding-bottom: 4px;
+}
+
+.one-v-one-overlay .league-stats--side .league-stats-tr-label {
+  font-size: 48px;
+}
+
+.one-v-one-overlay .league-stats--side .league-stats-details {
+  font-size: 28px;
+}

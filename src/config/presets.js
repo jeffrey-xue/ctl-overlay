@@ -1,30 +1,44 @@
+import CtlOverlay from '../components/ctl-components/CtlOverlay';
+import TwsOverlay from '../components/tws-components/TwsOverlay';
+import OneVsOneOverlay from '../components/1v1/OneVsOneOverlay';
+import { DEFAULT_LAYOUT } from './Positions';
+
 const defaultPreset = {
   css: {
     '--player-transition': '2s cubic-bezier(0.9, 0, 0.1, 1)',
     '--fade-transition': '0.4s',
     '--detail-transition': '1s',
   },
-  layout: {
-    xPadding: 30,
-    yPadding: 100,
-    focusedXPadding: 500,
-    gameSceneXPadding: -10,
-    gameSceneYPadding: -80,
-    defaultSize: 150,
-    focusedSize: 350,
-  },
-  leagueStatsLayout: 'top',
+  layout: DEFAULT_LAYOUT,
+  iconBorder: { type: 'color' },
+  banIconPath: 'Banned_Icon.png',
+  animateNames: false,
 };
 
 export const PRESETS = {
   ctl: {
     ...defaultPreset,
     label: 'Collegiate Tetris League',
+    Renderer: CtlOverlay,
+  },
+  tws: {
+    ...defaultPreset,
+    label: 'TETR.IO World Series',
+    Renderer: TwsOverlay,
+    iconBorder: { type: 'image', path: 'twsavatarframe.png' },
+    banIconPath: 'twsavatarban.png',
+    layout: {
+      ...defaultPreset.layout,
+      leftRosterYStart: 160,
+      leftRosterYEnd: 920,
+      rightRosterYStart: 80,
+      rightRosterYEnd: 840,
+    },
   },
   one_vs_one: {
     ...defaultPreset,
     label: '1 vs 1',
-    leagueStatsLayout: 'side',
+    Renderer: OneVsOneOverlay,
     css: {
       '--player-transition': '0s',
       '--fade-transition': '0s',

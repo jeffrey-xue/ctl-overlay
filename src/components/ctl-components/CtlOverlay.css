@@ -1,0 +1,238 @@
+.ctl-overlay {
+  max-width: 1920px;
+  max-height: 1080px;
+  min-width: 1920px;
+  min-height: 1080px;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  background-color: aquamarine;
+}
+
+.ctl-player-card {
+  display: flex;
+  position: absolute;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  width: var(--default-icon-size);
+  height: var(--default-icon-size);
+  transition:
+    top var(--player-transition),
+    left var(--player-transition),
+    right var(--player-transition),
+    bottom var(--player-transition),
+    width var(--player-transition),
+    height var(--player-transition);
+}
+
+.ctl-player-card .player-avatar {
+  position: relative;
+  flex: 0 0 70%;
+  width: 70%;
+  height: 70%;
+}
+
+.ctl-player-card .player-avatar-image {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: solid 3px white;
+  object-fit: cover;
+  transition: opacity var(--fade-transition);
+}
+
+.ctl-player-card .player-avatar-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+}
+
+.ctl-player-card .player-avatar-ban-icon {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.ctl-player-name {
+  position: relative;
+  width: 100%;
+  height: 50%;
+}
+
+.ctl-player-name svg {
+  position: absolute;
+  top: -50%;
+  left: 50%;
+  overflow: visible;
+  transform: translate(-50%);
+  transition: opacity var(--fade-transition);
+}
+
+.ctl-overlay--animate-names .ctl-player-name.is-focused {
+  animation: ctl-name-focus var(--name-transition, 400ms) ease-out both;
+}
+
+.ctl-overlay--animate-names .ctl-player-name:not(.is-focused) {
+  animation: ctl-name-unfocus var(--name-transition, 400ms) ease-out both;
+}
+
+@keyframes ctl-name-focus {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ctl-name-unfocus {
+  from {
+    opacity: 0.35;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ctl-player-blurb {
+  position: absolute;
+  top: 350px;
+  overflow: hidden;
+  max-width: 400px;
+  width: max-content;
+  padding: 10px;
+  border-radius: 20px;
+  background-color: rgb(0 0 0 / 50%);
+  color: white;
+  text-align: center;
+  font-family: Roboto, sans-serif;
+  font-size: 20px;
+  opacity: 0;
+  clip-path: inset(0 0 100% 0);
+  transition: var(--detail-transition);
+}
+
+.ctl-player-blurb.is-focused {
+  opacity: 1;
+  clip-path: inset(0);
+  transition-delay: 1s;
+}
+
+.ctl-overlay .league-stats {
+  position: absolute;
+  left: 50%;
+  top: -68px;
+  overflow: hidden;
+  width: 300px;
+  --clip-height: 65px;
+  transform: translateX(-50%);
+  color: white;
+  font-family: 'HUN', sans-serif;
+  font-size: 50px;
+  transition: top var(--detail-transition);
+}
+
+.ctl-overlay .league-stats--visible {
+  top: -120px;
+  transition-delay: 0.5s;
+}
+
+.ctl-overlay .league-stats--left-player {
+  left: 50%;
+}
+
+.ctl-overlay .league-stats--right-player {
+  right: auto;
+  left: 50%;
+}
+
+.ctl-overlay .league-stats-rank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 70px;
+  margin: 0.15em 0.15em 0;
+  color: #fff;
+  text-shadow:
+    0 2px #ddd,
+    0 0 16px #fff4;
+  clip-path: inset(var(--clip-height) 0 0);
+  transition: clip-path var(--detail-transition);
+}
+
+.ctl-overlay .league-stats-rank.is-visible {
+  clip-path: inset(0);
+  transition-delay: 0.5s;
+}
+
+.ctl-overlay .league-stats-icon {
+  display: block;
+  flex: 0 0 auto;
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+}
+
+.ctl-overlay .league-stats-icon {
+  transform: translateY(-4px);
+}
+
+.ctl-overlay .league-stats-rating {
+  font-weight: 800;
+  line-height: 1;
+}
+
+.ctl-overlay .league-stats-tr-label {
+  display: inline-block;
+  margin-left: 5px;
+  font-size: 40px;
+  line-height: 1;
+}
+
+.ctl-overlay .league-stats-line {
+  width: 0;
+  height: 0;
+  margin: auto auto 10px;
+  border-top: solid 1px white;
+  transition: width var(--detail-transition);
+}
+
+.ctl-overlay .league-stats-line.is-visible {
+  width: 100%;
+  transition-delay: 0.5s;
+}
+
+.ctl-overlay .league-stats-details {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  font-size: 20px;
+  clip-path: inset(0 0 var(--clip-height) 0);
+  transition: clip-path var(--detail-transition);
+}
+
+.ctl-overlay .league-stats-details.is-visible {
+  clip-path: inset(0);
+  transition-delay: 0.5s;
+}
+
+.ctl-overlay .league-stats-details > div {
+  margin: 0 5px;
+  text-align: center;
+}
+
+.ctl-overlay .league-stats-details span {
+  font-weight: 800;
+}

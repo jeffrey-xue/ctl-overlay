@@ -1,8 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
-import PlayerIcon from '../components/PlayerIcon';
-import createPositions from '../config/Positions';
+import { useState, useEffect } from 'react';
 import { PRESETS } from '../config/presets';
 import { useInterval } from '../hooks/useInterval';
+import usePlayerProfiles from '../hooks/usePlayerProfiles';
 
 const TRACKED_SCENES = ['player-select', 'players-chosen', 'game-scene'];
 
@@ -15,44 +14,6 @@ const trimTeam = (team) => {
   return team.slice(0, end);
 };
 
-const layoutWithFocus = (size, selected, focusedPos, benchPositions) => {
-  let benchIndex = 0;
-  return Array.from({ length: size }, (_, i) =>
-    i === selected ? focusedPos : benchPositions[benchIndex++]
-  );
-};
-
-const buildPositions = (scene, Positions, teamSizes, selectedPlayerIndices) =>
-  teamSizes.map((size, t) => {
-    const selected = selectedPlayerIndices[t];
-    const hasSelection = selected >= 0 && selected < size;
-
-    switch (scene) {
-      case 'players-chosen':
-        return hasSelection
-          ? layoutWithFocus(
-              size,
-              selected,
-              Positions.FOCUSED_PLAYER_SELECTED_POSITIONS[t],
-              Positions.BENCH_PLAYER_SELECTED_POSITIONS[t]
-            )
-          : Positions.DEFAULT_POSITIONS[t];
-      case 'game-scene':
-        return hasSelection
-          ? layoutWithFocus(
-              size,
-              selected,
-              Positions.FOCUSED_PLAYER_GAME_POSITIONS[t],
-              Positions.BENCH_PLAYER_GAME_POSITIONS[t]
-            )
-          : Positions.ALL_HIDDEN_GAME_POSITIONS[t];
-      case 'players-out':
-        return Positions.ALL_HIDDEN_GAME_POSITIONS[t];
-      default: // "player-select" and the initial "" scene
-        return Positions.DEFAULT_POSITIONS[t];
-    }
-  });
-
 const PlayerOverlay = () => {
   const [playerData, setPlayerData] = useState([
     [{}, {}, {}, {}, {}],
@@ -64,10 +25,16 @@ const PlayerOverlay = () => {
   const [scene, setScene] = useState('');
 
   const trimmedData = playerData.map(trimTeam);
-  const teamSizes = trimmedData.map((team) => team.length);
+  const profiles = usePlayerProfiles(trimmedData);
   const preset = PRESETS[presetId] ?? PRESETS.ctl;
-  const Positions = createPositions(teamSizes, preset.layout);
-  const playerPositions = buildPositions(scene, Positions, teamSizes, selectedPlayerIndices);
+  const Renderer = preset.Renderer;
+  const teams = trimmedData.map((team, teamIndex) =>
+    team.map((player) => ({
+      ...player,
+      teamColor: teamColors[teamIndex],
+      ...(profiles[player.name?.trim().toLowerCase()] ?? {}),
+    }))
+  );
 
   useInterval(() => {
     // there is no emitted event to send
@@ -110,30 +77,12 @@ const PlayerOverlay = () => {
 
   return (
     <div>
-      <main
-        style={{
-          ...preset.css,
-          '--default-icon-size': `${preset.layout.defaultSize}px`,
-        }}
-      >
-        {trimmedData.map((team, teamIndex) =>
-          team.map((player, playerIndex) => (
-            <PlayerIcon
-              teamColor={teamColors[teamIndex]}
-              username={player.name}
-              key={playerIndex}
-              pos={playerPositions[teamIndex][playerIndex]}
-              selected={
-                selectedPlayerIndices[teamIndex] === playerIndex && scene === 'players-chosen'
-              }
-              eliminated={player.eliminated}
-              banned={player.banned}
-              blurb={player.blurb}
-              leagueStatsLayout={preset.leagueStatsLayout}
-            />
-          ))
-        )}
-      </main>
+      <Renderer
+        teams={teams}
+        scene={scene}
+        selectedPlayerIndices={selectedPlayerIndices}
+        preset={preset}
+      />
       {/* Testing buttons that should be off screen. */}
       <button onClick={() => setScene('player-select')}>player select scene</button>
       <button onClick={() => setScene('players-chosen')}>player chosen scene</button>
