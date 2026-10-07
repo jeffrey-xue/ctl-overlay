@@ -35,6 +35,8 @@
 .one-v-one-player-card .player-avatar-image {
   box-sizing: border-box;
   display: block;
+  position: relative;
+  z-index: 1;
   width: 100%;
   height: 100%;
   border: solid 3px white;
@@ -42,18 +44,10 @@
   transition: opacity var(--fade-transition);
 }
 
-.one-v-one-player-card .player-avatar-frame {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
-  pointer-events: none;
-}
-
 .one-v-one-player-card .player-avatar-ban-icon {
   position: absolute;
   inset: 0;
+  z-index: 2;
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -72,36 +66,6 @@
   left: 50%;
   transform: translate(-50%);
   transition: opacity var(--fade-transition);
-}
-
-.one-v-one-overlay--animate-names .one-v-one-player-name.is-focused {
-  animation: one-v-one-name-focus var(--name-transition, 400ms) ease-out both;
-}
-
-.one-v-one-overlay--animate-names .one-v-one-player-name:not(.is-focused) {
-  animation: one-v-one-name-unfocus var(--name-transition, 400ms) ease-out both;
-}
-
-@keyframes one-v-one-name-focus {
-  from {
-    opacity: 0;
-    transform: translate(-50%, 12px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-}
-
-@keyframes one-v-one-name-unfocus {
-  from {
-    opacity: 0.35;
-    transform: translate(-50%, -8px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
 }
 
 .one-v-one-player-blurb {

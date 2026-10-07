@@ -3,11 +3,16 @@ const getAssetUrl = (path) => {
   return `${import.meta.env.BASE_URL}${path.replace(/^\/+/, '')}`;
 };
 
-const PlayerAvatar = ({ avatarUrl, teamColor, eliminated, banned, banIconPath, iconBorder }) => {
-  const imageBorder = iconBorder?.type === 'image' && iconBorder.path;
-  const colorBorder = iconBorder?.type !== 'image';
+const PlayerAvatar = ({
+  avatarUrl,
+  teamColor,
+  eliminated,
+  banned,
+  banIconPath,
+  teamColorBorder = true,
+}) => {
   const style = {
-    borderColor: colorBorder ? iconBorder?.color || teamColor || 'white' : 'transparent',
+    borderColor: teamColorBorder ? teamColor || 'white' : 'transparent',
     opacity: eliminated ? 0.3 : 1,
   };
 
@@ -18,21 +23,11 @@ const PlayerAvatar = ({ avatarUrl, teamColor, eliminated, banned, banIconPath, i
       ) : (
         <div className="player-avatar-image" style={style} />
       )}
-      {imageBorder && (
-        <img
-          className="player-avatar-frame"
-          alt=""
-          aria-hidden="true"
-          src={getAssetUrl(iconBorder.path)}
-        />
-      )}
       {banned && (
         <img className="player-avatar-ban-icon" src={getAssetUrl(banIconPath)} alt="Banned" />
       )}
     </div>
   );
 };
-
-export const getPresetAssetUrl = getAssetUrl;
 
 export default PlayerAvatar;

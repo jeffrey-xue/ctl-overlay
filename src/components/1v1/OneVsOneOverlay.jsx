@@ -19,12 +19,13 @@ const OneVsOneOverlay = ({ teams, scene, selectedPlayerIndices, preset }) => {
         team.map((player, playerIndex) => {
           const focused =
             selectedPlayerIndices[teamIndex] === playerIndex && scene === 'players-chosen';
+          const position = positions[teamIndex][playerIndex];
           const teamColor = player.teamColor || 'white';
           return (
             <div
               className="one-v-one-player-card"
               key={`${teamIndex}-${playerIndex}`}
-              style={positions[teamIndex][playerIndex]}
+              style={position}
             >
               <PlayerAvatar
                 avatarUrl={player.avatarUrl}
@@ -32,7 +33,7 @@ const OneVsOneOverlay = ({ teams, scene, selectedPlayerIndices, preset }) => {
                 eliminated={player.eliminated}
                 banned={player.banned}
                 banIconPath={preset.banIconPath}
-                iconBorder={preset.iconBorder}
+                teamColorBorder={preset.teamColorBorder}
               />
               <div
                 className={`one-v-one-player-name${focused ? ' is-focused' : ''}`}

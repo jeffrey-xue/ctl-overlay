@@ -19,20 +19,17 @@ const CtlOverlay = ({ teams, scene, selectedPlayerIndices, preset }) => {
         team.map((player, playerIndex) => {
           const focused =
             selectedPlayerIndices[teamIndex] === playerIndex && scene === 'players-chosen';
+          const position = positions[teamIndex][playerIndex];
           const teamColor = player.teamColor || 'white';
           return (
-            <div
-              className="ctl-player-card"
-              key={`${teamIndex}-${playerIndex}`}
-              style={positions[teamIndex][playerIndex]}
-            >
+            <div className="ctl-player-card" key={`${teamIndex}-${playerIndex}`} style={position}>
               <PlayerAvatar
                 avatarUrl={player.avatarUrl}
                 teamColor={teamColor}
                 eliminated={player.eliminated}
                 banned={player.banned}
                 banIconPath={preset.banIconPath}
-                iconBorder={preset.iconBorder}
+                teamColorBorder={preset.teamColorBorder}
               />
               <div
                 className={`ctl-player-name${focused ? ' is-focused' : ''}`}

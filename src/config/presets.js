@@ -10,7 +10,7 @@ const defaultPreset = {
     '--detail-transition': '1s',
   },
   layout: DEFAULT_LAYOUT,
-  iconBorder: { type: 'color' },
+  teamColorBorder: true,
   banIconPath: 'Banned_Icon.png',
   animateNames: false,
 };
@@ -25,7 +25,8 @@ export const PRESETS = {
     ...defaultPreset,
     label: 'TETR.IO World Series',
     Renderer: TwsOverlay,
-    iconBorder: { type: 'image', path: 'twsavatarframe.png' },
+    teamColorBorder: false,
+    animateNames: true,
     banIconPath: 'twsavatarban.png',
     layout: {
       ...defaultPreset.layout,

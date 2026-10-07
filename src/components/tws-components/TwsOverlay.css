@@ -1,1 +1,87 @@
 @import '../ctl-components/CtlOverlay.css';
+
+.tws-overlay {
+  --tws-roster-avatar-size: 60%;
+  --tws-focused-avatar-size: 70%;
+}
+
+.tws-overlay--animate-names .ctl-player-name.is-focused svg {
+  animation: tws-name-focus var(--name-transition, 400ms) ease-out both;
+}
+
+.tws-overlay--animate-names .ctl-player-name:not(.is-focused) svg {
+  animation: tws-name-unfocus var(--name-transition, 400ms) ease-out both;
+}
+
+@keyframes tws-name-focus {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 12px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes tws-name-unfocus {
+  from {
+    opacity: 0.35;
+    transform: translate(-50%, -8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.tws-player-card .tws-avatar-frame-container {
+  position: relative;
+  flex: 0 0 var(--tws-roster-avatar-size);
+  width: var(--tws-roster-avatar-size);
+  height: var(--tws-roster-avatar-size);
+  --tws-frame-offset-x: 0.476%;
+  /* --tws-frame-offset-x: 0%; */
+
+  --tws-frame-offset-y: 7%;
+}
+
+.tws-player-card .tws-avatar-frame-container--focused {
+  flex-basis: var(--tws-focused-avatar-size);
+  width: var(--tws-focused-avatar-size);
+  height: var(--tws-focused-avatar-size);
+}
+
+.tws-player-card {
+  background-color: red;
+}
+
+.tws-avatar-frame {
+  position: absolute;
+  top: calc(50% + var(--tws-frame-offset-y));
+  left: calc(50% + var(--tws-frame-offset-x));
+  z-index: 0;
+  width: 125%;
+  height: 125%;
+  object-fit: contain;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.tws-avatar-frame-container--focused .tws-avatar-frame {
+  width: 128%;
+  height: 128%;
+}
+
+.tws-avatar-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+}
+
+.tws-avatar-content .player-avatar {
+  flex: none;
+  width: 100%;
+  height: 100%;
+}
