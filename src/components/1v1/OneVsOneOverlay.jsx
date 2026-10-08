@@ -37,7 +37,11 @@ const OneVsOneOverlay = ({ teams, scene, selectedPlayerIndices, preset }) => {
               />
               <div
                 className={`one-v-one-player-name${focused ? ' is-focused' : ''}`}
-                style={{ opacity: player.eliminated ? 0.6 : 1 }}
+                style={{
+                  opacity: player.eliminated ? 0.6 : 1,
+                  visibility: preset.showUsernames ? 'visible' : 'hidden',
+                }}
+                aria-hidden={!preset.showUsernames}
               >
                 <svg
                   width="200%"
@@ -54,7 +58,7 @@ const OneVsOneOverlay = ({ teams, scene, selectedPlayerIndices, preset }) => {
                     fontWeight="bold"
                     fill={teamColor}
                   >
-                    {player.name}
+                    {player.name?.toUpperCase()}
                   </text>
                 </svg>
               </div>

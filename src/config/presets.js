@@ -13,6 +13,7 @@ const defaultPreset = {
   teamColorBorder: true,
   banIconPath: 'Banned_Icon.png',
   animateNames: false,
+  showUsernames: true,
 };
 
 export const PRESETS = {
@@ -27,6 +28,7 @@ export const PRESETS = {
     Renderer: TwsOverlay,
     teamColorBorder: false,
     animateNames: true,
+    showUsernames: false,
     banIconPath: 'twsavatarban.png',
     layout: {
       ...defaultPreset.layout,
