@@ -9,6 +9,7 @@ export const DEFAULT_LAYOUT = {
   focusedXPadding: 500,
   gameSceneXPadding: -10,
   gameSceneYPadding: -80,
+  gameSize: 350,
   defaultSize: 150,
   focusedSize: 350,
 };
@@ -24,6 +25,7 @@ const createPositions = (teamSizes = [MAX_TEAM_SIZE, MAX_TEAM_SIZE], layout = DE
     focusedXPadding,
     gameSceneXPadding,
     gameSceneYPadding,
+    gameSize,
     defaultSize,
     focusedSize,
   } = layout;
@@ -79,15 +81,15 @@ const createPositions = (teamSizes = [MAX_TEAM_SIZE, MAX_TEAM_SIZE], layout = DE
     ],
     FOCUSED_PLAYER_GAME_POSITIONS: [
       {
-        width: focusedSize,
-        height: focusedSize,
-        top: height - gameSceneYPadding - focusedSize,
+        width: gameSize,
+        height: gameSize,
+        top: height - gameSceneYPadding - gameSize,
         left: gameSceneXPadding,
       },
       {
-        width: focusedSize,
-        height: focusedSize,
-        top: height - gameSceneYPadding - focusedSize,
+        width: gameSize,
+        height: gameSize,
+        top: height - gameSceneYPadding - gameSize,
         right: gameSceneXPadding,
       },
     ],

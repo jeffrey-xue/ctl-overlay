@@ -184,6 +184,7 @@
   text-shadow:
     0 calc(2 * var(--u)) #ddd,
     0 0 calc(16 * var(--u)) #fff4;
+  gap: calc(5 * var(--u));
 }
 
 .tws-focused-panel .league-stats-icon {
