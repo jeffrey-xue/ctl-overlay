@@ -10,6 +10,11 @@ html {
   font-family: 'Roboto', sans-serif;
 }
 
+.offscreen-controls {
+  position: relative;
+  z-index: 100;
+}
+
 /* config styles */
 
 .config-container {

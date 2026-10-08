@@ -84,9 +84,11 @@ const PlayerOverlay = () => {
         preset={preset}
       />
       {/* Testing buttons that should be off screen. */}
-      <button onClick={() => setScene('player-select')}>player select scene</button>
-      <button onClick={() => setScene('players-chosen')}>player chosen scene</button>
-      <button onClick={() => setScene('game-scene')}>game scene</button>
+      <div className="offscreen-controls">
+        <button onClick={() => setScene('player-select')}>player select scene</button>
+        <button onClick={() => setScene('players-chosen')}>player chosen scene</button>
+        <button onClick={() => setScene('game-scene')}>game scene</button>
+      </div>
     </div>
   );
 };
