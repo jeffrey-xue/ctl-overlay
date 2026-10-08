@@ -28,6 +28,10 @@ export const PRESETS = {
     Renderer: TwsOverlay,
     teamColorBorder: false,
     banIconPath: 'twsavatarban.png',
+    css: {
+      ...defaultPreset.css,
+      '--detail-transition': '1s',
+    },
     layout: {
       ...defaultPreset.layout,
       leftRosterYStart: 160,

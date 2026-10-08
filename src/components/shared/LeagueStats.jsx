@@ -18,7 +18,7 @@ const LeagueStats = ({ leagueStats, show, className = '' }) => {
       <div className={`league-stats-line ${show ? 'is-visible' : ''}`} />
       <div className={`league-stats-details ${show ? 'is-visible' : ''}`}>
         <div>
-          <span>{leagueStats.apm?.toFixed(2)}</span>APM
+          <span>{leagueStats.apm?.toFixed(2)}</span> APM
         </div>
         <div>
           <span>{leagueStats.pps?.toFixed(2)}</span> PPS

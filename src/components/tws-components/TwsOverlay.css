@@ -7,30 +7,23 @@
 }
 
 .tws-overlay {
-  --tws-bench-color: #5343bc;
-  --tws-card-motion-delay: calc(0.5s + var(--detail-transition));
-  --tws-focused-reveal-delay: calc(
-    var(--tws-card-motion-delay) + var(--player-transition-duration)
-  );
-}
+  --tws-bench-color: #2d1c86;
 
-.tws-player-card .tws-avatar-frame-container {
-  position: relative;
-  flex: 0 0 70%;
-  width: 70%;
-  height: 70%;
-  --tws-frame-offset-y: 7%;
+  /* How early each step starts, before the previous one has finished. */
+  --tws-bleed: 0.8s;
+
+  /* Card starts moving just before the roster wipe / panel collapse ends. */
+  --tws-card-motion-delay: max(0s, calc(var(--detail-transition) - var(--tws-bleed)));
+
+  /* Panel unfurl (enter) and roster wipe-in (leave) start just before the card lands. */
+  --tws-focused-reveal-delay: max(
+    0s,
+    calc(var(--tws-card-motion-delay) + var(--player-transition-duration) - var(--tws-bleed))
+  );
 }
 
 .tws-overlay--focus-entering .tws-player-card,
 .tws-overlay--focus-leaving .tws-player-card {
-  transition-delay: var(--tws-card-motion-delay);
-}
-
-.tws-overlay--focus-entering .tws-avatar-frame-container,
-.tws-overlay--focus-leaving .tws-avatar-frame-container,
-.tws-overlay--focus-entering .tws-avatar-frame,
-.tws-overlay--focus-leaving .tws-avatar-frame {
   transition-delay: var(--tws-card-motion-delay);
 }
 
@@ -41,6 +34,50 @@
   transition-delay: var(--tws-focused-reveal-delay);
 }
 
+.tws-frame {
+  /* Measured from twsavatarframe.png, in source pixels. */
+  --frame-w: 351;
+  --frame-h: 395;
+  --window-x: 21;
+  --window-y: 21;
+  --window-size: 310;
+
+  position: absolute;
+  top: 0;
+  left: 50%;
+  height: 100%;
+  aspect-ratio: var(--frame-w) / var(--frame-h);
+  transform: translateX(-50%);
+}
+
+.tws-frame-stage {
+  position: absolute;
+  inset: 0;
+  container-type: size;
+}
+
+.tws-frame-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Sits exactly over the frame's inner window. */
+.tws-avatar-slot {
+  position: absolute;
+  left: calc(var(--window-x) / var(--frame-w) * 100%);
+  top: calc(var(--window-y) / var(--frame-h) * 100%);
+  width: calc(var(--window-size) / var(--frame-w) * 100%);
+  aspect-ratio: 1;
+}
+
+.tws-avatar-slot .player-avatar {
+  width: 100%;
+  height: 100%;
+}
+
 .tws-username {
   position: absolute;
   inset: 0;
@@ -48,7 +85,10 @@
   color: white;
   font-family: 'Orbitron', sans-serif;
   font-weight: 900;
-  /* text-shadow: 0 2px 8px rgb(0 0 0 / 80%); */
+}
+
+.tws-overlay--game-scene .tws-username {
+  visibility: hidden;
 }
 
 .tws-username-roster,
@@ -59,24 +99,24 @@
 
 .tws-username-roster {
   white-space: nowrap;
-  background-color: var(--tws-bench-color);
+  background-color: #5343bc;
   padding: 8px;
-  top: 50%;
+  top: calc((var(--window-y) + var(--window-size) / 2) / var(--frame-h) * 100%);
   font-size: 22px;
   transform: translateY(-50%);
+  /* leaving: wipe back in just before the card lands */
   transition:
-    clip-path var(--detail-transition)
-      calc(0.5s + var(--detail-transition) + var(--player-transition-duration)),
-    visibility 0s linear calc(0.5s + var(--detail-transition) + var(--player-transition-duration));
+    clip-path var(--detail-transition) var(--tws-focused-reveal-delay),
+    visibility 0s linear var(--tws-focused-reveal-delay);
 }
 
 .tws-username--team-0 .tws-username-roster {
-  left: calc(100% + 24px);
+  left: calc(100% + 12px);
   clip-path: inset(0);
 }
 
 .tws-username--team-1 .tws-username-roster {
-  right: calc(100% + 24px);
+  right: calc(100% + 12px);
   text-align: right;
   clip-path: inset(0);
 }
@@ -94,121 +134,93 @@
 }
 
 .tws-focused-panel {
-  top: -120px;
-  left: 50%;
-  width: var(--tws-focused-content-width);
-  height: 300px;
+  bottom: 100%;
+  left: 0;
+  width: 100%;
+  height: 48cqw;
   box-sizing: border-box;
-  transform: translateX(-50%);
+  /* 1u = 1px when the frame is 300px wide; everything below scales with it. */
+  --u: calc(100cqw / 300);
   background-color: var(--tws-bench-color);
-  opacity: 0;
+  clip-path: inset(100% 0 0 0);
   visibility: hidden;
+  /* leaving: collapse immediately */
   transition:
-    opacity var(--fade-transition) var(--tws-focused-reveal-delay),
-    visibility 0s linear var(--tws-focused-reveal-delay);
+    clip-path var(--detail-transition),
+    visibility 0s linear var(--detail-transition);
 }
 
 .tws-username.is-focused .tws-focused-panel {
-  opacity: 1;
+  clip-path: inset(0);
   visibility: visible;
-  transition-delay: var(--tws-focused-reveal-delay), 0s;
-}
-
-.tws-username-focused {
-  top: 170px;
-  left: 0;
-  box-sizing: border-box;
-  width: 100%;
-  padding: 0 12px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-align: center;
-  font-size: 48px;
-  text-fit: shrink 0%;
-  opacity: 0;
-  visibility: hidden;
+  /* entering: unfurl just before the card lands */
   transition:
-    top var(--detail-transition) 0.5s,
-    opacity var(--fade-transition) 0.5s,
-    visibility 0s linear calc(0.5s + var(--detail-transition));
-}
-
-.tws-username.is-focused .tws-username-focused {
-  top: 120px;
-  opacity: 1;
-  visibility: visible;
-  transition-delay: 0.5s, 0.5s, 0s;
-}
-
-.tws-overlay--focus-entering .tws-username.is-focused .tws-username-focused {
-  transition-delay: var(--tws-focused-reveal-delay), var(--tws-focused-reveal-delay), 0s;
+    clip-path var(--detail-transition) var(--tws-focused-reveal-delay),
+    visibility 0s;
 }
 
 .tws-focused-panel .league-stats {
-  top: 52px;
+  --clip-height: calc(60 * var(--u));
+  top: 0;
   left: 0;
   transform: none;
   box-sizing: border-box;
   width: 100%;
-  padding: 8px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: calc(40 * var(--u));
 }
 
-.tws-focused-panel .league-stats--visible {
-  top: 0;
+.tws-focused-panel .league-stats-rank {
+  height: calc(56 * var(--u));
+  text-shadow:
+    0 calc(2 * var(--u)) #ddd,
+    0 0 calc(16 * var(--u)) #fff4;
 }
 
-.tws-avatar-frame {
-  position: absolute;
-  top: calc(50% + var(--tws-frame-offset-y));
-  left: 50%;
-  z-index: 0;
-  width: 125%;
-  height: 125%;
-  object-fit: contain;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  transition:
-    width var(--player-transition),
-    height var(--player-transition);
+.tws-focused-panel .league-stats-icon {
+  width: calc(38 * var(--u));
+  height: calc(38 * var(--u));
+  transform: translateY(calc(0 * var(--u)));
 }
 
-.tws-avatar-frame-container--focused .tws-avatar-frame {
-  width: 128%;
-  height: 128%;
+.tws-focused-panel .league-stats-tr-label {
+  margin-left: calc(6 * var(--u));
+  font-size: calc(32 * var(--u));
 }
 
-.tws-avatar-content {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
+.tws-focused-panel .league-stats-line {
+  margin-bottom: calc(10 * var(--u));
 }
 
-.tws-avatar-size {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  transition:
-    width var(--player-transition),
-    height var(--player-transition);
+.tws-focused-panel .league-stats-line.is-visible {
+  width: 90%;
 }
 
-.tws-avatar-size .player-avatar {
+.tws-focused-panel .league-stats-details {
+  font-size: calc(14 * var(--u));
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.tws-focused-panel .league-stats-details span {
+  font-weight: 600;
+}
+
+.tws-focused-panel .league-stats-details > div {
+  margin: 0 calc(5 * var(--u));
+}
+
+.tws-username-focused {
+  top: 32cqw;
+  left: 0;
+  box-sizing: border-box;
   width: 100%;
-  height: 100%;
-}
-
-.tws-avatar-size--roster {
-  width: var(--tws-roster-avatar-size);
-  height: var(--tws-roster-avatar-size);
-}
-
-.tws-avatar-size--focused {
-  width: var(--tws-focused-avatar-size);
-  height: var(--tws-focused-avatar-size);
-}
-
-.tws-overlay--focus-entering .tws-avatar-size,
-.tws-overlay--focus-leaving .tws-avatar-size {
-  transition-delay: var(--tws-card-motion-delay);
+  height: 13cqw;
+  padding: 0 4cqw;
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: center;
+  font-size: 13cqw;
+  line-height: 13cqw;
+  text-fit: shrink 0%;
 }
