@@ -27,6 +27,7 @@
 
 .one-v-one-player-card .player-avatar {
   position: relative;
+  overflow: hidden;
   flex: 0 0 70%;
   width: 70%;
   height: 70%;
@@ -44,7 +45,8 @@
   transition: opacity var(--fade-transition);
 }
 
-.one-v-one-player-card .player-avatar-ban-icon {
+.one-v-one-player-card .player-avatar-ban-icon,
+.one-v-one-player-card .player-avatar-eliminated-overlay {
   position: absolute;
   inset: 0;
   z-index: 2;

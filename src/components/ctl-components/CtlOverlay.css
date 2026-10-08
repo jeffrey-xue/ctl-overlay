@@ -28,6 +28,7 @@
 
 .ctl-player-card .player-avatar {
   position: relative;
+  overflow: hidden;
   flex: 0 0 70%;
   width: 70%;
   height: 70%;
@@ -45,7 +46,8 @@
   transition: opacity var(--fade-transition);
 }
 
-.ctl-player-card .player-avatar-ban-icon {
+.ctl-player-card .player-avatar-ban-icon,
+.ctl-player-card .player-avatar-eliminated-overlay {
   position: absolute;
   inset: 0;
   z-index: 2;

@@ -13,7 +13,6 @@ const PlayerAvatar = ({
 }) => {
   const style = {
     borderColor: teamColorBorder ? teamColor || 'white' : 'transparent',
-    opacity: eliminated ? 0.3 : 1,
   };
 
   return (
@@ -23,9 +22,13 @@ const PlayerAvatar = ({
       ) : (
         <div className="player-avatar-image" style={style} />
       )}
-      {banned && (
-        <img className="player-avatar-ban-icon" src={getAssetUrl(banIconPath)} />
+      {eliminated && (
+        <img
+          className="player-avatar-eliminated-overlay"
+          src={getAssetUrl('tws/twsplayedoverlay.png')}
+        />
       )}
+      {banned && <img className="player-avatar-ban-icon" src={getAssetUrl(banIconPath)} />}
     </div>
   );
 };

@@ -5,7 +5,7 @@ import buildPlayerPositions from '../shared/buildPlayerPositions';
 import TwsUsername from './TwsUsername';
 import './TwsOverlay.css';
 
-const TWS_FRAME_URL = `${import.meta.env.BASE_URL}twsavatarframe.png`;
+const TWS_FRAME_URL = `${import.meta.env.BASE_URL}tws/twsavatarframe.png`;
 
 const TwsOverlay = ({ teams, scene, selectedPlayerIndices, preset }) => {
   const previouslyFocusedPlayers = useRef([-1, -1]);

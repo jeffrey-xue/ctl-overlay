@@ -31,10 +31,7 @@ const CtlOverlay = ({ teams, scene, selectedPlayerIndices, preset }) => {
                 banIconPath={preset.banIconPath}
                 teamColorBorder={preset.teamColorBorder}
               />
-              <div
-                className={`ctl-player-name${focused ? ' is-focused' : ''}`}
-                style={{ opacity: player.eliminated ? 0.6 : 1 }}
-              >
+              <div className={`ctl-player-name${focused ? ' is-focused' : ''}`}>
                 <svg
                   width="200%"
                   height="200%"

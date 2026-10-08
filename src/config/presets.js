@@ -27,7 +27,7 @@ export const PRESETS = {
     label: 'TETR.IO World Series',
     Renderer: TwsOverlay,
     teamColorBorder: false,
-    banIconPath: 'twsavatarban.png',
+    banIconPath: 'tws/twsavatarban.png',
     css: {
       ...defaultPreset.css,
       '--detail-transition': '1s',

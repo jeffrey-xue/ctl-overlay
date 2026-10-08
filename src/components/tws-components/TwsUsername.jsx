@@ -2,10 +2,7 @@ const TwsUsername = ({ name, teamColor, teamIndex, focused, eliminated, children
   const username = name?.toUpperCase() ?? '';
 
   return (
-    <div
-      className={`tws-username tws-username--team-${teamIndex}${focused ? ' is-focused' : ''}`}
-      style={{ opacity: eliminated ? 0.6 : 1 }}
-    >
+    <div className={`tws-username tws-username--team-${teamIndex}${focused ? ' is-focused' : ''}`}>
       <span className="tws-username-roster" style={{ color: teamColor }}>
         {username}
       </span>
