@@ -5,7 +5,8 @@ import { DEFAULT_LAYOUT } from './Positions';
 
 const defaultPreset = {
   css: {
-    '--player-transition': '2s cubic-bezier(0.9, 0, 0.1, 1)',
+    '--player-transition-duration': '2s',
+    '--player-transition': 'var(--player-transition-duration) cubic-bezier(0.9, 0, 0.1, 1)',
     '--fade-transition': '0.4s',
     '--detail-transition': '1s',
   },
@@ -13,7 +14,6 @@ const defaultPreset = {
   teamColorBorder: true,
   banIconPath: 'Banned_Icon.png',
   animateNames: false,
-  showUsernames: true,
 };
 
 export const PRESETS = {
@@ -27,8 +27,6 @@ export const PRESETS = {
     label: 'TETR.IO World Series',
     Renderer: TwsOverlay,
     teamColorBorder: false,
-    animateNames: true,
-    showUsernames: false,
     banIconPath: 'twsavatarban.png',
     layout: {
       ...defaultPreset.layout,
@@ -43,6 +41,7 @@ export const PRESETS = {
     label: '1 vs 1',
     Renderer: OneVsOneOverlay,
     css: {
+      '--player-transition-duration': '0s',
       '--player-transition': '0s',
       '--fade-transition': '0s',
       '--detail-transition': '0s',

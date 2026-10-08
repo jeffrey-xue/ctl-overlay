@@ -9,7 +9,6 @@ const LeagueStats = ({ leagueStats, show, className = '' }) => {
         <img
           className="league-stats-icon"
           src={`https://tetr.io/res/league-ranks/${leagueStats.rank}.png`}
-          alt={`${leagueStats.rank} rank`}
         />
         <div className="league-stats-rating">
           {leagueStats.tr?.toFixed(0)}

@@ -1,69 +1,166 @@
 @import '../ctl-components/CtlOverlay.css';
 
+@font-face {
+  font-family: 'Orbitron';
+  src: url('/fonts/Orbitron-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+}
+
 .tws-overlay {
-  --tws-roster-avatar-size: 60%;
-  --tws-focused-avatar-size: 70%;
-}
-
-.tws-overlay--animate-names .ctl-player-name.is-focused svg {
-  animation: tws-name-focus var(--name-transition, 400ms) ease-out both;
-}
-
-.tws-overlay--animate-names .ctl-player-name:not(.is-focused) svg {
-  animation: tws-name-unfocus var(--name-transition, 400ms) ease-out both;
-}
-
-@keyframes tws-name-focus {
-  from {
-    opacity: 0;
-    transform: translate(-50%, 12px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-}
-
-@keyframes tws-name-unfocus {
-  from {
-    opacity: 0.35;
-    transform: translate(-50%, -8px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
+  --tws-bench-color: #5343bc;
+  --tws-card-motion-delay: calc(0.5s + var(--detail-transition));
+  --tws-focused-reveal-delay: calc(
+    var(--tws-card-motion-delay) + var(--player-transition-duration)
+  );
 }
 
 .tws-player-card .tws-avatar-frame-container {
   position: relative;
-  flex: 0 0 var(--tws-roster-avatar-size);
-  width: var(--tws-roster-avatar-size);
-  height: var(--tws-roster-avatar-size);
-  transition:
-    flex-basis var(--player-transition),
-    width var(--player-transition),
-    height var(--player-transition);
-  --tws-frame-offset-x: 0.476%;
-  /* --tws-frame-offset-x: 0%; */
-
+  flex: 0 0 70%;
+  width: 70%;
+  height: 70%;
   --tws-frame-offset-y: 7%;
 }
 
-.tws-player-card .tws-avatar-frame-container--focused {
-  flex-basis: var(--tws-focused-avatar-size);
-  width: var(--tws-focused-avatar-size);
-  height: var(--tws-focused-avatar-size);
+.tws-overlay--focus-entering .tws-player-card,
+.tws-overlay--focus-leaving .tws-player-card {
+  transition-delay: var(--tws-card-motion-delay);
 }
 
-.tws-player-card {
-  /* background-color: red; */
+.tws-overlay--focus-entering .tws-avatar-frame-container,
+.tws-overlay--focus-leaving .tws-avatar-frame-container,
+.tws-overlay--focus-entering .tws-avatar-frame,
+.tws-overlay--focus-leaving .tws-avatar-frame {
+  transition-delay: var(--tws-card-motion-delay);
+}
+
+.tws-overlay--focus-entering .league-stats,
+.tws-overlay--focus-entering .league-stats-rank.is-visible,
+.tws-overlay--focus-entering .league-stats-line.is-visible,
+.tws-overlay--focus-entering .league-stats-details.is-visible {
+  transition-delay: var(--tws-focused-reveal-delay);
+}
+
+.tws-username {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  color: white;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  /* text-shadow: 0 2px 8px rgb(0 0 0 / 80%); */
+}
+
+.tws-username-roster,
+.tws-focused-panel,
+.tws-username-focused {
+  position: absolute;
+}
+
+.tws-username-roster {
+  white-space: nowrap;
+  background-color: var(--tws-bench-color);
+  padding: 8px;
+  top: 50%;
+  font-size: 22px;
+  transform: translateY(-50%);
+  transition:
+    clip-path var(--detail-transition)
+      calc(0.5s + var(--detail-transition) + var(--player-transition-duration)),
+    visibility 0s linear calc(0.5s + var(--detail-transition) + var(--player-transition-duration));
+}
+
+.tws-username--team-0 .tws-username-roster {
+  left: calc(100% + 24px);
+  clip-path: inset(0);
+}
+
+.tws-username--team-1 .tws-username-roster {
+  right: calc(100% + 24px);
+  text-align: right;
+  clip-path: inset(0);
+}
+
+.tws-username--team-0.is-focused .tws-username-roster {
+  clip-path: inset(0 100% 0 0);
+  visibility: hidden;
+  transition-delay: 0s, var(--detail-transition);
+}
+
+.tws-username--team-1.is-focused .tws-username-roster {
+  clip-path: inset(0 0 0 100%);
+  visibility: hidden;
+  transition-delay: 0s, var(--detail-transition);
+}
+
+.tws-focused-panel {
+  top: -120px;
+  left: 50%;
+  width: var(--tws-focused-content-width);
+  height: 300px;
+  box-sizing: border-box;
+  transform: translateX(-50%);
+  background-color: var(--tws-bench-color);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--fade-transition) var(--tws-focused-reveal-delay),
+    visibility 0s linear var(--tws-focused-reveal-delay);
+}
+
+.tws-username.is-focused .tws-focused-panel {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: var(--tws-focused-reveal-delay), 0s;
+}
+
+.tws-username-focused {
+  top: 170px;
+  left: 0;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: center;
+  font-size: 48px;
+  text-fit: shrink 0%;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    top var(--detail-transition) 0.5s,
+    opacity var(--fade-transition) 0.5s,
+    visibility 0s linear calc(0.5s + var(--detail-transition));
+}
+
+.tws-username.is-focused .tws-username-focused {
+  top: 120px;
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0.5s, 0.5s, 0s;
+}
+
+.tws-overlay--focus-entering .tws-username.is-focused .tws-username-focused {
+  transition-delay: var(--tws-focused-reveal-delay), var(--tws-focused-reveal-delay), 0s;
+}
+
+.tws-focused-panel .league-stats {
+  top: 52px;
+  left: 0;
+  transform: none;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 8px;
+}
+
+.tws-focused-panel .league-stats--visible {
+  top: 0;
 }
 
 .tws-avatar-frame {
   position: absolute;
   top: calc(50% + var(--tws-frame-offset-y));
-  left: calc(50% + var(--tws-frame-offset-x));
+  left: 50%;
   z-index: 0;
   width: 125%;
   height: 125%;
@@ -81,14 +178,37 @@
 }
 
 .tws-avatar-content {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 1;
+}
+
+.tws-avatar-size {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition:
+    width var(--player-transition),
+    height var(--player-transition);
+}
+
+.tws-avatar-size .player-avatar {
   width: 100%;
   height: 100%;
 }
 
-.tws-avatar-content .player-avatar {
-  flex: none;
-  width: 100%;
-  height: 100%;
+.tws-avatar-size--roster {
+  width: var(--tws-roster-avatar-size);
+  height: var(--tws-roster-avatar-size);
+}
+
+.tws-avatar-size--focused {
+  width: var(--tws-focused-avatar-size);
+  height: var(--tws-focused-avatar-size);
+}
+
+.tws-overlay--focus-entering .tws-avatar-size,
+.tws-overlay--focus-leaving .tws-avatar-size {
+  transition-delay: var(--tws-card-motion-delay);
 }

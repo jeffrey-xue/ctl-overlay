@@ -19,12 +19,12 @@ const PlayerAvatar = ({
   return (
     <div className="player-avatar">
       {avatarUrl ? (
-        <img className="player-avatar-image" alt="Player avatar" src={avatarUrl} style={style} />
+        <img className="player-avatar-image" src={avatarUrl} style={style} />
       ) : (
         <div className="player-avatar-image" style={style} />
       )}
       {banned && (
-        <img className="player-avatar-ban-icon" src={getAssetUrl(banIconPath)} alt="Banned" />
+        <img className="player-avatar-ban-icon" src={getAssetUrl(banIconPath)} />
       )}
     </div>
   );

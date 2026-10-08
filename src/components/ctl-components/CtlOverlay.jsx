@@ -33,11 +33,7 @@ const CtlOverlay = ({ teams, scene, selectedPlayerIndices, preset }) => {
               />
               <div
                 className={`ctl-player-name${focused ? ' is-focused' : ''}`}
-                style={{
-                  opacity: player.eliminated ? 0.6 : 1,
-                  visibility: preset.showUsernames ? 'visible' : 'hidden',
-                }}
-                aria-hidden={!preset.showUsernames}
+                style={{ opacity: player.eliminated ? 0.6 : 1 }}
               >
                 <svg
                   width="200%"
