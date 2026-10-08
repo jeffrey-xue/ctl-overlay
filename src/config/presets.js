@@ -35,9 +35,11 @@ export const PRESETS = {
     layout: {
       ...defaultPreset.layout,
       leftRosterYStart: 160,
-      leftRosterYEnd: 920,
+      leftRosterYEnd: 700,
       rightRosterYStart: 80,
-      rightRosterYEnd: 840,
+      rightRosterYEnd: 620,
+      defaultSize: 120,
+      focusedSize: 380,
     },
   },
   one_vs_one: {

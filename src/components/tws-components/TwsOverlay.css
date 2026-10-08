@@ -34,6 +34,13 @@
   transition-delay: var(--tws-focused-reveal-delay);
 }
 
+/* ---------------------------------------------------------------------------
+   Frame
+   The frame fills the card's height; its width follows from the image's
+   aspect ratio. Everything inside is positioned in % or container units, so
+   the card's own width/height transition scales all of it in lockstep.
+--------------------------------------------------------------------------- */
+
 .tws-frame {
   /* Measured from twsavatarframe.png, in source pixels. */
   --frame-w: 351;
@@ -59,6 +66,7 @@
 .tws-frame-image {
   position: absolute;
   inset: 0;
+  z-index: 1; /* above the focused panel, which tucks 2px behind it */
   width: 100%;
   height: 100%;
   pointer-events: none;
@@ -67,6 +75,7 @@
 /* Sits exactly over the frame's inner window. */
 .tws-avatar-slot {
   position: absolute;
+  z-index: 2; /* above the frame image, which has an opaque window */
   left: calc(var(--window-x) / var(--frame-w) * 100%);
   top: calc(var(--window-y) / var(--frame-h) * 100%);
   width: calc(var(--window-size) / var(--frame-w) * 100%);
@@ -111,12 +120,12 @@
 }
 
 .tws-username--team-0 .tws-username-roster {
-  left: calc(100% + 12px);
+  left: calc(100% + 16px);
   clip-path: inset(0);
 }
 
 .tws-username--team-1 .tws-username-roster {
-  right: calc(100% + 12px);
+  right: calc(100% + 16px);
   text-align: right;
   clip-path: inset(0);
 }
@@ -134,10 +143,10 @@
 }
 
 .tws-focused-panel {
-  bottom: 100%;
+  bottom: calc(100% - 2px); /* tucks 2px behind the frame to hide the seam */
   left: 0;
   width: 100%;
-  height: 48cqw;
+  height: calc(48cqw + 2px);
   box-sizing: border-box;
   /* 1u = 1px when the frame is 300px wide; everything below scales with it. */
   --u: calc(100cqw / 300);
@@ -189,7 +198,7 @@
 }
 
 .tws-focused-panel .league-stats-line {
-  margin-bottom: calc(10 * var(--u));
+  margin-bottom: calc(8 * var(--u));
 }
 
 .tws-focused-panel .league-stats-line.is-visible {
@@ -197,7 +206,7 @@
 }
 
 .tws-focused-panel .league-stats-details {
-  font-size: calc(14 * var(--u));
+  font-size: calc(17 * var(--u));
   font-weight: 400;
   white-space: nowrap;
 }
