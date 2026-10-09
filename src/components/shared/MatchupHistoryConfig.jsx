@@ -19,7 +19,7 @@ const MatchupHistoryConfig = ({ value, onChange, teamPlayerNames }) => {
           const side = teamIndex === 0 ? 'left' : 'right';
           return (
             <div className="matchup-team-config" key={teamIndex}>
-              <div className="matchup-team-bans-config">
+              {/* <div className="matchup-team-bans-config">
                 {teamBans.map((ban, banIndex) => (
                   <label key={banIndex}>
                     Ban {banIndex + 1}
@@ -39,7 +39,7 @@ const MatchupHistoryConfig = ({ value, onChange, teamPlayerNames }) => {
                     </select>
                   </label>
                 ))}
-              </div>
+              </div> */}
               <div className="matchup-team-rows-config">
                 {value.matchups.map((matchup, gameIndex) => (
                   <div className="matchup-team-row" key={gameIndex}>
