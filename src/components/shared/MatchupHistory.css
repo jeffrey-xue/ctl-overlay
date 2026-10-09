@@ -1,27 +1,26 @@
 /* Proportions taken from the reference screenshot: avatar = 1u, column gap = 1u,
-   score digits ~0.5u tall, divider ~0.75u tall. Change --history-avatar-size to resize everything. */
+   score digits ~0.7u font size, divider ~0.75u tall. Change --history-avatar-size to resize everything. */
 .tws-matchup-history {
-  --history-avatar-size: 64px;
-  --history-gap: var(--history-avatar-size);
+  --history-avatar-size: 48px;
 
-  /* Frame measured from avatarframe_min.png, in source pixels. */
+  /* Frame measured from twsavatarframe_min.png, in source pixels. */
   --history-frame: 321;
   --history-window-x: 12;
   --history-window-size: 297;
 
   position: absolute;
-  left: var(--tws-history-left, 50%);
-  bottom: var(--tws-history-bottom, 24px);
+  left: 50%;
+  bottom: 170px;
   transform: translateX(-50%);
   display: flex;
   align-items: flex-start;
-  gap: var(--history-gap);
-  padding: calc(var(--history-avatar-size) * 0.5) var(--history-avatar-size);
-  background-color: var(--tws-bench-color, #2d1c86);
+  gap: 16px;
+  padding: calc(var(--history-avatar-size) * 0.25) calc(var(--history-avatar-size) * 0.25);
+  background-color: var(--tws-bench-color);
   color: white;
   font-family: 'Orbitron', sans-serif;
-  font-weight: 900;
-  transition: opacity var(--detail-transition, 0.4s);
+  font-weight: 600;
+  transition: opacity var(--detail-transition);
 }
 
 .tws-overlay--game-scene .tws-matchup-history {
@@ -32,7 +31,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: calc(var(--history-avatar-size) * 0.4);
+  gap: calc(var(--history-avatar-size) * 0.15);
 }
 
 .tws-history-avatar {
@@ -70,12 +69,12 @@
   flex-direction: column;
   align-items: center;
   gap: calc(var(--history-avatar-size) * 0.1);
-  font-size: calc(var(--history-avatar-size) * 0.7);
-  line-height: 1;
+  font-size: calc(var(--history-avatar-size) * 0.5);
+  line-height: 0.8;
 }
 
 .tws-history-divider {
   width: max(1px, calc(var(--history-avatar-size) * 0.04));
-  height: calc(var(--history-avatar-size) * 0.75);
+  height: calc(var(--history-avatar-size) * 0);
   background-color: currentColor;
 }

@@ -42,6 +42,7 @@ export const PRESETS = {
       defaultSize: 130,
       focusedSize: 400,
       focusedXPadding: 520,
+      focusedYPadding: -40,
       gameSize: 230,
       gameSceneXPadding: 10,
       gameSceneYPadding: 15,
