@@ -1,0 +1,81 @@
+/* Proportions taken from the reference screenshot: avatar = 1u, column gap = 1u,
+   score digits ~0.5u tall, divider ~0.75u tall. Change --history-avatar-size to resize everything. */
+.tws-matchup-history {
+  --history-avatar-size: 64px;
+  --history-gap: var(--history-avatar-size);
+
+  /* Frame measured from avatarframe_min.png, in source pixels. */
+  --history-frame: 321;
+  --history-window-x: 12;
+  --history-window-size: 297;
+
+  position: absolute;
+  left: var(--tws-history-left, 50%);
+  bottom: var(--tws-history-bottom, 24px);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--history-gap);
+  padding: calc(var(--history-avatar-size) * 0.5) var(--history-avatar-size);
+  background-color: var(--tws-bench-color, #2d1c86);
+  color: white;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  transition: opacity var(--detail-transition, 0.4s);
+}
+
+.tws-overlay--game-scene .tws-matchup-history {
+  opacity: 0;
+}
+
+.tws-history-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--history-avatar-size) * 0.4);
+}
+
+.tws-history-avatar {
+  position: relative;
+  width: var(--history-avatar-size);
+  aspect-ratio: 1;
+}
+
+.tws-history-frame-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Sits exactly over the frame's inner window. */
+.tws-history-avatar-slot {
+  position: absolute;
+  left: calc(var(--history-window-x) / var(--history-frame) * 100%);
+  top: calc(var(--history-window-x) / var(--history-frame) * 100%);
+  width: calc(var(--history-window-size) / var(--history-frame) * 100%);
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+
+.tws-history-avatar-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tws-history-scores {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--history-avatar-size) * 0.1);
+  font-size: calc(var(--history-avatar-size) * 0.7);
+  line-height: 1;
+}
+
+.tws-history-divider {
+  width: max(1px, calc(var(--history-avatar-size) * 0.04));
+  height: calc(var(--history-avatar-size) * 0.75);
+  background-color: currentColor;
+}

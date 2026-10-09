@@ -3,11 +3,12 @@ import PlayerAvatar from '../shared/PlayerAvatar';
 import LeagueStats from '../shared/LeagueStats';
 import buildPlayerPositions from '../shared/buildPlayerPositions';
 import TwsUsername from './TwsUsername';
+import TwsMatchupHistory from '../shared/MatchupHistory';
 import './TwsOverlay.css';
 
 const TWS_FRAME_URL = `${import.meta.env.BASE_URL}tws/twsavatarframe.png`;
 
-const TwsOverlay = ({ teams, scene, selectedPlayerIndices, preset }) => {
+const TwsOverlay = ({ teams, scene, selectedPlayerIndices, preset, matchupHistory }) => {
   const previouslyFocusedPlayers = useRef([-1, -1]);
   const previousScene = useRef(scene);
   const [isLeavingFocus, setIsLeavingFocus] = useState(false);
@@ -95,6 +96,7 @@ const TwsOverlay = ({ teams, scene, selectedPlayerIndices, preset }) => {
           );
         })
       )}
+      <TwsMatchupHistory matchups={matchupHistory?.matchups} />
     </main>
   );
 };
