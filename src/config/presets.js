@@ -8,6 +8,7 @@ const defaultPreset = {
     '--player-transition-duration': '2s',
     '--player-transition': 'var(--player-transition-duration) cubic-bezier(0.9, 0, 0.1, 1)',
     '--fade-transition': '0.4s',
+    '--overlay-icon-fade-transition': '0.4s',
     '--detail-transition': '1s',
   },
   layout: DEFAULT_LAYOUT,
@@ -54,6 +55,7 @@ export const PRESETS = {
       '--player-transition-duration': '0s',
       '--player-transition': '0s',
       '--fade-transition': '0s',
+      '--overlay-icon-fade-transition': '0.4s',
       '--detail-transition': '0s',
     },
     layout: {

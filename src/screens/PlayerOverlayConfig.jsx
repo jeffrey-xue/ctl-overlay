@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { PRESETS } from '../config/presets';
-import MatchupHistoryConfig from '../components/MatchupHistoryConfig';
+import MatchupHistoryConfig from '../components/shared/MatchupHistoryConfig';
 import { connectObs, disconnectObs, setMatchupScores } from '../util/obs';
 
 const createEmptyMatchupHistory = () => ({
@@ -23,7 +23,7 @@ const PlayerOverlayConfig = () => {
   ]);
   const [selectedPlayerIndices, setSelectedPlayerIndices] = useState([-1, -1]);
   const [teamColors, setTeamColors] = useState(['', '']);
-  const [presetId, setPresetId] = useState('ctl');
+  const [presetId, setPresetId] = useState('tws');
 
   const [showPlayerBlurbs, setShowPlayerBlurbs] = useState({ 0: false, 1: false });
   const [matchupHistory, setMatchupHistory] = useState(createEmptyMatchupHistory);

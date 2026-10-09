@@ -45,9 +45,9 @@
   /* Measured from twsavatarframe.png, in source pixels. */
   --frame-w: 351;
   --frame-h: 395;
-  --window-x: 21;
-  --window-y: 21;
-  --window-size: 310;
+  --window-x: 18;
+  --window-y: 18;
+  --window-size: 315;
 
   position: absolute;
   top: 0;
