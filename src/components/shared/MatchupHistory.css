@@ -10,13 +10,14 @@
 
   position: absolute;
   left: 50%;
-  bottom: 170px;
+  bottom: 185px;
   transform: translateX(-50%);
   display: flex;
   align-items: flex-start;
   gap: 16px;
   padding: calc(var(--history-avatar-size) * 0.25) calc(var(--history-avatar-size) * 0.25);
-  background-color: var(--tws-bench-color);
+  /* background-color: var(--tws-bench-color); */
+  background-color: #5343bc;
   color: white;
   font-family: 'Orbitron', sans-serif;
   font-weight: 600;

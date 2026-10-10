@@ -16,6 +16,25 @@ const createEmptyMatchupHistory = () => ({
   })),
 });
 
+const matchupHistoryForRoster = (history, playerData) => {
+  const teamNames = playerData.map(
+    (team) => new Set(team.map((player) => player.name?.trim().toLowerCase()).filter(Boolean))
+  );
+
+  return {
+    ...history,
+    matchups: history.matchups.map((matchup) => ({
+      ...matchup,
+      leftPlayer: teamNames[0].has(matchup.leftPlayer?.trim().toLowerCase())
+        ? matchup.leftPlayer
+        : '',
+      rightPlayer: teamNames[1].has(matchup.rightPlayer?.trim().toLowerCase())
+        ? matchup.rightPlayer
+        : '',
+    })),
+  };
+};
+
 const PlayerOverlayConfig = () => {
   const [playerData, setPlayerData] = useState([
     [{}, {}, {}, {}, {}],
@@ -72,6 +91,7 @@ const PlayerOverlayConfig = () => {
       name,
     };
     setPlayerData(newPlayers);
+    setMatchupHistory((history) => matchupHistoryForRoster(history, newPlayers));
   };
 
   const changePlayerBlurb = (teamIndex, playerIndex, blurb) => {
@@ -140,8 +160,12 @@ const PlayerOverlayConfig = () => {
       setSelectedPlayerIndices((selectedIndices) => newSelectedPlayers ?? selectedIndices);
       setTeamColors((teamColors) => newTeamColors ?? teamColors);
       setPresetId((presetId) => (PRESETS[newPresetId] ? newPresetId : presetId));
-      if (newMatchupHistory?.bans?.length === 2 && newMatchupHistory?.matchups?.length === 5) {
-        setMatchupHistory(newMatchupHistory);
+      if (
+        newPlayerData &&
+        newMatchupHistory?.bans?.length === 2 &&
+        newMatchupHistory?.matchups?.length === 5
+      ) {
+        setMatchupHistory(matchupHistoryForRoster(newMatchupHistory, newPlayerData));
       }
       console.log('successfully fetched from localstorage');
     } catch (e) {
