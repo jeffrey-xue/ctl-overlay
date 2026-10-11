@@ -3,28 +3,110 @@
   width: 100%;
   height: 100%;
   max-width: 1920px;
-  max-height: 1080px;
+  max-height: 600px;
   color: white;
   font-family: 'Orbitron', sans-serif;
 }
 
-.upcoming-page-title {
+.tws-upcoming-matchups {
   position: absolute;
-  top: 3%;
+  top: 55%;
   left: 50%;
-  margin: 0;
-  font-size: clamp(24px, 3vw, 48px);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(8px, 1vw, 18px) clamp(10px, 1.25vw, 24px);
+  width: min(96%, 1800px);
+  transform: translate(-50%, -50%);
+}
+
+.tws-upcoming-match-card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 965 / 322;
+  container-type: inline-size;
+}
+
+.tws-upcoming-match-card-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.tws-upcoming-match-type {
+  position: absolute;
+  top: 0;
+  left: 43%;
+  display: flex;
+  width: 57%;
+  height: 15%;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: #16104b;
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(9px, 4cqw, 21px);
+  font-weight: 900;
+  line-height: 0.95;
   text-align: center;
-  text-transform: uppercase;
+  -webkit-text-stroke: 0.3px currentColor;
+  white-space: pre-line;
+}
+
+.tws-upcoming-team {
+  position: absolute;
+  top: 23.5%;
+  display: flex;
+  width: 17%;
+  height: 68%;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tws-upcoming-team--left {
+  left: 5.5%;
+}
+
+.tws-upcoming-team--right {
+  left: 37.4%;
+}
+
+.tws-upcoming-seed {
+  display: flex;
+  min-height: 15%;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(6px, 2cqw, 11px);
+  font-weight: 700;
+  line-height: 0.9;
+}
+
+.tws-upcoming-flag {
+  position: absolute;
+  top: 29%;
+  left: 50%;
+  width: 56%;
+  height: 42%;
+  object-fit: contain;
   transform: translateX(-50%);
 }
 
-.upcoming-page-empty {
+.tws-upcoming-team-name {
   position: absolute;
-  top: 50%;
   left: 50%;
-  margin: 0;
-  font-size: clamp(16px, 2vw, 28px);
+  bottom: 0;
+  width: 130%;
+  max-height: 2.2em;
+  overflow: hidden;
+  color: white;
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(6px, 2.7cqw, 14px);
+  font-weight: 700;
+  line-height: 1.1;
   text-align: center;
-  transform: translate(-50%, -50%);
+  text-transform: uppercase;
+  transform: translateX(-50%);
+  overflow-wrap: anywhere;
 }
