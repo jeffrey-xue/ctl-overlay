@@ -17,6 +17,13 @@ export async function setText(inputName, text) {
   });
 }
 
+export async function setBrowserSourceUrl(inputName, url) {
+  await obs.call('SetInputSettings', {
+    inputName,
+    inputSettings: { url },
+  });
+}
+
 export async function setMatchupScores(matchups) {
   const totals = matchups.reduce(
     (result, matchup) => {

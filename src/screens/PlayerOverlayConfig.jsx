@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { PRESETS } from '../config/presets';
 import MatchupHistoryConfig from '../components/shared/MatchupHistoryConfig';
 import { connectObs, disconnectObs, setMatchupScores } from '../util/obs';
+import { sendMatchesToObs, syncGoogleSheet as syncGoogleSheetData } from '../util/googleSheets';
 
 const createEmptyMatchupHistory = () => ({
   bans: [
@@ -46,6 +47,8 @@ const PlayerOverlayConfig = () => {
 
   const [showPlayerBlurbs, setShowPlayerBlurbs] = useState({ 0: false, 1: false });
   const [matchupHistory, setMatchupHistory] = useState(createEmptyMatchupHistory);
+  const [potentialPlayerNames, setPotentialPlayerNames] = useState([[], []]);
+  const [syncStatus, setSyncStatus] = useState('idle');
   const [obsConnection, setObsConnection] = useState({
     ip: '127.0.0.1',
     port: '4455',
@@ -142,9 +145,26 @@ const PlayerOverlayConfig = () => {
         teamColors,
         presetId,
         matchupHistory,
+        potentialPlayerNames,
       })
     );
     console.log('saved');
+  };
+
+  const handleGoogleSheetSync = async () => {
+    setSyncStatus('syncing');
+    try {
+      const matches = await syncGoogleSheetData();
+      setPotentialPlayerNames(matches);
+
+      if (obsConnection.status === 'connected') {
+        await sendMatchesToObs(matches);
+      }
+      setSyncStatus('success');
+      setSyncStatus('success');
+    } catch {
+      setSyncStatus('failure');
+    }
   };
 
   const loadFromLocalStorage = () => {
@@ -155,11 +175,15 @@ const PlayerOverlayConfig = () => {
         teamColors: newTeamColors,
         presetId: newPresetId,
         matchupHistory: newMatchupHistory,
+        potentialPlayerNames: newPotentialPlayerNames,
       } = JSON.parse(localStorage.getItem('ctl-player-overlay-config'));
       setPlayerData((playerData) => newPlayerData ?? playerData);
       setSelectedPlayerIndices((selectedIndices) => newSelectedPlayers ?? selectedIndices);
       setTeamColors((teamColors) => newTeamColors ?? teamColors);
       setPresetId((presetId) => (PRESETS[newPresetId] ? newPresetId : presetId));
+      if (Array.isArray(newPotentialPlayerNames) && newPotentialPlayerNames.length === 2) {
+        setPotentialPlayerNames(newPotentialPlayerNames);
+      }
       if (
         newPlayerData &&
         newMatchupHistory?.bans?.length === 2 &&
@@ -249,6 +273,19 @@ const PlayerOverlayConfig = () => {
             <span className="obs-connection-error">{obsConnection.error}</span>
           )}
         </span>
+      </div>
+      <div className="google-sheets-sync">
+        <button type="button" onClick={handleGoogleSheetSync} disabled={syncStatus === 'syncing'}>
+          {syncStatus === 'syncing' ? 'Syncing…' : 'Sync Production Spreadsheet'}
+        </button>
+        {syncStatus === 'success' && (
+          <span>
+            {' '}
+            Sheet synced
+            {obsConnection.status !== 'connected' && ' (OBS not connected; data not sent)'}
+          </span>
+        )}
+        {syncStatus === 'failure' && <span className="obs-connection-error"> Sync failed</span>}
       </div>
       <div className="player-config">
         {playerData.map((players, teamIndex) => (
