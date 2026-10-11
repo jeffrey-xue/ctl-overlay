@@ -11,7 +11,7 @@ const cellText = (cell) => {
 };
 
 const parseTeam = ([team, seed, roster, flag]) => ({
-  team,
+  team: team.toUpperCase(),
   seed,
   roster: roster
     .split(',')
@@ -45,7 +45,8 @@ export async function syncGoogleSheet() {
       type: cells[0]
         .split('|')
         .map((part) => part.trim())
-        .join('\n'),
+        .join('\n')
+        .toUpperCase(),
       team1: parseTeam(cells.slice(1, 5)),
       team2: parseTeam(cells.slice(5)),
     };
