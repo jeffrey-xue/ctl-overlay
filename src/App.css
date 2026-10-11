@@ -19,11 +19,21 @@ html {
 
 .config-container {
   max-width: 800px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+}
+
+.config-container h3 {
+  margin: 0;
 }
 
 .layout-dropdown select {
   font-size: 1rem;
 }
+
 .layout-dropdown option {
   font-size: 1rem;
 }
@@ -33,12 +43,10 @@ html {
   flex-wrap: wrap;
   align-items: end;
   gap: 8px;
-  margin: 10px;
 }
 
 .obs-connection h3 {
   flex-basis: 100%;
-  margin: 0;
 }
 
 .obs-connection label {
@@ -50,14 +58,6 @@ html {
 .obs-connection-error {
   flex-basis: 100%;
   color: #b00020;
-}
-
-.matchup-history-config {
-  margin: 10px;
-}
-
-.matchup-history-config h3 {
-  margin: 0;
 }
 
 .matchup-teams-config {
@@ -145,44 +145,28 @@ html {
 
 .player-col h3 {
   text-align: center;
-  margin: 0;
 }
 
 .save-button {
-  margin: 10px auto 10px auto;
+  align-self: center;
   width: 80%;
-  display: block;
   padding: 5px;
-}
-
-.layout-dropdown {
-  display: block;
-  margin: 10px;
 }
 
 @media screen and (max-width: 400px) {
   .config-container {
-    display: flex;
-    flex-direction: column;
     align-items: flex-start;
   }
 
   .player-config {
-    display: block;
+    display: grid;
+    gap: 30px;
     text-align: center;
     padding: 10px;
   }
 
   .player-col {
     align-items: center;
-    display: flex;
-    flex-direction: column;
-    margin-top: 30px;
-  }
-
-  .save-button {
-    padding: 5px;
-    margin: 10px;
   }
 
   .matchup-teams-config {

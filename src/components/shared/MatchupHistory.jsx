@@ -45,9 +45,9 @@ const TwsMatchupHistory = ({ matchups = [] }) => {
         <div className="tws-history-column" key={index}>
           <HistoryAvatar name={matchup.leftPlayer} avatarUrl={matchup.leftAvatarUrl} />
           <div className="tws-history-scores">
-            <span>{formatScore(matchup.leftScore)}</span>
-            <span className="tws-history-divider" />
-            <span>{formatScore(matchup.rightScore)}</span>
+            <span className="tws-history-score-num">{formatScore(matchup.leftScore)}</span>
+            <span className="tws-history-divider">-</span>
+            <span className="tws-history-score-num">{formatScore(matchup.rightScore)}</span>
           </div>
           <HistoryAvatar name={matchup.rightPlayer} avatarUrl={matchup.rightAvatarUrl} />
         </div>

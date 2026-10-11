@@ -67,7 +67,7 @@
 }
 
 .tws-history-scores {
-  width: calc(var(--history-avatar-size) * 1.2);
+  /* width: calc(var(--history-avatar-size) * 1.2); */
   flex: 0 0 auto;
   display: flex;
   justify-content: center;
@@ -78,16 +78,14 @@
   line-height: 0.8;
 }
 
-/* .tws-history-scores > :first-child {
-  align-self: flex-start;
+.tws-history-score-num {
+  display: inline-block;
+  width: 0.8em;
+  text-align: center;
 }
 
-.tws-history-scores > :last-child {
-  align-self: flex-end;
-} */
-
 .tws-history-divider {
-  height: max(1px, calc(var(--history-avatar-size) * 0.04));
-  width: calc(var(--history-avatar-size) * 0.2);
-  background-color: currentColor;
+  display: inline-block;
+  width: 0.5em;
+  text-align: center;
 }
