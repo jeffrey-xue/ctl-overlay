@@ -1,12 +1,12 @@
 .tws-upcoming-matchups {
   position: absolute;
-  top: 22%;
+  top: 55%;
   left: 50%;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(8px, 1vw, 18px) clamp(10px, 1.25vw, 24px);
   width: min(96%, 1800px);
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
 }
 
 .tws-upcoming-match-card {

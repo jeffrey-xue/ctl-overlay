@@ -24,7 +24,6 @@ const PlayerOverlay = () => {
   const [presetId, setPresetId] = useState('ctl');
   const [scene, setScene] = useState('');
   const [matchupHistory, setMatchupHistory] = useState(null);
-  const [upcomingMatches, setUpcomingMatches] = useState([]);
 
   const trimmedData = playerData.map(trimTeam);
   const profiles = usePlayerProfiles(trimmedData);
@@ -69,7 +68,6 @@ const PlayerOverlay = () => {
         teamColors: newTeamColors,
         presetId: newPresetId,
         matchupHistory: newMatchupHistory,
-        matches: newUpcomingMatches,
       } = JSON.parse(localStorage.getItem('ctl-player-overlay-config'));
       setPlayerData((playerData) => newPlayerData ?? playerData);
       setSelectedPlayerIndices((selectedIndices) => newSelectedPlayers ?? selectedIndices);
@@ -77,9 +75,6 @@ const PlayerOverlay = () => {
       setPresetId((presetId) => (PRESETS[newPresetId] ? newPresetId : presetId));
       if (Array.isArray(newMatchupHistory?.matchups)) {
         setMatchupHistory(newMatchupHistory);
-      }
-      if (Array.isArray(newUpcomingMatches)) {
-        setUpcomingMatches(newUpcomingMatches);
       }
       console.log('successfully fetched from localstorage');
     } catch (e) {
@@ -107,7 +102,6 @@ const PlayerOverlay = () => {
         selectedPlayerIndices={selectedPlayerIndices}
         preset={preset}
         matchupHistory={matchupHistoryWithAvatars}
-        upcomingMatches={upcomingMatches}
       />
       {/* Testing buttons that should be off screen. */}
       <div className="offscreen-controls">

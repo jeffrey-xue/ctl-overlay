@@ -2,11 +2,8 @@ import { setText, setBrowserSourceUrl } from './obs';
 
 const SPREADSHEET_ID = '1wiONK_ZJGG8KtwXAYbPyos_0rrVJZpzknCsn5urEe6U';
 const SHEET_NAME = 'schedule';
-const CONFIG_STORAGE_KEY = 'ctl-player-overlay-config';
 const MATCHES_RANGE = 'B3:J11';
 const MATCH_COUNT = 9;
-
-export const googleSheetData = { matches: [] };
 
 const cellText = (cell) => {
   const value = String(cell?.v ?? cell?.f ?? '').trim();
@@ -53,11 +50,6 @@ export async function syncGoogleSheet() {
       team2: parseTeam(cells.slice(5)),
     };
   });
-
-  googleSheetData.matches.splice(0, Infinity, ...matches);
-
-  const savedConfig = JSON.parse(window.localStorage.getItem(CONFIG_STORAGE_KEY) || '{}');
-  window.localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify({ ...savedConfig, matches }));
 
   return matches;
 }

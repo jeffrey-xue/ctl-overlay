@@ -47,7 +47,6 @@ const PlayerOverlayConfig = () => {
 
   const [showPlayerBlurbs, setShowPlayerBlurbs] = useState({ 0: false, 1: false });
   const [matchupHistory, setMatchupHistory] = useState(createEmptyMatchupHistory);
-  const [potentialPlayerNames, setPotentialPlayerNames] = useState([[], []]);
   const [syncStatus, setSyncStatus] = useState('idle');
   const [obsConnection, setObsConnection] = useState({
     ip: '127.0.0.1',
@@ -147,7 +146,6 @@ const PlayerOverlayConfig = () => {
         teamColors,
         presetId,
         matchupHistory,
-        potentialPlayerNames,
       })
     );
     console.log('saved');
@@ -157,12 +155,17 @@ const PlayerOverlayConfig = () => {
     setSyncStatus('syncing');
     try {
       const matches = await syncGoogleSheetData();
-      setPotentialPlayerNames(matches);
+      const savedConfig = JSON.parse(
+        window.localStorage.getItem('ctl-player-overlay-config') || '{}'
+      );
+      window.localStorage.setItem(
+        'ctl-player-overlay-config',
+        JSON.stringify({ ...savedConfig, matches })
+      );
 
       if (obsConnection.status === 'connected') {
         await sendMatchesToObs(matches);
       }
-      setSyncStatus('success');
       setSyncStatus('success');
     } catch {
       setSyncStatus('failure');
@@ -177,15 +180,11 @@ const PlayerOverlayConfig = () => {
         teamColors: newTeamColors,
         presetId: newPresetId,
         matchupHistory: newMatchupHistory,
-        potentialPlayerNames: newPotentialPlayerNames,
       } = JSON.parse(localStorage.getItem('ctl-player-overlay-config'));
       setPlayerData((playerData) => newPlayerData ?? playerData);
       setSelectedPlayerIndices((selectedIndices) => newSelectedPlayers ?? selectedIndices);
       setTeamColors((teamColors) => newTeamColors ?? teamColors);
       setPresetId((presetId) => (PRESETS[newPresetId] ? newPresetId : presetId));
-      if (Array.isArray(newPotentialPlayerNames) && newPotentialPlayerNames.length === 2) {
-        setPotentialPlayerNames(newPotentialPlayerNames);
-      }
       if (
         newPlayerData &&
         newMatchupHistory?.bans?.length === 2 &&

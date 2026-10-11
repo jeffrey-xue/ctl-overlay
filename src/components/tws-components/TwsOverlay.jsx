@@ -4,7 +4,6 @@ import LeagueStats from '../shared/LeagueStats';
 import buildPlayerPositions from '../shared/buildPlayerPositions';
 import TwsUsername from './TwsUsername';
 import TwsMatchupHistory from '../shared/MatchupHistory';
-import TwsUpcomingMatchups from '../shared/UpcomingMatchups';
 import './TwsOverlay.css';
 
 const TWS_FRAME_URL = `${import.meta.env.BASE_URL}tws/twsavatarframe.png`;
@@ -15,7 +14,6 @@ const TwsOverlay = ({
   selectedPlayerIndices,
   preset,
   matchupHistory,
-  upcomingMatches,
 }) => {
   const previouslyFocusedPlayers = useRef([-1, -1]);
   const previousScene = useRef(scene);
@@ -105,7 +103,6 @@ const TwsOverlay = ({
         })
       )}
       <TwsMatchupHistory matchups={matchupHistory?.matchups} />
-      {scene === 'title-screen' && <TwsUpcomingMatchups matches={upcomingMatches} />}
     </main>
   );
 };

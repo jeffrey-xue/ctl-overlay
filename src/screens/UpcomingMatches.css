@@ -1,0 +1,28 @@
+.upcoming-page {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  color: white;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.upcoming-page-title {
+  position: absolute;
+  top: 3%;
+  left: 50%;
+  margin: 0;
+  font-size: clamp(24px, 3vw, 48px);
+  text-align: center;
+  text-transform: uppercase;
+  transform: translateX(-50%);
+}
+
+.upcoming-page-empty {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: 0;
+  font-size: clamp(16px, 2vw, 28px);
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
