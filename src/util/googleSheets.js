@@ -3,7 +3,7 @@ import { setText, setBrowserSourceUrl } from './obs';
 const SPREADSHEET_ID = '1wiONK_ZJGG8KtwXAYbPyos_0rrVJZpzknCsn5urEe6U';
 const SHEET_NAME = 'schedule';
 const CONFIG_STORAGE_KEY = 'ctl-player-overlay-config';
-const MATCHES_RANGE = 'B3:I11';
+const MATCHES_RANGE = 'B3:J11';
 const MATCH_COUNT = 9;
 
 export const googleSheetData = { matches: [] };
@@ -43,8 +43,14 @@ export async function syncGoogleSheet() {
   const matchTable = await fetchTable({ range: MATCHES_RANGE, headers: '0' });
 
   const matches = Array.from({ length: MATCH_COUNT }, (_, row) => {
-    const cells = Array.from({ length: 8 }, (_, col) => cellText(matchTable.rows[row]?.c?.[col]));
-    return { team1: parseTeam(cells.slice(0, 4)), team2: parseTeam(cells.slice(4)) };
+    const cells = Array.from({ length: 9 }, (_, col) =>
+      cellText(matchTable.rows[row]?.c?.[col])
+    );
+    return {
+      type: cells[0],
+      team1: parseTeam(cells.slice(1, 5)),
+      team2: parseTeam(cells.slice(5)),
+    };
   });
 
   googleSheetData.matches.splice(0, Infinity, ...matches);
