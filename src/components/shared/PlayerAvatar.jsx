@@ -1,3 +1,5 @@
+import './PlayerAvatar.css';
+
 const getAssetUrl = (path) => {
   if (/^(?:[a-z]+:|data:|blob:)/i.test(path)) return path;
   return `${import.meta.env.BASE_URL}${path.replace(/^\/+/, '')}`;
@@ -22,13 +24,14 @@ const PlayerAvatar = ({
       ) : (
         <div className="player-avatar-image" style={style} />
       )}
-      {eliminated && (
-        <img
-          className="player-avatar-eliminated-overlay"
-          src={getAssetUrl('tws/twsplayedoverlay.png')}
-        />
-      )}
-      {banned && <img className="player-avatar-ban-icon" src={getAssetUrl(banIconPath)} />}
+      <img
+        className={`player-avatar-eliminated-overlay${eliminated ? ' is-played' : ''}`}
+        src={getAssetUrl('tws/twsplayedoverlay.png')}
+      />
+      <img
+        className={`player-avatar-ban-icon${banned ? ' is-banned' : ''}`}
+        src={getAssetUrl(banIconPath)}
+      />
     </div>
   );
 };

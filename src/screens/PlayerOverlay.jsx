@@ -23,9 +23,24 @@ const PlayerOverlay = () => {
   const [teamColors, setTeamColors] = useState(['', '']);
   const [presetId, setPresetId] = useState('ctl');
   const [scene, setScene] = useState('');
+  const [matchupHistory, setMatchupHistory] = useState(null);
 
   const trimmedData = playerData.map(trimTeam);
   const profiles = usePlayerProfiles(trimmedData);
+  const matchups = matchupHistory?.matchups ?? [];
+  const matchupProfiles = usePlayerProfiles([
+    matchups.map((matchup) => ({ name: matchup.leftPlayer })),
+    matchups.map((matchup) => ({ name: matchup.rightPlayer })),
+  ]);
+  const avatarFor = (name) => matchupProfiles[name?.trim().toLowerCase()]?.avatarUrl;
+  const matchupHistoryWithAvatars = matchupHistory && {
+    ...matchupHistory,
+    matchups: matchups.map((matchup) => ({
+      ...matchup,
+      leftAvatarUrl: avatarFor(matchup.leftPlayer),
+      rightAvatarUrl: avatarFor(matchup.rightPlayer),
+    })),
+  };
   const preset = PRESETS[presetId] ?? PRESETS.ctl;
   const Renderer = preset.Renderer;
   const teams = trimmedData.map((team, teamIndex) =>
@@ -52,11 +67,15 @@ const PlayerOverlay = () => {
         selectedPlayerIndices: newSelectedPlayers,
         teamColors: newTeamColors,
         presetId: newPresetId,
+        matchupHistory: newMatchupHistory,
       } = JSON.parse(localStorage.getItem('ctl-player-overlay-config'));
       setPlayerData((playerData) => newPlayerData ?? playerData);
       setSelectedPlayerIndices((selectedIndices) => newSelectedPlayers ?? selectedIndices);
       setTeamColors((teamColors) => newTeamColors ?? teamColors);
       setPresetId((presetId) => (PRESETS[newPresetId] ? newPresetId : presetId));
+      if (Array.isArray(newMatchupHistory?.matchups)) {
+        setMatchupHistory(newMatchupHistory);
+      }
       console.log('successfully fetched from localstorage');
     } catch (e) {
       console.log('failed to fetch from localstorage');
@@ -82,6 +101,7 @@ const PlayerOverlay = () => {
         scene={scene}
         selectedPlayerIndices={selectedPlayerIndices}
         preset={preset}
+        matchupHistory={matchupHistoryWithAvatars}
       />
       {/* Testing buttons that should be off screen. */}
       <div className="offscreen-controls">
