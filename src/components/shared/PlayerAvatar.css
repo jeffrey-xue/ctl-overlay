@@ -1,0 +1,10 @@
+.player-avatar-ban-icon,
+.player-avatar-eliminated-overlay {
+  opacity: 0;
+  transition: opacity var(--overlay-icon-fade-transition, 0.4s);
+}
+
+.player-avatar-ban-icon.is-banned,
+.player-avatar-eliminated-overlay.is-played {
+  opacity: 1;
+}

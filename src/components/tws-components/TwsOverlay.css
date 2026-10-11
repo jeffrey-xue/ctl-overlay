@@ -45,9 +45,9 @@
   /* Measured from twsavatarframe.png, in source pixels. */
   --frame-w: 351;
   --frame-h: 395;
-  --window-x: 21;
-  --window-y: 21;
-  --window-size: 310;
+  --window-x: 18;
+  --window-y: 18;
+  --window-size: 315;
 
   position: absolute;
   top: 0;
@@ -230,7 +230,7 @@
   overflow: hidden;
   white-space: nowrap;
   text-align: center;
-  font-size: 13cqw;
+  font-size: calc(13cqw * var(--fit, 1));
   line-height: 13cqw;
   text-fit: shrink 0%;
 }
