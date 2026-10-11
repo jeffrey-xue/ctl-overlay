@@ -43,11 +43,12 @@ export async function syncGoogleSheet() {
   const matchTable = await fetchTable({ range: MATCHES_RANGE, headers: '0' });
 
   const matches = Array.from({ length: MATCH_COUNT }, (_, row) => {
-    const cells = Array.from({ length: 9 }, (_, col) =>
-      cellText(matchTable.rows[row]?.c?.[col])
-    );
+    const cells = Array.from({ length: 9 }, (_, col) => cellText(matchTable.rows[row]?.c?.[col]));
     return {
-      type: cells[0],
+      type: cells[0]
+        .split('|')
+        .map((part) => part.trim())
+        .join('\n'),
       team1: parseTeam(cells.slice(1, 5)),
       team2: parseTeam(cells.slice(5)),
     };
@@ -62,11 +63,13 @@ export async function syncGoogleSheet() {
 }
 
 export async function sendMatchesToObs(matches) {
-  const { team1, team2 } = matches[0];
+  const { type, team1, team2 } = matches[0];
 
   await Promise.all([
     setText('teamnameleft', team1.team),
     setText('teamnameright', team2.team),
+    setText('footer-primary', `${team1.team} [${team1.seed}] vs ${team2.team} [${team2.seed}]`),
+    setText('footer-secondary', type),
     setBrowserSourceUrl('crestL', team1.flag),
     setBrowserSourceUrl('crestR', team2.flag),
     // Missing seeds and title generation
