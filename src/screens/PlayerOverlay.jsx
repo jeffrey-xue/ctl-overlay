@@ -3,7 +3,7 @@ import { PRESETS } from '../config/presets';
 import { useInterval } from '../hooks/useInterval';
 import usePlayerProfiles from '../hooks/usePlayerProfiles';
 
-const TRACKED_SCENES = ['player-select', 'players-chosen', 'game-scene'];
+const TRACKED_SCENES = ['title-screen', 'player-select', 'players-chosen', 'game-scene'];
 
 const isActive = (player) => (player?.name ?? '').trim() !== '';
 
@@ -24,6 +24,7 @@ const PlayerOverlay = () => {
   const [presetId, setPresetId] = useState('ctl');
   const [scene, setScene] = useState('');
   const [matchupHistory, setMatchupHistory] = useState(null);
+  const [upcomingMatches, setUpcomingMatches] = useState([]);
 
   const trimmedData = playerData.map(trimTeam);
   const profiles = usePlayerProfiles(trimmedData);
@@ -68,6 +69,7 @@ const PlayerOverlay = () => {
         teamColors: newTeamColors,
         presetId: newPresetId,
         matchupHistory: newMatchupHistory,
+        matches: newUpcomingMatches,
       } = JSON.parse(localStorage.getItem('ctl-player-overlay-config'));
       setPlayerData((playerData) => newPlayerData ?? playerData);
       setSelectedPlayerIndices((selectedIndices) => newSelectedPlayers ?? selectedIndices);
@@ -75,6 +77,9 @@ const PlayerOverlay = () => {
       setPresetId((presetId) => (PRESETS[newPresetId] ? newPresetId : presetId));
       if (Array.isArray(newMatchupHistory?.matchups)) {
         setMatchupHistory(newMatchupHistory);
+      }
+      if (Array.isArray(newUpcomingMatches)) {
+        setUpcomingMatches(newUpcomingMatches);
       }
       console.log('successfully fetched from localstorage');
     } catch (e) {
@@ -102,9 +107,11 @@ const PlayerOverlay = () => {
         selectedPlayerIndices={selectedPlayerIndices}
         preset={preset}
         matchupHistory={matchupHistoryWithAvatars}
+        upcomingMatches={upcomingMatches}
       />
       {/* Testing buttons that should be off screen. */}
       <div className="offscreen-controls">
+        <button onClick={() => setScene('title-screen')}>title screen</button>
         <button onClick={() => setScene('player-select')}>player select scene</button>
         <button onClick={() => setScene('players-chosen')}>player chosen scene</button>
         <button onClick={() => setScene('game-scene')}>game scene</button>

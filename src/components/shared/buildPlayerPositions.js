@@ -32,6 +32,7 @@ const buildPlayerPositions = (scene, teamSizes, selectedPlayerIndices, layout) =
               positions.BENCH_PLAYER_GAME_POSITIONS[teamIndex]
             )
           : positions.ALL_HIDDEN_GAME_POSITIONS[teamIndex];
+      case 'title-screen':
       case 'players-out':
         return positions.ALL_HIDDEN_GAME_POSITIONS[teamIndex];
       default:

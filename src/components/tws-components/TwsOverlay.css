@@ -96,6 +96,7 @@
   font-weight: 900;
 }
 
+.tws-overlay--title-screen .tws-username,
 .tws-overlay--game-scene .tws-username {
   visibility: hidden;
 }

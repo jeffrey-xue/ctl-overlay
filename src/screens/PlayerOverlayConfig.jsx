@@ -137,9 +137,11 @@ const PlayerOverlayConfig = () => {
   };
 
   const saveToLocalStorage = () => {
+    const savedConfig = JSON.parse(window.localStorage.getItem('ctl-player-overlay-config') || '{}');
     window.localStorage.setItem(
       'ctl-player-overlay-config',
       JSON.stringify({
+        ...savedConfig,
         playerData,
         selectedPlayerIndices,
         teamColors,

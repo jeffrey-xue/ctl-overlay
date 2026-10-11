@@ -4,11 +4,19 @@ import LeagueStats from '../shared/LeagueStats';
 import buildPlayerPositions from '../shared/buildPlayerPositions';
 import TwsUsername from './TwsUsername';
 import TwsMatchupHistory from '../shared/MatchupHistory';
+import TwsUpcomingMatchups from '../shared/UpcomingMatchups';
 import './TwsOverlay.css';
 
 const TWS_FRAME_URL = `${import.meta.env.BASE_URL}tws/twsavatarframe.png`;
 
-const TwsOverlay = ({ teams, scene, selectedPlayerIndices, preset, matchupHistory }) => {
+const TwsOverlay = ({
+  teams,
+  scene,
+  selectedPlayerIndices,
+  preset,
+  matchupHistory,
+  upcomingMatches,
+}) => {
   const previouslyFocusedPlayers = useRef([-1, -1]);
   const previousScene = useRef(scene);
   const [isLeavingFocus, setIsLeavingFocus] = useState(false);
@@ -28,7 +36,7 @@ const TwsOverlay = ({ teams, scene, selectedPlayerIndices, preset, matchupHistor
 
   return (
     <main
-      className={`ctl-overlay tws-overlay${scene === 'players-chosen' ? ' tws-overlay--focus-entering' : ''}${isLeavingFocus ? ' tws-overlay--focus-leaving' : ''}${scene === 'game-scene' ? ' tws-overlay--game-scene' : ''}`}
+      className={`ctl-overlay tws-overlay${scene === 'players-chosen' ? ' tws-overlay--focus-entering' : ''}${isLeavingFocus ? ' tws-overlay--focus-leaving' : ''}${scene === 'game-scene' ? ' tws-overlay--game-scene' : ''}${scene === 'title-screen' ? ' tws-overlay--title-screen' : ''}`}
       style={{
         ...preset.css,
         '--default-icon-size': `${preset.layout.defaultSize}px`,
@@ -97,6 +105,7 @@ const TwsOverlay = ({ teams, scene, selectedPlayerIndices, preset, matchupHistor
         })
       )}
       <TwsMatchupHistory matchups={matchupHistory?.matchups} />
+      {scene === 'title-screen' && <TwsUpcomingMatchups matches={upcomingMatches} />}
     </main>
   );
 };
