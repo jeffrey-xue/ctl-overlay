@@ -29,26 +29,31 @@ const HistoryAvatar = ({ name, avatarUrl }) => {
   );
 };
 
-/**
- * Previous-matchups strip for the TWS overlay.
- *
- * matchups: the matchup history data object's `matchups`
- *   [{ leftPlayer, leftScore, rightScore, rightPlayer, leftAvatarUrl, rightAvatarUrl }, ...] (max 5)
- */
-const TwsMatchupHistory = ({ matchups = [] }) => (
-  <div className="tws-matchup-history">
-    {matchups.slice(0, MAX_MATCHUPS).map((matchup, index) => (
-      <div className="tws-history-column" key={index}>
-        <HistoryAvatar name={matchup.leftPlayer} avatarUrl={matchup.leftAvatarUrl} />
-        <div className="tws-history-scores">
-          <span>{formatScore(matchup.leftScore)}</span>
-          <span className="tws-history-divider" />
-          <span>{formatScore(matchup.rightScore)}</span>
+const hasName = (name) => Boolean(name?.trim());
+
+const TwsMatchupHistory = ({ matchups = [] }) => {
+  const visibleMatchups = matchups
+    .filter((m) => hasName(m.leftPlayer) || hasName(m.rightPlayer))
+    .slice(0, MAX_MATCHUPS);
+
+  // Nothing to show: skip the container
+  if (visibleMatchups.length === 0) return null;
+
+  return (
+    <div className="tws-matchup-history">
+      {visibleMatchups.map((matchup, index) => (
+        <div className="tws-history-column" key={index}>
+          <HistoryAvatar name={matchup.leftPlayer} avatarUrl={matchup.leftAvatarUrl} />
+          <div className="tws-history-scores">
+            <span>{formatScore(matchup.leftScore)}</span>
+            <span className="tws-history-divider" />
+            <span>{formatScore(matchup.rightScore)}</span>
+          </div>
+          <HistoryAvatar name={matchup.rightPlayer} avatarUrl={matchup.rightAvatarUrl} />
         </div>
-        <HistoryAvatar name={matchup.rightPlayer} avatarUrl={matchup.rightAvatarUrl} />
-      </div>
-    ))}
-  </div>
-);
+      ))}
+    </div>
+  );
+};
 
 export default TwsMatchupHistory;
