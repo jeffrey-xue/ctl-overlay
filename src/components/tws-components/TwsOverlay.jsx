@@ -8,13 +8,7 @@ import './TwsOverlay.css';
 
 const TWS_FRAME_URL = `${import.meta.env.BASE_URL}tws/twsavatarframe.png`;
 
-const TwsOverlay = ({
-  teams,
-  scene,
-  selectedPlayerIndices,
-  preset,
-  matchupHistory,
-}) => {
+const TwsOverlay = ({ teams, scene, selectedPlayerIndices, preset, matchupHistory }) => {
   const previouslyFocusedPlayers = useRef([-1, -1]);
   const previousScene = useRef(scene);
   const [isLeavingFocus, setIsLeavingFocus] = useState(false);
@@ -34,7 +28,7 @@ const TwsOverlay = ({
 
   return (
     <main
-      className={`ctl-overlay tws-overlay${scene === 'players-chosen' ? ' tws-overlay--focus-entering' : ''}${isLeavingFocus ? ' tws-overlay--focus-leaving' : ''}${scene === 'game-scene' ? ' tws-overlay--game-scene' : ''}${scene === 'title-screen' ? ' tws-overlay--title-screen' : ''}`}
+      className={`ctl-overlay tws-overlay${scene === 'players-chosen' ? ' tws-overlay--focus-entering' : ''}${isLeavingFocus ? ' tws-overlay--focus-leaving' : ''}${scene === 'game-scene' ? ' tws-overlay--game-scene' : ''}`}
       style={{
         ...preset.css,
         '--default-icon-size': `${preset.layout.defaultSize}px`,

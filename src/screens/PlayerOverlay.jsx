@@ -103,9 +103,7 @@ const PlayerOverlay = () => {
         preset={preset}
         matchupHistory={matchupHistoryWithAvatars}
       />
-      {/* Testing buttons that should be off screen. */}
       <div className="offscreen-controls">
-        <button onClick={() => setScene('title-screen')}>title screen</button>
         <button onClick={() => setScene('player-select')}>player select scene</button>
         <button onClick={() => setScene('players-chosen')}>player chosen scene</button>
         <button onClick={() => setScene('game-scene')}>game scene</button>
