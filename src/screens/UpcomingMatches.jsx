@@ -45,7 +45,7 @@ const UpcomingMatches = () => {
     <main className="upcoming-page">
       {upcomingMatches.length > 0 && (
         <section className="tws-upcoming-matchups" aria-label="Upcoming matches">
-          {upcomingMatches.map((match, index) => (
+          {upcomingMatches.slice(0, 9).map((match, index) => (
             <UpcomingMatchCard
               key={`${match.team1?.team ?? ''}-${match.team2?.team ?? ''}-${index}`}
               match={match}

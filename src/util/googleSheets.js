@@ -1,5 +1,6 @@
 import { setText, setBrowserSourceUrl } from './obs';
 
+// Mastersheet: https://docs.google.com/spreadsheets/d/1wiONK_ZJGG8KtwXAYbPyos_0rrVJZpzknCsn5urEe6U/
 const SPREADSHEET_ID = '1wiONK_ZJGG8KtwXAYbPyos_0rrVJZpzknCsn5urEe6U';
 const SHEET_NAME = 'schedule';
 const MATCHES_RANGE = 'B3:J11';
