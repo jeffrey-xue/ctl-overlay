@@ -148,7 +148,6 @@ const PlayerOverlayConfig = () => {
         teamColors,
         presetId,
         matchupHistory,
-        potentialPlayerNames,
       })
     );
     console.log('saved');
@@ -183,15 +182,11 @@ const PlayerOverlayConfig = () => {
         teamColors: newTeamColors,
         presetId: newPresetId,
         matchupHistory: newMatchupHistory,
-        potentialPlayerNames: newPotentialPlayerNames,
       } = JSON.parse(localStorage.getItem('ctl-player-overlay-config'));
       setPlayerData((playerData) => newPlayerData ?? playerData);
       setSelectedPlayerIndices((selectedIndices) => newSelectedPlayers ?? selectedIndices);
       setTeamColors((teamColors) => newTeamColors ?? teamColors);
       setPresetId((presetId) => (PRESETS[newPresetId] ? newPresetId : presetId));
-      if (Array.isArray(newPotentialPlayerNames) && newPotentialPlayerNames.length === 2) {
-        setPotentialPlayerNames(newPotentialPlayerNames);
-      }
       if (
         newPlayerData &&
         newMatchupHistory?.bans?.length === 2 &&
