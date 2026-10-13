@@ -3,12 +3,21 @@ import { setText, setBrowserSourceUrl } from './obs';
 // Mastersheet: https://docs.google.com/spreadsheets/d/1wiONK_ZJGG8KtwXAYbPyos_0rrVJZpzknCsn5urEe6U/
 const SPREADSHEET_ID = '1wiONK_ZJGG8KtwXAYbPyos_0rrVJZpzknCsn5urEe6U';
 const SHEET_NAME = 'schedule';
-const MATCHES_RANGE = 'B3:J11';
+const MATCHES_RANGE = 'A3:J11';
 const MATCH_COUNT = 9;
 
 const cellText = (cell) => {
   const value = String(cell?.v ?? cell?.f ?? '').trim();
   return value.startsWith('#') ? '' : value;
+};
+
+const pad = (n) => String(n).padStart(2, '0');
+
+// "Date(2026,9,29,13,0,0)" -> "13:00"
+const parseTime = (text) => {
+  if (!text) return '';
+  const [, , , hours, minutes] = text.slice(5, -1).split(',').map(Number);
+  return `${pad(hours)}:${pad(minutes)}`;
 };
 
 const parseTeam = ([team, seed, roster, flag]) => ({
@@ -41,15 +50,16 @@ export async function syncGoogleSheet() {
   const matchTable = await fetchTable({ range: MATCHES_RANGE, headers: '0' });
 
   const matches = Array.from({ length: MATCH_COUNT }, (_, row) => {
-    const cells = Array.from({ length: 9 }, (_, col) => cellText(matchTable.rows[row]?.c?.[col]));
+    const cells = Array.from({ length: 10 }, (_, col) => cellText(matchTable.rows[row]?.c?.[col]));
     return {
-      type: cells[0]
+      time: parseTime(cells[0]),
+      type: cells[1]
         .split('|')
         .map((part) => part.trim())
         .join('\n')
         .toUpperCase(),
-      team1: parseTeam(cells.slice(1, 5)),
-      team2: parseTeam(cells.slice(5)),
+      team1: parseTeam(cells.slice(2, 6)),
+      team2: parseTeam(cells.slice(6)),
     };
   });
 

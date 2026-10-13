@@ -66,6 +66,12 @@ const UpcomingMatchCard = ({ match }) => (
         </div>
       );
     })}
+    {match.time && (
+      <div className="tws-upcoming-time">
+        <span>{match.time}</span>
+        <span>UTC</span>
+      </div>
+    )}
   </article>
 );
 

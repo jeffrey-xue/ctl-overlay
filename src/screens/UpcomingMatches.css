@@ -149,3 +149,30 @@
   line-height: 1.05;
   text-fit: shrink;
 }
+
+.tws-upcoming-time {
+  position: absolute;
+  top: 23.5%;
+  left: 52%;
+  width: 48%;
+  height: 68%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  line-height: 1.05;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* time */
+.tws-upcoming-time span:first-child {
+  font-size: 8cqw;
+}
+
+/* label */
+.tws-upcoming-time span:last-child {
+  font-size: 8cqw;
+  font-weight: 600;
+}
