@@ -1,0 +1,178 @@
+.upcoming-page {
+  --page-w: 1920px;
+  --page-h: 500px;
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--page-w);
+  height: var(--page-h);
+  overflow: hidden;
+  color: white;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.tws-upcoming-matchups {
+  --gap: 16px;
+  --pad: 16px;
+  --card-max-w: 965px; /* native width of twsupcoming.png */
+  --card-w: min(
+    var(--card-max-w),
+    calc(
+      (var(--page-w) - 2 * var(--pad) - (var(--cols, 3) - 1) * var(--gap)) / var(--cols, 3) - 1px
+    ),
+    calc(
+      (var(--page-h) - 2 * var(--pad) - (var(--rows, 3) - 1) * var(--gap)) / var(--rows, 3) * 965 /
+        322
+    )
+  );
+
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: var(--gap);
+  width: 100%;
+  max-width: calc(
+    var(--cols, 3) * var(--card-w) + (var(--cols, 3) - 1) * var(--gap) + 2 * var(--pad) + 1px
+  );
+  height: 100%;
+  padding: var(--pad);
+  box-sizing: border-box;
+}
+
+.tws-upcoming-match-card {
+  position: relative;
+  flex: none;
+  width: var(--card-w);
+  aspect-ratio: 965 / 322;
+  container-type: inline-size;
+}
+
+.tws-upcoming-match-card-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.tws-upcoming-match-type {
+  position: absolute;
+  top: 0;
+  left: 43%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 57%;
+  height: 15%;
+  overflow: hidden;
+  color: #16104b;
+  font-size: 3.6cqw;
+  font-weight: 900;
+  line-height: 0.95;
+  text-align: center;
+  white-space: pre-line;
+  -webkit-text-stroke: 0.05cqw currentColor;
+}
+
+.tws-upcoming-team {
+  position: absolute;
+  top: 23.5%;
+  width: 17%;
+  height: 68%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 29fr) minmax(0, 42fr) minmax(0, 29fr);
+  justify-items: center;
+  /* background-color: blue; */
+}
+
+.tws-upcoming-team--left {
+  left: 5.5%;
+}
+.tws-upcoming-team--right {
+  left: 37.4%;
+}
+
+.tws-upcoming-seed {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 87%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6cqw;
+  white-space: nowrap;
+  line-height: 0.95;
+}
+
+/* label */
+.tws-upcoming-seed span:first-child {
+  font-size: 2.5cqw;
+  font-weight: 400;
+}
+
+/* seed number */
+.tws-upcoming-seed span:last-child {
+  font-size: 4.5cqw;
+  font-weight: 900;
+}
+
+.tws-upcoming-flag {
+  grid-row: 2;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: contain;
+}
+
+.tws-upcoming-team-name {
+  position: absolute;
+  top: 85.5%;
+  left: -14%;
+  width: 128%;
+  height: 5cqw;
+  font-size: calc(3.5cqw * var(--fit, 1));
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-fit: shrink;
+}
+
+.tws-upcoming-team-name--two-line {
+  font-size: calc(2.5cqw * var(--fit, 1));
+  line-height: 1.05;
+  text-fit: shrink;
+}
+
+.tws-upcoming-time {
+  position: absolute;
+  top: 23.5%;
+  left: 52%;
+  width: 48%;
+  height: 68%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  line-height: 1.05;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* time */
+.tws-upcoming-time span:first-child {
+  font-size: 8cqw;
+}
+
+/* label */
+.tws-upcoming-time span:last-child {
+  font-size: 8cqw;
+  font-weight: 600;
+}

@@ -3,7 +3,7 @@ import { PRESETS } from '../config/presets';
 import { useInterval } from '../hooks/useInterval';
 import usePlayerProfiles from '../hooks/usePlayerProfiles';
 
-const TRACKED_SCENES = ['player-select', 'players-chosen', 'game-scene'];
+const TRACKED_SCENES = ['title-screen', 'player-select', 'players-chosen', 'game-scene'];
 
 const isActive = (player) => (player?.name ?? '').trim() !== '';
 
@@ -103,7 +103,6 @@ const PlayerOverlay = () => {
         preset={preset}
         matchupHistory={matchupHistoryWithAvatars}
       />
-      {/* Testing buttons that should be off screen. */}
       <div className="offscreen-controls">
         <button onClick={() => setScene('player-select')}>player select scene</button>
         <button onClick={() => setScene('players-chosen')}>player chosen scene</button>

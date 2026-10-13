@@ -1,12 +1,8 @@
 @import '../ctl-components/CtlOverlay.css';
 
-@font-face {
-  font-family: 'Orbitron';
-  src: url('/fonts/Orbitron-VariableFont_wght.ttf') format('truetype');
-  font-weight: 100 900;
-}
-
 .tws-overlay {
+  width: 1920px;
+  height: 1080px;
   --tws-bench-color: #2d1c86;
 
   /* How early each step starts, before the previous one has finished. */
@@ -96,6 +92,7 @@
   font-weight: 900;
 }
 
+.tws-overlay--title-screen .tws-username,
 .tws-overlay--game-scene .tws-username {
   visibility: hidden;
 }
