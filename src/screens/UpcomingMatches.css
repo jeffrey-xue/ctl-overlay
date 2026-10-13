@@ -1,28 +1,51 @@
 .upcoming-page {
+  --page-w: 1920px;
+  --page-h: 500px;
+
   position: relative;
-  width: 100%;
-  height: 100%;
-  max-width: 1920px;
-  max-height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--page-w);
+  height: var(--page-h);
+  overflow: hidden;
   color: white;
   font-family: 'Orbitron', sans-serif;
-  /* background-color: red; */
 }
 
 .tws-upcoming-matchups {
-  position: absolute;
-  top: 55%;
-  left: 50%;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(8px, 1vw, 18px) clamp(10px, 1.25vw, 24px);
-  width: min(96%, 1800px);
-  transform: translate(-50%, -50%);
+  --gap: 16px;
+  --pad: 16px;
+  --card-max-w: 965px; /* native width of twsupcoming.png */
+  --card-w: min(
+    var(--card-max-w),
+    calc(
+      (var(--page-w) - 2 * var(--pad) - (var(--cols, 3) - 1) * var(--gap)) / var(--cols, 3) - 1px
+    ),
+    calc(
+      (var(--page-h) - 2 * var(--pad) - (var(--rows, 3) - 1) * var(--gap)) / var(--rows, 3) * 965 /
+        322
+    )
+  );
+
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: var(--gap);
+  width: 100%;
+  max-width: calc(
+    var(--cols, 3) * var(--card-w) + (var(--cols, 3) - 1) * var(--gap) + 2 * var(--pad) + 1px
+  );
+  height: 100%;
+  padding: var(--pad);
+  box-sizing: border-box;
 }
 
 .tws-upcoming-match-card {
   position: relative;
-  width: 100%;
+  flex: none;
+  width: var(--card-w);
   aspect-ratio: 965 / 322;
   container-type: inline-size;
 }
@@ -39,75 +62,90 @@
   top: 0;
   left: 43%;
   display: flex;
-  width: 57%;
-  height: 15%;
   align-items: center;
   justify-content: center;
+  width: 57%;
+  height: 15%;
   overflow: hidden;
   color: #16104b;
-  font-family: 'Orbitron', sans-serif;
-  font-size: clamp(9px, 4cqw, 21px);
+  font-size: 3.6cqw;
   font-weight: 900;
   line-height: 0.95;
   text-align: center;
-  -webkit-text-stroke: 0.3px currentColor;
   white-space: pre-line;
+  -webkit-text-stroke: 0.05cqw currentColor;
 }
 
 .tws-upcoming-team {
   position: absolute;
   top: 23.5%;
-  display: flex;
   width: 17%;
   height: 68%;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 29fr) minmax(0, 42fr) minmax(0, 29fr);
+  justify-items: center;
+  /* background-color: blue; */
 }
 
 .tws-upcoming-team--left {
   left: 5.5%;
 }
-
 .tws-upcoming-team--right {
   left: 37.4%;
 }
 
 .tws-upcoming-seed {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 87%;
   display: flex;
-  min-height: 15%;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  color: white;
-  font-family: 'Orbitron', sans-serif;
-  font-size: clamp(6px, 2cqw, 11px);
-  font-weight: 700;
-  line-height: 0.9;
+  justify-content: center;
+  gap: 0.6cqw;
+  white-space: nowrap;
+  line-height: 0.95;
+}
+
+/* label */
+.tws-upcoming-seed span:first-child {
+  font-size: 2.5cqw;
+  font-weight: 400;
+}
+
+/* seed number */
+.tws-upcoming-seed span:last-child {
+  font-size: 4.5cqw;
+  font-weight: 900;
 }
 
 .tws-upcoming-flag {
-  position: absolute;
-  top: 29%;
-  left: 50%;
-  width: 56%;
-  height: 42%;
+  grid-row: 2;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
   object-fit: contain;
-  transform: translateX(-50%);
 }
 
 .tws-upcoming-team-name {
   position: absolute;
-  left: 50%;
-  bottom: 0;
-  width: 130%;
-  max-height: 2.2em;
-  overflow: hidden;
-  color: white;
-  font-family: 'Orbitron', sans-serif;
-  font-size: clamp(6px, 2.7cqw, 14px);
+  top: 85.5%;
+  left: -14%;
+  width: 128%;
+  height: 5cqw;
+  font-size: calc(3.5cqw * var(--fit, 1));
   font-weight: 700;
   line-height: 1.1;
   text-align: center;
   text-transform: uppercase;
-  transform: translateX(-50%);
-  overflow-wrap: anywhere;
+  white-space: nowrap;
+  text-fit: shrink;
+}
+
+.tws-upcoming-team-name--two-line {
+  font-size: calc(2.5cqw * var(--fit, 1));
+  line-height: 1.05;
+  text-fit: shrink;
 }
