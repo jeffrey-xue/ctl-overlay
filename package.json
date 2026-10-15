@@ -4,6 +4,7 @@
   "homepage": "https://digcheese.github.io/ctl-overlay/#",
   "private": true,
   "dependencies": {
+    "html-to-image": "^1.11.13",
     "obs-websocket-js": "^5.0.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

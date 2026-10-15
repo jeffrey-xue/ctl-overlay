@@ -1,0 +1,172 @@
+.rs-stage {
+  --rs-font: var(--tws-font, 'Orbitron', sans-serif);
+  --header-x: 0px;
+  --header-y: 24px;
+  --roster-x: 970px;
+  --roster-y: 24px;
+  --strip-gap: 7px;
+
+  position: relative;
+  width: 1920px;
+  height: 800px;
+  overflow: hidden;
+  background-size: cover;
+  font-family: var(--rs-font);
+  font-weight: 700;
+  color: #fff;
+}
+
+.rs-header {
+  position: absolute;
+  left: var(--header-x);
+  top: var(--header-y);
+  width: 957px;
+  height: 174px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.rs-header__flag {
+  position: absolute;
+  left: 82px;
+  top: 43px;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.rs-header__name {
+  position: absolute;
+  left: 220px;
+  top: 67px;
+  width: 497px;
+  height: 107px;
+  overflow: hidden;
+  font-size: 76px;
+  line-height: 107px;
+  white-space: nowrap;
+  text-transform: uppercase;
+  text-fit: shrink 25%;
+}
+
+.rs-header__seed {
+  position: absolute;
+  left: 735px;
+  top: 32px;
+  width: 200px;
+  height: 105px;
+  overflow: hidden;
+  font-size: 60px;
+  line-height: 105px;
+  text-align: center;
+  white-space: nowrap;
+  text-fit: shrink 50%;
+}
+
+.rs-roster {
+  position: absolute;
+  left: var(--roster-x);
+  top: var(--roster-y);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--strip-gap);
+}
+
+.rs-strip {
+  position: relative;
+  flex: none;
+  width: 950px;
+  height: 80px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.rs-strip > * {
+  position: absolute;
+}
+
+.rs-strip__rd {
+  left: 25px;
+  top: 13px;
+  width: 50px;
+  height: 56px;
+  scale: 0.85;
+  object-fit: contain;
+}
+
+.rs-strip__seed {
+  left: 25px;
+  top: 12px;
+  width: 50px;
+  height: 56px;
+  scale: 0.7;
+  object-fit: contain;
+}
+
+.rs-strip__tr {
+  left: 120px;
+  top: 4px;
+  width: 162px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 40px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.rs-strip__glicko {
+  left: 88px;
+  top: 52px;
+  width: 138px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: #c4b0ff;
+}
+
+.rs-strip__name {
+  left: 296px;
+  top: 12px;
+  width: 506px;
+  height: 56px;
+  overflow: hidden;
+  font-size: 40px;
+  line-height: 56px;
+  text-align: right;
+  white-space: nowrap;
+  text-transform: uppercase;
+  text-fit: shrink 50%;
+}
+
+.rs-strip__avatar {
+  left: 811px;
+  top: 3px;
+  width: 69px;
+  height: 69px;
+  object-fit: cover;
+}
+
+.rs-strip__rank {
+  left: 892px;
+  top: 6px;
+  width: 45px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.rs-export {
+  position: fixed;
+  left: 8px;
+  bottom: 8px;
+  z-index: 1;
+  padding: 10px 18px;
+  cursor: pointer;
+}
