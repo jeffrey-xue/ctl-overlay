@@ -27,7 +27,12 @@ const ROSTER_SHEET = {
 };
 
 const FALLBACK_FLAG = 'https://hatscripts.github.io/circle-flags/flags/xx.svg';
-const rankIconUrl = (rank) => `https://tetr.io/res/league-ranks/${rank}.png`;
+const TETR_IO_ASSET_PROXY = '/tetrio-assets';
+const rosterImageUrl = (url) => {
+  if (!import.meta.env.DEV || !url?.startsWith('https://tetr.io/')) return url;
+  return `${TETR_IO_ASSET_PROXY}/${url.slice('https://tetr.io/'.length)}`;
+};
+const rankIconUrl = (rank) => rosterImageUrl(`https://tetr.io/res/league-ranks/${rank}.png`);
 
 const letterToIndex = (letters) =>
   letters
@@ -168,7 +173,7 @@ const CountryHeader = ({ country }) => {
     <div className="rs-header" style={{ backgroundImage: `url(${headerImg})` }}>
       <img
         className="rs-header__flag"
-        src={country.flag || FALLBACK_FLAG}
+        src={rosterImageUrl(country.flag || FALLBACK_FLAG)}
         alt=""
         onError={(e) => {
           if (e.currentTarget.src !== FALLBACK_FLAG) e.currentTarget.src = FALLBACK_FLAG;
@@ -196,7 +201,9 @@ const PlayerStrip = ({ player, profile }) => {
 
       <div className="rs-strip__name">{player.name}</div>
 
-      {profile?.avatarUrl && <img className="rs-strip__avatar" src={profile.avatarUrl} alt="" />}
+      {profile?.avatarUrl && (
+        <img className="rs-strip__avatar" src={rosterImageUrl(profile.avatarUrl)} alt="" />
+      )}
       {rank && (
         <img
           className="rs-strip__rank"
@@ -211,19 +218,29 @@ const PlayerStrip = ({ player, profile }) => {
   );
 };
 
-const exportStagePng = async (node, fileName) => {
-  const { toPng } = await import('html-to-image');
+const exportStagePng = async (node, fileHandle) => {
+  const { toBlob } = await import('html-to-image');
   await document.fonts?.ready;
 
-  const dataUrl = await toPng(node, { pixelRatio: 1 });
+  const blob = await toBlob(node, { pixelRatio: 1 });
+  if (!blob) throw new Error('Could not generate roster PNG.');
 
+  if (fileHandle) {
+    const writable = await fileHandle.createWritable();
+    await writable.write(blob);
+    await writable.close();
+    return;
+  }
+
+  const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
-  link.download = fileName;
-  link.href = dataUrl;
+  link.download = 'roster.png';
+  link.href = url;
   link.click();
+  URL.revokeObjectURL(url);
 };
 
-const Roster = ({ background }) => {
+const Roster = () => {
   const stageRef = useRef(null);
   const { status, country, players } = useRosterSheet();
 
@@ -234,7 +251,7 @@ const Roster = ({ background }) => {
     try {
       const saveHandle = window.showSaveFilePicker
         ? await window.showSaveFilePicker({
-            suggestedName: 'roster.png',
+            suggestedName: `${country.name}_roster.png`,
             types: [{ description: 'PNG image', accept: { 'image/png': ['.png'] } }],
           })
         : null;
@@ -248,11 +265,7 @@ const Roster = ({ background }) => {
   return (
     <>
       {status === 'ready' && (
-        <div
-          className="rs-stage"
-          ref={stageRef}
-          style={background ? { backgroundImage: `url(${background})` } : undefined}
-        >
+        <div className="rs-stage" ref={stageRef}>
           <CountryHeader country={country} />
           <div className="rs-roster">
             {players.map((player) => (
