@@ -251,7 +251,7 @@ const Roster = () => {
     try {
       const saveHandle = window.showSaveFilePicker
         ? await window.showSaveFilePicker({
-            suggestedName: `${country.name}_roster.png`,
+            suggestedName: `${country.seed.padStart(2, '0')}-${country.name}-roster.png`,
             types: [{ description: 'PNG image', accept: { 'image/png': ['.png'] } }],
           })
         : null;

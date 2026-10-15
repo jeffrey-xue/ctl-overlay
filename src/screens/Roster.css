@@ -8,12 +8,13 @@
 
   position: relative;
   width: 1920px;
-  height: 800px;
+  height: 900px;
   overflow: hidden;
   background-size: cover;
   font-family: var(--rs-font);
   font-weight: 700;
   color: #fff;
+  background-color: blue;
 }
 
 .rs-header {
