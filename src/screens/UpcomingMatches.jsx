@@ -50,7 +50,7 @@ const TeamName = ({ name }) => {
 const UpcomingMatchCard = ({ match }) => (
   <article className="tws-upcoming-match-card">
     <img className="tws-upcoming-match-card-frame" src={FRAME_URL} alt="" />
-    {match.type && <div className="tws-upcoming-match-type">{match.type}</div>}
+    {match.type && <div className="tws-upcoming-match-type">{match.type.replace(/\n/g, ' ')}</div>}
     {[match.team1, match.team2].map((team, index) => {
       const side = index === 0 ? 'left' : 'right';
       return (
