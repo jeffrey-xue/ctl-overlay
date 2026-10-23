@@ -166,13 +166,16 @@
   white-space: nowrap;
 }
 
-/* time */
-.tws-upcoming-time span:first-child {
+.tws-upcoming-date {
+  font-size: 3cqw;
+  font-weight: 400;
+}
+
+.tws-upcoming-time-value {
   font-size: 8cqw;
 }
 
-/* label */
-.tws-upcoming-time span:last-child {
+.tws-upcoming-time-zone {
   font-size: 8cqw;
   font-weight: 600;
 }

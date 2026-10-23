@@ -66,6 +66,23 @@ html {
   color: #b00020;
 }
 
+.google-sheets-sync {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.google-sheets-start-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.google-sheets-start-row input {
+  width: 60px;
+}
+
 .matchup-teams-config {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -157,6 +174,14 @@ html {
   align-self: center;
   width: 80%;
   padding: 5px;
+}
+
+.hide-ban-icons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  margin-top: -15px;
 }
 
 @media screen and (max-width: 400px) {
