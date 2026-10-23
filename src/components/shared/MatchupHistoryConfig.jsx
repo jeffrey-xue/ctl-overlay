@@ -11,7 +11,9 @@ const formatMatchupHistory = (matchups, bans, currentMatch) => {
   const banLines = bans
     .map((teamBans, index) => {
       const players = teamBans.filter(Boolean).join(', ');
-      return players ? `${country(currentMatch[`team${index + 1}`])} bans ${players}` : '';
+      return players
+        ? `${country(currentMatch[`team${index + 1}`])} bans ${players.toUpperCase()}`
+        : '';
     })
     .filter(Boolean);
   const lines = rows.map(
@@ -19,10 +21,10 @@ const formatMatchupHistory = (matchups, bans, currentMatch) => {
       `${m.leftPlayer.padEnd(leftWidth)} ${`${m.leftScore || 0} - ${m.rightScore || 0}`.padEnd(scoreWidth)}${m.rightPlayer.padStart(rightWidth)}`
   );
 
-  return `\`\`\`\n${banLines.join('\n')}\n\n${lines.join('\n')}\n\nFinal score: ${country(currentMatch.team1)} (#${currentMatch.team1.seed || 'SEED'}) ${total('left')} - ${total('right')} ${country(currentMatch.team2)} (#${currentMatch.team2.seed || 'SEED'})\n\`\`\``;
+  return `\`\`\`\n${currentMatch.type.replace(/\r?\n/g, ' ')}\n\n${banLines.join('\n')}\n\n${lines.join('\n')}\n\nFinal score: ${country(currentMatch.team1)} (#${currentMatch.team1.seed || 'SEED'}) ${total('left')} - ${total('right')} ${country(currentMatch.team2)} (#${currentMatch.team2.seed || 'SEED'})\n\`\`\``;
 };
 
-const MatchupHistoryConfig = ({ value, onChange, teamPlayerNames }) => {
+const MatchupHistoryConfig = ({ value, onChange, onBanChange, teamPlayerNames }) => {
   const [exportStatus, setExportStatus] = useState('');
 
   const exportHistory = async () => {
@@ -39,9 +41,7 @@ const MatchupHistoryConfig = ({ value, onChange, teamPlayerNames }) => {
   };
 
   const updateBan = (teamIndex, banIndex, name) => {
-    const bans = value.bans.map((teamBans) => [...teamBans]);
-    bans[teamIndex][banIndex] = name;
-    onChange({ ...value, bans });
+    onBanChange(teamIndex, banIndex, name);
   };
 
   const updateMatchup = (gameIndex, field, fieldValue) => {

@@ -26,6 +26,17 @@ const normalizeStartRow = (value) => {
   return Number.isFinite(parsed) ? Math.max(MIN_START_ROW, parsed) : MIN_START_ROW;
 };
 
+const samePlayerName = (left, right) =>
+  (left ?? '').trim().toLowerCase() === (right ?? '').trim().toLowerCase();
+
+const applyBanState = (players, bans) =>
+  players.map((team, teamIndex) =>
+    team.map((player) => ({
+      ...player,
+      banned: bans[teamIndex].some((name) => name && samePlayerName(name, player.name)),
+    }))
+  );
+
 const matchupHistoryForRoster = (history, playerData) => {
   const teamNames = playerData.map(
     (team) => new Set(team.map((player) => player.name?.trim().toLowerCase()).filter(Boolean))
@@ -33,6 +44,9 @@ const matchupHistoryForRoster = (history, playerData) => {
 
   return {
     ...history,
+    bans: history.bans.map((teamBans, teamIndex) =>
+      teamBans.map((ban) => (teamNames[teamIndex].has(ban?.trim().toLowerCase()) ? ban : ''))
+    ),
     matchups: history.matchups.map((matchup) => ({
       ...matchup,
       leftPlayer: teamNames[0].has(matchup.leftPlayer?.trim().toLowerCase())
@@ -44,6 +58,21 @@ const matchupHistoryForRoster = (history, playerData) => {
     })),
   };
 };
+
+const addPlayerBansToHistory = (history, playerData) => ({
+  ...history,
+  bans: history.bans.map((teamBans, teamIndex) => {
+    const bans = [...teamBans];
+    playerData[teamIndex].forEach((player) => {
+      const name = player.name?.trim();
+      if (!player.banned || !name || bans.some((ban) => samePlayerName(ban, name))) return;
+      const emptySlot = bans.indexOf('');
+      if (emptySlot === -1) bans.push(name);
+      else bans[emptySlot] = name;
+    });
+    return bans;
+  }),
+});
 
 const PlayerOverlayConfig = () => {
   const [playerData, setPlayerData] = useState([
@@ -98,12 +127,24 @@ const PlayerOverlayConfig = () => {
 
   const changePlayerName = (teamIndex, playerIndex, name) => {
     const newPlayers = [...playerData].map((e) => [...e]);
+    const oldName = newPlayers[teamIndex][playerIndex].name?.trim();
     newPlayers[teamIndex][playerIndex] = {
       ...newPlayers[teamIndex][playerIndex],
       name,
     };
-    setPlayerData(newPlayers);
-    setMatchupHistory((history) => matchupHistoryForRoster(history, newPlayers));
+    const history = matchupHistoryForRoster(
+      {
+        ...matchupHistory,
+        bans: matchupHistory.bans.map((teamBans, index) =>
+          index === teamIndex
+            ? teamBans.map((ban) => (oldName && samePlayerName(ban, oldName) ? name.trim() : ban))
+            : teamBans
+        ),
+      },
+      newPlayers
+    );
+    setPlayerData(applyBanState(newPlayers, history.bans));
+    setMatchupHistory(history);
   };
 
   const changePlayerBlurb = (teamIndex, playerIndex, blurb) => {
@@ -124,13 +165,14 @@ const PlayerOverlayConfig = () => {
     setPlayerData(newPlayers);
   };
 
-  const banPlayer = (teamIndex, playerIndex, banned) => {
-    const newPlayers = [...playerData].map((e) => [...e]);
-    newPlayers[teamIndex][playerIndex] = {
-      ...newPlayers[teamIndex][playerIndex],
-      banned,
-    };
-    setPlayerData(newPlayers);
+  const updateBanSelection = (teamIndex, banIndex, name) => {
+    const bans = matchupHistory.bans.map((teamBans, index) =>
+      index === teamIndex
+        ? teamBans.map((ban, slot) => (slot === banIndex ? name : ban))
+        : teamBans
+    );
+    setMatchupHistory((history) => ({ ...history, bans }));
+    setPlayerData((players) => applyBanState(players, bans));
   };
 
   const setSelectedPlayer = (teamIndex, playerIndex) => {
@@ -205,7 +247,12 @@ const PlayerOverlayConfig = () => {
         newMatchupHistory?.bans?.length === 2 &&
         newMatchupHistory?.matchups?.length === 5
       ) {
-        setMatchupHistory(matchupHistoryForRoster(newMatchupHistory, newPlayerData));
+        const history = addPlayerBansToHistory(
+          matchupHistoryForRoster(newMatchupHistory, newPlayerData),
+          newPlayerData
+        );
+        setMatchupHistory(history);
+        setPlayerData((players) => applyBanState(players, history.bans));
       }
       console.log('successfully fetched from localstorage');
     } catch (e) {
@@ -320,7 +367,6 @@ const PlayerOverlayConfig = () => {
             <h3>Team {teamIndex + 1}</h3>
             <div className={`player-row player-row-header player-row-team-${teamIndex + 1}`}>
               <span className="player-row-checkbox-label">E</span>
-              <span className="player-row-checkbox-label">B</span>
               <span className="player-row-header-spacer"></span>
               <span className="player-row-checkbox-label">S</span>
             </div>
@@ -334,12 +380,6 @@ const PlayerOverlayConfig = () => {
                   onChange={(e) => eliminatePlayer(teamIndex, playerIndex, e.target.checked)}
                   name={`team${teamIndex}`}
                   checked={player.eliminated ?? false}
-                />
-                <input
-                  type="checkbox"
-                  onChange={(e) => banPlayer(teamIndex, playerIndex, e.target.checked)}
-                  name={`team${teamIndex}-banned`}
-                  checked={player.banned ?? false}
                 />
                 <input
                   onChange={(e) => changePlayerName(teamIndex, playerIndex, e.target.value)}
@@ -398,6 +438,7 @@ const PlayerOverlayConfig = () => {
       <MatchupHistoryConfig
         value={matchupHistory}
         onChange={setMatchupHistory}
+        onBanChange={updateBanSelection}
         teamPlayerNames={playerData.map((team) => team.map((player) => player.name?.trim() ?? ''))}
       />
       <button className="save-button" onClick={saveToLocalStorage}>
