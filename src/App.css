@@ -36,6 +36,13 @@ html {
   margin: 0;
 }
 
+.config-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
 .layout-dropdown select {
   font-size: 1rem;
 }

@@ -21,6 +21,11 @@ const createEmptyMatchupHistory = () => ({
   })),
 });
 
+const createEmptyPlayerData = () => [
+  [{}, {}, {}, {}, {}],
+  [{}, {}, {}, {}, {}],
+];
+
 const normalizeStartRow = (value) => {
   const parsed = Math.floor(Number(value));
   return Number.isFinite(parsed) ? Math.max(MIN_START_ROW, parsed) : MIN_START_ROW;
@@ -92,10 +97,7 @@ const configSnapshot = ({
   });
 
 const PlayerOverlayConfig = () => {
-  const [playerData, setPlayerData] = useState([
-    [{}, {}, {}, {}, {}],
-    [{}, {}, {}, {}, {}],
-  ]);
+  const [playerData, setPlayerData] = useState(createEmptyPlayerData);
   const [selectedPlayerIndices, setSelectedPlayerIndices] = useState([-1, -1]);
   const [teamColors, setTeamColors] = useState(['', '']);
   const [presetId, setPresetId] = useState('tws');
@@ -226,6 +228,15 @@ const PlayerOverlayConfig = () => {
     console.log('saved');
   };
 
+  const resetToDefaults = () => {
+    setPlayerData(createEmptyPlayerData());
+    setSelectedPlayerIndices([-1, -1]);
+    setTeamColors(['', '']);
+    setShowBans(true);
+    setShowPlayerBlurbs({ 0: false, 1: false });
+    setMatchupHistory(createEmptyMatchupHistory());
+  };
+
   const handleGoogleSheetSync = async () => {
     const row = normalizeStartRow(startRow);
     setStartRow(String(row));
@@ -315,16 +326,21 @@ const PlayerOverlayConfig = () => {
 
   return (
     <div className="config-container">
-      <label className="layout-dropdown">
-        Current Layout:{' '}
-        <select value={presetId} onChange={(event) => setPresetId(event.target.value)}>
-          {Object.entries(PRESETS).map(([id, preset]) => (
-            <option key={id} value={id}>
-              {preset.label}
-            </option>
-          ))}
-        </select>
-      </label>
+      <div className="config-header">
+        <label className="layout-dropdown">
+          Current Layout:{' '}
+          <select value={presetId} onChange={(event) => setPresetId(event.target.value)}>
+            {Object.entries(PRESETS).map(([id, preset]) => (
+              <option key={id} value={id}>
+                {preset.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <button type="button" onClick={resetToDefaults}>
+          Reset to Defaults
+        </button>
+      </div>
       <div className="obs-connection">
         <label>
           IP address
