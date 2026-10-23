@@ -176,6 +176,14 @@ html {
   padding: 5px;
 }
 
+.hide-ban-icons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  margin-top: -15px;
+}
+
 @media screen and (max-width: 400px) {
   .config-container {
     align-items: flex-start;

@@ -82,7 +82,14 @@ const configSnapshot = ({
   showBans,
   matchupHistory,
 }) =>
-  JSON.stringify({ playerData, selectedPlayerIndices, teamColors, presetId, showBans, matchupHistory });
+  JSON.stringify({
+    playerData,
+    selectedPlayerIndices,
+    teamColors,
+    presetId,
+    showBans,
+    matchupHistory,
+  });
 
 const PlayerOverlayConfig = () => {
   const [playerData, setPlayerData] = useState([
@@ -217,10 +224,6 @@ const PlayerOverlayConfig = () => {
     );
     setSavedSnapshot(configSnapshot(config));
     console.log('saved');
-  };
-
-  const toggleShowBans = () => {
-    setShowBans((visible) => !visible);
   };
 
   const handleGoogleSheetSync = async () => {
@@ -489,9 +492,14 @@ const PlayerOverlayConfig = () => {
           </div>
         ))}
       </div>
-      <button className="save-button" type="button" onClick={toggleShowBans}>
-        {showBans ? 'Hide ban icons' : 'Show ban icons'}
-      </button>
+      <label className="hide-ban-icons">
+        Hide ban icons:
+        <input
+          type="checkbox"
+          checked={!showBans}
+          onChange={(event) => setShowBans(!event.target.checked)}
+        />
+      </label>
       <MatchupHistoryConfig
         value={matchupHistory}
         onChange={setMatchupHistory}
