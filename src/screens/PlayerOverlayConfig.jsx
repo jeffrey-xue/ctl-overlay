@@ -82,6 +82,7 @@ const PlayerOverlayConfig = () => {
   const [selectedPlayerIndices, setSelectedPlayerIndices] = useState([-1, -1]);
   const [teamColors, setTeamColors] = useState(['', '']);
   const [presetId, setPresetId] = useState('tws');
+  const [showBans, setShowBans] = useState(true);
 
   const [showPlayerBlurbs, setShowPlayerBlurbs] = useState({ 0: false, 1: false });
   const [matchupHistory, setMatchupHistory] = useState(createEmptyMatchupHistory);
@@ -167,9 +168,7 @@ const PlayerOverlayConfig = () => {
 
   const updateBanSelection = (teamIndex, banIndex, name) => {
     const bans = matchupHistory.bans.map((teamBans, index) =>
-      index === teamIndex
-        ? teamBans.map((ban, slot) => (slot === banIndex ? name : ban))
-        : teamBans
+      index === teamIndex ? teamBans.map((ban, slot) => (slot === banIndex ? name : ban)) : teamBans
     );
     setMatchupHistory((history) => ({ ...history, bans }));
     setPlayerData((players) => applyBanState(players, bans));
@@ -179,12 +178,6 @@ const PlayerOverlayConfig = () => {
     const newSelectedPlayers = [...selectedPlayerIndices];
     newSelectedPlayers[teamIndex] = playerIndex;
     setSelectedPlayerIndices(newSelectedPlayers);
-  };
-
-  const createTeamColorInputOnChange = (teamIndex, color) => {
-    const newTeamColors = [...teamColors];
-    newTeamColors[teamIndex] = color;
-    setTeamColors(newTeamColors);
   };
 
   const saveToLocalStorage = () => {
@@ -199,10 +192,15 @@ const PlayerOverlayConfig = () => {
         selectedPlayerIndices,
         teamColors,
         presetId,
+        showBans,
         matchupHistory,
       })
     );
     console.log('saved');
+  };
+
+  const toggleShowBans = () => {
+    setShowBans((visible) => !visible);
   };
 
   const handleGoogleSheetSync = async () => {
@@ -236,12 +234,14 @@ const PlayerOverlayConfig = () => {
         selectedPlayerIndices: newSelectedPlayers,
         teamColors: newTeamColors,
         presetId: newPresetId,
+        showBans: newShowBans,
         matchupHistory: newMatchupHistory,
       } = JSON.parse(localStorage.getItem('ctl-player-overlay-config'));
       setPlayerData((playerData) => newPlayerData ?? playerData);
       setSelectedPlayerIndices((selectedIndices) => newSelectedPlayers ?? selectedIndices);
       setTeamColors((teamColors) => newTeamColors ?? teamColors);
       setPresetId((presetId) => (PRESETS[newPresetId] ? newPresetId : presetId));
+      setShowBans(newShowBans ?? true);
       if (
         newPlayerData &&
         newMatchupHistory?.bans?.length === 2 &&
@@ -406,7 +406,7 @@ const PlayerOverlayConfig = () => {
               Clear Selected Player
             </button>
 
-            <button
+            {/* <button
               onClick={() =>
                 setShowPlayerBlurbs((showBlurbs) => ({
                   ...showBlurbs,
@@ -415,7 +415,7 @@ const PlayerOverlayConfig = () => {
               }
             >
               {showPlayerBlurbs[teamIndex] ? 'Hide' : 'Show'} player blurbs
-            </button>
+            </button> */}
             {showPlayerBlurbs[teamIndex] &&
               players.map((player, playerIndex) => (
                 <input
@@ -426,19 +426,38 @@ const PlayerOverlayConfig = () => {
                 />
               ))}
 
-            <span>Team Color Hex:</span>
-            <input
-              placeholder={`Team ${teamIndex + 1} Color Hex`}
-              value={teamColors[teamIndex]}
-              onChange={(e) => createTeamColorInputOnChange(teamIndex, e.target.value)}
-            />
+            <div className="matchup-team-bans-config">
+              {matchupHistory.bans[teamIndex].map((ban, banIndex) => (
+                <label key={banIndex}>
+                  Ban {banIndex + 1}
+                  <select
+                    name={`ban-team-${teamIndex + 1}-${banIndex + 1}`}
+                    value={ban}
+                    onChange={(event) =>
+                      updateBanSelection(teamIndex, banIndex, event.target.value)
+                    }
+                  >
+                    <option value="">Select player</option>
+                    {playerData[teamIndex].map((player, playerIndex) =>
+                      player.name ? (
+                        <option key={`${player.name}-${playerIndex}`} value={player.name}>
+                          {player.name}
+                        </option>
+                      ) : null
+                    )}
+                  </select>
+                </label>
+              ))}
+            </div>
           </div>
         ))}
       </div>
+      <button className="save-button" type="button" onClick={toggleShowBans}>
+        {showBans ? 'Hide ban icons' : 'Show ban icons'}
+      </button>
       <MatchupHistoryConfig
         value={matchupHistory}
         onChange={setMatchupHistory}
-        onBanChange={updateBanSelection}
         teamPlayerNames={playerData.map((team) => team.map((player) => player.name?.trim() ?? ''))}
       />
       <button className="save-button" onClick={saveToLocalStorage}>

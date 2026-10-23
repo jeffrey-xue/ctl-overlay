@@ -22,6 +22,7 @@ const PlayerOverlay = () => {
   const [selectedPlayerIndices, setSelectedPlayerIndices] = useState([-1, -1]);
   const [teamColors, setTeamColors] = useState(['', '']);
   const [presetId, setPresetId] = useState('ctl');
+  const [showBans, setShowBans] = useState(true);
   const [scene, setScene] = useState('');
   const [matchupHistory, setMatchupHistory] = useState(null);
 
@@ -46,6 +47,7 @@ const PlayerOverlay = () => {
   const teams = trimmedData.map((team, teamIndex) =>
     team.map((player) => ({
       ...player,
+      banned: showBans && player.banned,
       teamColor: teamColors[teamIndex],
       ...(profiles[player.name?.trim().toLowerCase()] ?? {}),
     }))
@@ -67,12 +69,14 @@ const PlayerOverlay = () => {
         selectedPlayerIndices: newSelectedPlayers,
         teamColors: newTeamColors,
         presetId: newPresetId,
+        showBans: newShowBans,
         matchupHistory: newMatchupHistory,
       } = JSON.parse(localStorage.getItem('ctl-player-overlay-config'));
       setPlayerData((playerData) => newPlayerData ?? playerData);
       setSelectedPlayerIndices((selectedIndices) => newSelectedPlayers ?? selectedIndices);
       setTeamColors((teamColors) => newTeamColors ?? teamColors);
       setPresetId((presetId) => (PRESETS[newPresetId] ? newPresetId : presetId));
+      setShowBans(newShowBans ?? true);
       if (Array.isArray(newMatchupHistory?.matchups)) {
         setMatchupHistory(newMatchupHistory);
       }

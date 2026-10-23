@@ -24,7 +24,7 @@ const formatMatchupHistory = (matchups, bans, currentMatch) => {
   return `\`\`\`\n${currentMatch.type.replace(/\r?\n/g, ' ')}\n\n${banLines.join('\n')}\n\n${lines.join('\n')}\n\nFinal score: ${country(currentMatch.team1)} (#${currentMatch.team1.seed || 'SEED'}) ${total('left')} - ${total('right')} ${country(currentMatch.team2)} (#${currentMatch.team2.seed || 'SEED'})\n\`\`\``;
 };
 
-const MatchupHistoryConfig = ({ value, onChange, onBanChange, teamPlayerNames }) => {
+const MatchupHistoryConfig = ({ value, onChange, teamPlayerNames }) => {
   const [exportStatus, setExportStatus] = useState('');
 
   const exportHistory = async () => {
@@ -40,10 +40,6 @@ const MatchupHistoryConfig = ({ value, onChange, onBanChange, teamPlayerNames })
     }
   };
 
-  const updateBan = (teamIndex, banIndex, name) => {
-    onBanChange(teamIndex, banIndex, name);
-  };
-
   const updateMatchup = (gameIndex, field, fieldValue) => {
     const matchups = value.matchups.map((matchup) => ({ ...matchup }));
     matchups[gameIndex][field] = fieldValue;
@@ -53,38 +49,17 @@ const MatchupHistoryConfig = ({ value, onChange, onBanChange, teamPlayerNames })
   return (
     <section className="matchup-history-config">
       <h3>
-        Previous Matchups{' '}
+        Matchups{' '}
         <button type="button" onClick={exportHistory}>
           Copy to Clipboard
         </button>
         {exportStatus && <span role="alert">{exportStatus}</span>}
       </h3>
       <div className="matchup-teams-config">
-        {value.bans.map((teamBans, teamIndex) => {
+        {Array.from({ length: 2 }, (_, teamIndex) => {
           const side = teamIndex === 0 ? 'left' : 'right';
           return (
             <div className="matchup-team-config" key={teamIndex}>
-              <div className="matchup-team-bans-config">
-                {teamBans.map((ban, banIndex) => (
-                  <label key={banIndex}>
-                    Ban {banIndex + 1}
-                    <select
-                      name={`ban-team-${teamIndex + 1}-${banIndex + 1}`}
-                      value={ban}
-                      onChange={(event) => updateBan(teamIndex, banIndex, event.target.value)}
-                    >
-                      <option value="">Select player</option>
-                      {teamPlayerNames[teamIndex].map((name, playerIndex) =>
-                        name ? (
-                          <option key={`${name}-${playerIndex}`} value={name}>
-                            {name}
-                          </option>
-                        ) : null
-                      )}
-                    </select>
-                  </label>
-                ))}
-              </div>
               <div className="matchup-team-rows-config">
                 {value.matchups.map((matchup, gameIndex) => (
                   <div className="matchup-team-row" key={gameIndex}>
