@@ -81,20 +81,8 @@ const configSnapshot = ({
   presetId,
   showBans,
   matchupHistory,
-}) => {
-  const { matchups, ...history } = matchupHistory;
-  return JSON.stringify({
-    playerData,
-    selectedPlayerIndices,
-    teamColors,
-    presetId,
-    showBans,
-    matchupHistory: {
-      ...history,
-      matchups: matchups.map(({ leftScore, rightScore, ...matchup }) => matchup),
-    },
-  });
-};
+}) =>
+  JSON.stringify({ playerData, selectedPlayerIndices, teamColors, presetId, showBans, matchupHistory });
 
 const PlayerOverlayConfig = () => {
   const [playerData, setPlayerData] = useState([
@@ -509,11 +497,10 @@ const PlayerOverlayConfig = () => {
         onChange={setMatchupHistory}
         teamPlayerNames={playerData.map((team) => team.map((player) => player.name?.trim() ?? ''))}
       />
-      <button
-        className={`save-button${savedSnapshot !== null && currentSnapshot !== savedSnapshot ? ' save-button--unsaved' : ''}`}
-        onClick={saveToLocalStorage}
-      >
-        Save
+      <button className="save-button" onClick={saveToLocalStorage}>
+        {savedSnapshot !== null && currentSnapshot !== savedSnapshot
+          ? 'Save (new unsaved changes)'
+          : 'Save'}
       </button>
     </div>
   );
