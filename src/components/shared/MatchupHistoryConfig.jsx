@@ -12,16 +12,16 @@ const formatMatchupHistory = (matchups, bans, currentMatch) => {
     .map((teamBans, index) => {
       const players = teamBans.filter(Boolean).join(', ');
       return players
-        ? `${country(currentMatch[`team${index + 1}`])} bans ${players.toUpperCase()}`
+        ? `${country(currentMatch[`team${2 - index}`]).toUpperCase()} bans ${players.toUpperCase()}`
         : '';
     })
     .filter(Boolean);
   const lines = rows.map(
     (m) =>
-      `${m.leftPlayer.padEnd(leftWidth)} ${`${m.leftScore || 0} - ${m.rightScore || 0}`.padEnd(scoreWidth)}${m.rightPlayer.padStart(rightWidth)}`
+      `${m.leftPlayer.toUpperCase().padEnd(leftWidth)} ${`${m.leftScore || 0} - ${m.rightScore || 0}`.padEnd(scoreWidth)}${m.rightPlayer.toUpperCase().padStart(rightWidth)}`
   );
 
-  return `\`\`\`\n${currentMatch.type.replace(/\r?\n/g, ' ')}\n\n${banLines.join('\n')}\n\n${lines.join('\n')}\n\nFinal score: ${country(currentMatch.team1)} (#${currentMatch.team1.seed || 'SEED'}) ${total('left')} - ${total('right')} ${country(currentMatch.team2)} (#${currentMatch.team2.seed || 'SEED'})\n\`\`\``;
+  return `\`\`\`\n${currentMatch.type.replace(/\r?\n/g, ' ')}\n\n${banLines.join('\n')}\n\n${lines.join('\n')}\n\nFinal score: ${country(currentMatch.team1).toUpperCase()} (#${currentMatch.team1.seed || 'SEED'}) ${total('left')} - ${total('right')} ${country(currentMatch.team2).toUpperCase()} (#${currentMatch.team2.seed || 'SEED'})\n\`\`\``;
 };
 
 const MatchupHistoryConfig = ({ value, onChange, teamPlayerNames }) => {
