@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react';
 import { PRESETS } from '../config/presets';
 import MatchupHistoryConfig from '../components/shared/MatchupHistoryConfig';
 import { connectObs, disconnectObs, setMatchupScores } from '../util/obs';
-import { sendMatchesToObs, syncGoogleSheet as syncGoogleSheetData } from '../util/googleSheets';
+import {
+  MIN_START_ROW,
+  sendMatchesToObs,
+  syncGoogleSheet as syncGoogleSheetData,
+} from '../util/googleSheets';
 
 const createEmptyMatchupHistory = () => ({
   bans: [
@@ -16,6 +20,11 @@ const createEmptyMatchupHistory = () => ({
     rightPlayer: '',
   })),
 });
+
+const normalizeStartRow = (value) => {
+  const parsed = Math.floor(Number(value));
+  return Number.isFinite(parsed) ? Math.max(MIN_START_ROW, parsed) : MIN_START_ROW;
+};
 
 const matchupHistoryForRoster = (history, playerData) => {
   const teamNames = playerData.map(
@@ -54,6 +63,7 @@ const PlayerOverlayConfig = () => {
     status: 'disconnected',
     error: '',
   });
+  const [startRow, setStartRow] = useState(String(MIN_START_ROW));
   const portNumber = Number(obsConnection.port);
   const validObsPort = Number.isInteger(portNumber) && portNumber >= 1 && portNumber <= 65535;
 
@@ -154,9 +164,11 @@ const PlayerOverlayConfig = () => {
   };
 
   const handleGoogleSheetSync = async () => {
+    const row = normalizeStartRow(startRow);
+    setStartRow(String(row));
     setSyncStatus('syncing');
     try {
-      const matches = await syncGoogleSheetData();
+      const matches = await syncGoogleSheetData(row);
       const savedConfig = JSON.parse(
         window.localStorage.getItem('ctl-player-overlay-config') || '{}'
       );
@@ -169,7 +181,8 @@ const PlayerOverlayConfig = () => {
         await sendMatchesToObs(matches);
       }
       setSyncStatus('success');
-    } catch {
+    } catch (error) {
+      console.error('Google Sheets sync failed:', error);
       setSyncStatus('failure');
     }
   };
@@ -281,14 +294,25 @@ const PlayerOverlayConfig = () => {
         <button type="button" onClick={handleGoogleSheetSync} disabled={syncStatus === 'syncing'}>
           {syncStatus === 'syncing' ? 'Syncing…' : 'Sync Production Spreadsheet'}
         </button>
+        <label className="google-sheets-start-row">
+          Start row
+          <input
+            type="number"
+            min={MIN_START_ROW}
+            step="1"
+            value={startRow}
+            onChange={(event) => setStartRow(event.target.value)}
+            onBlur={() => setStartRow(String(normalizeStartRow(startRow)))}
+            disabled={syncStatus === 'syncing'}
+          />
+        </label>
         {syncStatus === 'success' && (
           <span>
-            {' '}
             Sheet synced
             {obsConnection.status !== 'connected' && ' (OBS not connected; data not sent)'}
           </span>
         )}
-        {syncStatus === 'failure' && <span className="obs-connection-error"> Sync failed</span>}
+        {syncStatus === 'failure' && <span className="obs-connection-error">Sync failed</span>}
       </div>
       <div className="player-config">
         {playerData.map((players, teamIndex) => (

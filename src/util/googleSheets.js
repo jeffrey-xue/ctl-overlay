@@ -3,7 +3,7 @@ import { setText, setBrowserSourceUrl } from './obs';
 // Mastersheet: https://docs.google.com/spreadsheets/d/1wiONK_ZJGG8KtwXAYbPyos_0rrVJZpzknCsn5urEe6U/
 const SPREADSHEET_ID = '1wiONK_ZJGG8KtwXAYbPyos_0rrVJZpzknCsn5urEe6U';
 const SHEET_NAME = 'schedule';
-const MATCHES_RANGE = 'A3:J11';
+export const MIN_START_ROW = 3;
 const MATCH_COUNT = 9;
 
 const cellText = (cell) => {
@@ -46,8 +46,10 @@ async function fetchTable(extraParams = {}) {
   return table;
 }
 
-export async function syncGoogleSheet() {
-  const matchTable = await fetchTable({ range: MATCHES_RANGE, headers: '0' });
+export async function syncGoogleSheet(startRow = MIN_START_ROW) {
+  const firstRow = Math.max(MIN_START_ROW, Math.floor(Number(startRow)) || MIN_START_ROW);
+  const range = `A${firstRow}:J${firstRow + MATCH_COUNT - 1}`;
+  const matchTable = await fetchTable({ range, headers: '0' });
 
   const matches = Array.from({ length: MATCH_COUNT }, (_, row) => {
     const cells = Array.from({ length: 10 }, (_, col) => cellText(matchTable.rows[row]?.c?.[col]));
