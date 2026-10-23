@@ -74,6 +74,28 @@ const addPlayerBansToHistory = (history, playerData) => ({
   }),
 });
 
+const configSnapshot = ({
+  playerData,
+  selectedPlayerIndices,
+  teamColors,
+  presetId,
+  showBans,
+  matchupHistory,
+}) => {
+  const { matchups, ...history } = matchupHistory;
+  return JSON.stringify({
+    playerData,
+    selectedPlayerIndices,
+    teamColors,
+    presetId,
+    showBans,
+    matchupHistory: {
+      ...history,
+      matchups: matchups.map(({ leftScore, rightScore, ...matchup }) => matchup),
+    },
+  });
+};
+
 const PlayerOverlayConfig = () => {
   const [playerData, setPlayerData] = useState([
     [{}, {}, {}, {}, {}],
@@ -86,6 +108,7 @@ const PlayerOverlayConfig = () => {
 
   const [showPlayerBlurbs, setShowPlayerBlurbs] = useState({ 0: false, 1: false });
   const [matchupHistory, setMatchupHistory] = useState(createEmptyMatchupHistory);
+  const [savedSnapshot, setSavedSnapshot] = useState(null);
   const [syncStatus, setSyncStatus] = useState('idle');
   const [obsConnection, setObsConnection] = useState({
     ip: '127.0.0.1',
@@ -96,6 +119,14 @@ const PlayerOverlayConfig = () => {
   const [startRow, setStartRow] = useState(String(MIN_START_ROW));
   const portNumber = Number(obsConnection.port);
   const validObsPort = Number.isInteger(portNumber) && portNumber >= 1 && portNumber <= 65535;
+  const currentSnapshot = configSnapshot({
+    playerData,
+    selectedPlayerIndices,
+    teamColors,
+    presetId,
+    showBans,
+    matchupHistory,
+  });
 
   const toggleObsConnection = async () => {
     setObsConnection((connection) => ({ ...connection, error: '' }));
@@ -184,18 +215,19 @@ const PlayerOverlayConfig = () => {
     const savedConfig = JSON.parse(
       window.localStorage.getItem('ctl-player-overlay-config') || '{}'
     );
+    const config = {
+      playerData,
+      selectedPlayerIndices,
+      teamColors,
+      presetId,
+      showBans,
+      matchupHistory,
+    };
     window.localStorage.setItem(
       'ctl-player-overlay-config',
-      JSON.stringify({
-        ...savedConfig,
-        playerData,
-        selectedPlayerIndices,
-        teamColors,
-        presetId,
-        showBans,
-        matchupHistory,
-      })
+      JSON.stringify({ ...savedConfig, ...config })
     );
+    setSavedSnapshot(configSnapshot(config));
     console.log('saved');
   };
 
@@ -237,23 +269,40 @@ const PlayerOverlayConfig = () => {
         showBans: newShowBans,
         matchupHistory: newMatchupHistory,
       } = JSON.parse(localStorage.getItem('ctl-player-overlay-config'));
-      setPlayerData((playerData) => newPlayerData ?? playerData);
-      setSelectedPlayerIndices((selectedIndices) => newSelectedPlayers ?? selectedIndices);
-      setTeamColors((teamColors) => newTeamColors ?? teamColors);
-      setPresetId((presetId) => (PRESETS[newPresetId] ? newPresetId : presetId));
-      setShowBans(newShowBans ?? true);
-      if (
+      const loadedPlayerData = newPlayerData ?? playerData;
+      const loadedSelectedPlayers = newSelectedPlayers ?? selectedPlayerIndices;
+      const loadedTeamColors = newTeamColors ?? teamColors;
+      const loadedPresetId = PRESETS[newPresetId] ? newPresetId : presetId;
+      const loadedShowBans = newShowBans ?? true;
+      const hasSavedMatchupHistory =
         newPlayerData &&
         newMatchupHistory?.bans?.length === 2 &&
-        newMatchupHistory?.matchups?.length === 5
-      ) {
-        const history = addPlayerBansToHistory(
-          matchupHistoryForRoster(newMatchupHistory, newPlayerData),
-          newPlayerData
-        );
-        setMatchupHistory(history);
-        setPlayerData((players) => applyBanState(players, history.bans));
-      }
+        newMatchupHistory?.matchups?.length === 5;
+      const loadedHistory = hasSavedMatchupHistory
+        ? addPlayerBansToHistory(
+            matchupHistoryForRoster(newMatchupHistory, newPlayerData),
+            newPlayerData
+          )
+        : matchupHistory;
+      const loadedPlayers = hasSavedMatchupHistory
+        ? applyBanState(loadedPlayerData, loadedHistory.bans)
+        : loadedPlayerData;
+      setPlayerData(loadedPlayers);
+      setSelectedPlayerIndices(loadedSelectedPlayers);
+      setTeamColors(loadedTeamColors);
+      setPresetId(loadedPresetId);
+      setShowBans(loadedShowBans);
+      setMatchupHistory(loadedHistory);
+      setSavedSnapshot(
+        configSnapshot({
+          playerData: loadedPlayers,
+          selectedPlayerIndices: loadedSelectedPlayers,
+          teamColors: loadedTeamColors,
+          presetId: loadedPresetId,
+          showBans: loadedShowBans,
+          matchupHistory: loadedHistory,
+        })
+      );
       console.log('successfully fetched from localstorage');
     } catch (e) {
       console.log('failed to fetch from localstorage');
@@ -460,7 +509,10 @@ const PlayerOverlayConfig = () => {
         onChange={setMatchupHistory}
         teamPlayerNames={playerData.map((team) => team.map((player) => player.name?.trim() ?? ''))}
       />
-      <button className="save-button" onClick={saveToLocalStorage}>
+      <button
+        className={`save-button${savedSnapshot !== null && currentSnapshot !== savedSnapshot ? ' save-button--unsaved' : ''}`}
+        onClick={saveToLocalStorage}
+      >
         Save
       </button>
     </div>

@@ -176,6 +176,17 @@ html {
   padding: 5px;
 }
 
+.save-button--unsaved {
+  animation: unsaved-save-highlight 0.8s infinite alternate;
+}
+
+@keyframes unsaved-save-highlight {
+  to {
+    background: #f4320b99;
+    box-shadow: 0 0 8px 3px #f4320b99;
+  }
+}
+
 @media screen and (max-width: 400px) {
   .config-container {
     align-items: flex-start;
