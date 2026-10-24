@@ -27,7 +27,13 @@ const PlayerOverlay = () => {
   const [matchupHistory, setMatchupHistory] = useState(null);
 
   const trimmedData = playerData.map(trimTeam);
-  const profiles = usePlayerProfiles(trimmedData);
+  const renderData = trimmedData.map((team) => team.filter(isActive));
+  const renderSelectedPlayerIndices = selectedPlayerIndices.map((selected, teamIndex) => {
+    const team = trimmedData[teamIndex];
+    if (selected < 0 || !isActive(team[selected])) return -1;
+    return team.slice(0, selected).filter(isActive).length;
+  });
+  const profiles = usePlayerProfiles(renderData);
   const matchups = matchupHistory?.matchups ?? [];
   const matchupProfiles = usePlayerProfiles([
     matchups.map((matchup) => ({ name: matchup.leftPlayer })),
@@ -44,7 +50,7 @@ const PlayerOverlay = () => {
   };
   const preset = PRESETS[presetId] ?? PRESETS.ctl;
   const Renderer = preset.Renderer;
-  const teams = trimmedData.map((team, teamIndex) =>
+  const teams = renderData.map((team, teamIndex) =>
     team.map((player) => ({
       ...player,
       banned: showBans && player.banned,
@@ -103,7 +109,7 @@ const PlayerOverlay = () => {
       <Renderer
         teams={teams}
         scene={scene}
-        selectedPlayerIndices={selectedPlayerIndices}
+        selectedPlayerIndices={renderSelectedPlayerIndices}
         preset={preset}
         matchupHistory={matchupHistoryWithAvatars}
       />
