@@ -21,6 +21,11 @@ const createEmptyMatchupHistory = () => ({
   })),
 });
 
+const createEmptyPlayerData = () => [
+  [{}, {}, {}, {}, {}],
+  [{}, {}, {}, {}, {}],
+];
+
 const normalizeStartRow = (value) => {
   const parsed = Math.floor(Number(value));
   return Number.isFinite(parsed) ? Math.max(MIN_START_ROW, parsed) : MIN_START_ROW;
@@ -92,16 +97,16 @@ const configSnapshot = ({
   });
 
 const PlayerOverlayConfig = () => {
-  const [playerData, setPlayerData] = useState([
-    [{}, {}, {}, {}, {}],
-    [{}, {}, {}, {}, {}],
-  ]);
+  const [playerData, setPlayerData] = useState(createEmptyPlayerData);
   const [selectedPlayerIndices, setSelectedPlayerIndices] = useState([-1, -1]);
   const [teamColors, setTeamColors] = useState(['', '']);
   const [presetId, setPresetId] = useState('tws');
   const [showBans, setShowBans] = useState(true);
 
   const [showPlayerBlurbs, setShowPlayerBlurbs] = useState({ 0: false, 1: false });
+  const [playerImports, setPlayerImports] = useState(['', '']);
+  const [playerImportErrors, setPlayerImportErrors] = useState(['', '']);
+  const [importTeamIndex, setImportTeamIndex] = useState(null);
   const [matchupHistory, setMatchupHistory] = useState(createEmptyMatchupHistory);
   const [savedSnapshot, setSavedSnapshot] = useState(null);
   const [syncStatus, setSyncStatus] = useState('idle');
@@ -174,6 +179,47 @@ const PlayerOverlayConfig = () => {
     setMatchupHistory(history);
   };
 
+  const closePlayerImport = (teamIndex) => {
+    setPlayerImports((imports) =>
+      imports.map((value, index) => (index === teamIndex ? '' : value))
+    );
+    setPlayerImportErrors((errors) =>
+      errors.map((error, index) => (index === teamIndex ? '' : error))
+    );
+    setImportTeamIndex(null);
+  };
+
+  const importPlayers = (teamIndex) => {
+    const names = playerImports[teamIndex]
+      .split(/\r?\n/)
+      .map((name) => name.trim())
+      .filter(Boolean);
+
+    if (names.length > playerData[teamIndex].length) {
+      setPlayerImportErrors((errors) =>
+        errors.map((error, index) =>
+          index === teamIndex
+            ? `Enter no more than ${playerData[teamIndex].length} player names.`
+            : error
+        )
+      );
+      return;
+    }
+
+    const newPlayers = playerData.map((team, index) =>
+      index === teamIndex
+        ? team.map((player, playerIndex) => ({
+            ...player,
+            name: names[playerIndex] ?? '',
+          }))
+        : team
+    );
+    const history = matchupHistoryForRoster(matchupHistory, newPlayers);
+    setPlayerData(applyBanState(newPlayers, history.bans));
+    setMatchupHistory(history);
+    closePlayerImport(teamIndex);
+  };
+
   const changePlayerBlurb = (teamIndex, playerIndex, blurb) => {
     const newPlayers = [...playerData].map((e) => [...e]);
     newPlayers[teamIndex][playerIndex] = {
@@ -224,6 +270,15 @@ const PlayerOverlayConfig = () => {
     );
     setSavedSnapshot(configSnapshot(config));
     console.log('saved');
+  };
+
+  const resetToDefaults = () => {
+    setPlayerData(createEmptyPlayerData());
+    setSelectedPlayerIndices([-1, -1]);
+    setTeamColors(['', '']);
+    setShowBans(true);
+    setShowPlayerBlurbs({ 0: false, 1: false });
+    setMatchupHistory(createEmptyMatchupHistory());
   };
 
   const handleGoogleSheetSync = async () => {
@@ -315,16 +370,21 @@ const PlayerOverlayConfig = () => {
 
   return (
     <div className="config-container">
-      <label className="layout-dropdown">
-        Current Layout:{' '}
-        <select value={presetId} onChange={(event) => setPresetId(event.target.value)}>
-          {Object.entries(PRESETS).map(([id, preset]) => (
-            <option key={id} value={id}>
-              {preset.label}
-            </option>
-          ))}
-        </select>
-      </label>
+      <div className="config-header">
+        <label className="layout-dropdown">
+          Current Layout:{' '}
+          <select value={presetId} onChange={(event) => setPresetId(event.target.value)}>
+            {Object.entries(PRESETS).map(([id, preset]) => (
+              <option key={id} value={id}>
+                {preset.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <button type="button" onClick={resetToDefaults}>
+          Reset to Defaults
+        </button>
+      </div>
       <div className="obs-connection">
         <label>
           IP address
@@ -445,6 +505,13 @@ const PlayerOverlayConfig = () => {
             >
               Clear Selected Player
             </button>
+            <button
+              className="player-import-trigger"
+              type="button"
+              onClick={() => setImportTeamIndex(teamIndex)}
+            >
+              Import Players
+            </button>
 
             {/* <button
               onClick={() =>
@@ -492,6 +559,56 @@ const PlayerOverlayConfig = () => {
           </div>
         ))}
       </div>
+      {importTeamIndex !== null && (
+        <dialog
+          className="player-import-dialog"
+          ref={(dialog) => {
+            if (dialog && !dialog.open) dialog.showModal();
+          }}
+          onCancel={() => closePlayerImport(importTeamIndex)}
+        >
+          <form
+            className="player-import"
+            onSubmit={(event) => {
+              event.preventDefault();
+              importPlayers(importTeamIndex);
+            }}
+          >
+            <h3>Import Team {importTeamIndex + 1} Players</h3>
+            <label htmlFor={`player-import-${importTeamIndex}`}>
+              Enter one player name per line
+            </label>
+            <textarea
+              id={`player-import-${importTeamIndex}`}
+              rows="8"
+              autoFocus
+              value={playerImports[importTeamIndex]}
+              onChange={(event) => {
+                const value = event.target.value;
+                setPlayerImports((imports) =>
+                  imports.map((current, index) =>
+                    index === importTeamIndex ? value : current
+                  )
+                );
+                setPlayerImportErrors((errors) =>
+                  errors.map((error, index) => (index === importTeamIndex ? '' : error))
+                );
+              }}
+            />
+            {playerImportErrors[importTeamIndex] && (
+              <span className="obs-connection-error">
+                {playerImportErrors[importTeamIndex]}
+              </span>
+            )}
+            <div className="player-import-actions">
+              <button type="button" onClick={() => closePlayerImport(importTeamIndex)}>
+                Cancel
+              </button>
+              <button type="submit">Import Team {importTeamIndex + 1}</button>
+            </div>
+          </form>
+        </dialog>
+      )}
       <label className="hide-ban-icons">
         Hide ban icons:
         <input

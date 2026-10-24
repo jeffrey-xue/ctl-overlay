@@ -36,6 +36,13 @@ html {
   margin: 0;
 }
 
+.config-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
 .layout-dropdown select {
   font-size: 1rem;
 }
@@ -168,6 +175,48 @@ html {
 
 .player-col h3 {
   text-align: center;
+}
+
+.player-import-trigger {
+  margin: 0 0 8px;
+}
+
+.player-import-dialog {
+  box-sizing: border-box;
+  width: min(480px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  padding: 20px;
+  border: 1px solid #888;
+  border-radius: 6px;
+}
+
+.player-import-dialog::backdrop {
+  background: rgb(0 0 0 / 55%);
+}
+
+.player-import {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+}
+
+.player-import h3 {
+  margin: 0 0 8px;
+}
+
+.player-import textarea {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+  resize: vertical;
+}
+
+.player-import-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
 }
 
 .save-button {
