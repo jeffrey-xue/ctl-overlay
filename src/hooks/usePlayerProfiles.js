@@ -1,6 +1,29 @@
 import { useEffect, useState } from 'react';
 import { fetchProxied } from '../util/fetchProxied';
 
+const TR_CACHE_KEY = 'ctl-player-tr-cache-v1';
+const profileRequests = new Map();
+
+const readTRCache = () => {
+  try {
+    const cache = JSON.parse(localStorage.getItem(TR_CACHE_KEY) || '{}');
+    return cache && typeof cache === 'object' && !Array.isArray(cache) ? cache : {};
+  } catch (error) {
+    console.error('Could not read cached TETR.IO TR values.', error);
+    return {};
+  }
+};
+
+const writeCachedTR = (username, tr) => {
+  try {
+    const cache = readTRCache();
+    cache[username] = tr;
+    localStorage.setItem(TR_CACHE_KEY, JSON.stringify(cache));
+  } catch (error) {
+    console.error('Could not save cached TETR.IO TR value.', error);
+  }
+};
+
 const fetchPlayerProfile = async (username) => {
   const encodedUsername = encodeURIComponent(username.toLowerCase());
   const [leagueRes, userRes] = await Promise.all([
@@ -33,26 +56,58 @@ const fetchPlayerProfile = async (username) => {
   return { avatarUrl, leagueStats: leagueRes.data };
 };
 
+const loadPlayerProfile = (username) => {
+  const key = username.toLowerCase();
+  const existingRequest = profileRequests.get(key);
+  if (existingRequest) return existingRequest;
+
+  const request = fetchPlayerProfile(username)
+    .then((profile) => {
+      if (Number.isFinite(profile.leagueStats?.tr)) {
+        writeCachedTR(key, profile.leagueStats.tr);
+      }
+      return profile;
+    })
+    .finally(() => profileRequests.delete(key));
+  profileRequests.set(key, request);
+  return request;
+};
+
 const usePlayerProfiles = (teams) => {
   const [profiles, setProfiles] = useState({});
-  const usernames = teams
-    .flat()
-    .map((player) => player?.name?.trim())
-    .filter(Boolean);
-  const usernamesKey = [...new Set(usernames.map((name) => name.toLowerCase()))].sort().join('|');
+  const rosterKey = JSON.stringify(
+    teams.map((team) => team.map((player) => player?.name?.trim().toLowerCase() ?? ''))
+  );
 
   useEffect(() => {
     let isCurrent = true;
-    const uniqueUsernames = usernamesKey.split('|').filter(Boolean);
-    setProfiles({});
+    const uniqueUsernames = [...new Set(JSON.parse(rosterKey).flat().filter(Boolean))].sort();
+    const cache = readTRCache();
+    const cachedProfiles = Object.fromEntries(
+      uniqueUsernames.flatMap((username) => {
+        const tr = cache[username];
+        return Number.isFinite(tr)
+          ? [[username, { avatarUrl: null, leagueStats: { tr } }]]
+          : [];
+      })
+    );
+    setProfiles(cachedProfiles);
 
     Promise.all(
       uniqueUsernames.map(async (username) => {
+        const cachedProfile = cachedProfiles[username];
+
         try {
-          return [username.toLowerCase(), await fetchPlayerProfile(username)];
+          const profile = await loadPlayerProfile(username);
+          return [
+            username,
+            profile.leagueStats?.tr == null && cachedProfile
+              ? { ...profile, leagueStats: cachedProfile.leagueStats }
+              : profile,
+          ];
         } catch (error) {
           console.error(`Could not load TETR.IO profile data for "${username}".`, error);
-          return [username.toLowerCase(), { avatarUrl: null, leagueStats: null }];
+          return [username, cachedProfile ?? { avatarUrl: null, leagueStats: null }];
         }
       })
     ).then((entries) => {
@@ -62,7 +117,7 @@ const usePlayerProfiles = (teams) => {
     return () => {
       isCurrent = false;
     };
-  }, [usernamesKey]);
+  }, [rosterKey]);
 
   return profiles;
 };

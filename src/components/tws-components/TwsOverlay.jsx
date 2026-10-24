@@ -12,8 +12,7 @@ const TwsOverlay = ({ teams, scene, selectedPlayerIndices, preset, matchupHistor
   const previouslyFocusedPlayers = useRef([-1, -1]);
   const previousScene = useRef(scene);
   const [isLeavingFocus, setIsLeavingFocus] = useState(false);
-  const teamSizes = teams.map((team) => team.length);
-  const positions = buildPlayerPositions(scene, teamSizes, selectedPlayerIndices, preset.layout);
+  const positions = buildPlayerPositions(scene, teams, selectedPlayerIndices, preset.layout);
 
   useLayoutEffect(() => {
     if (scene === 'players-chosen') {

@@ -4,8 +4,7 @@ import buildPlayerPositions from '../shared/buildPlayerPositions';
 import './OneVsOneOverlay.css';
 
 const OneVsOneOverlay = ({ teams, scene, selectedPlayerIndices, preset }) => {
-  const teamSizes = teams.map((team) => team.length);
-  const positions = buildPlayerPositions(scene, teamSizes, selectedPlayerIndices, preset.layout);
+  const positions = buildPlayerPositions(scene, teams, selectedPlayerIndices, preset.layout);
 
   return (
     <main

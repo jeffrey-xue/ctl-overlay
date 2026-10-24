@@ -4,8 +4,7 @@ import buildPlayerPositions from '../shared/buildPlayerPositions';
 import './CtlOverlay.css';
 
 const CtlOverlay = ({ teams, scene, selectedPlayerIndices, preset }) => {
-  const teamSizes = teams.map((team) => team.length);
-  const positions = buildPlayerPositions(scene, teamSizes, selectedPlayerIndices, preset.layout);
+  const positions = buildPlayerPositions(scene, teams, selectedPlayerIndices, preset.layout);
 
   return (
     <main
