@@ -5,6 +5,7 @@ import { setMatchupScores } from '../util/obs';
 import useObsConnection from '../hooks/useObsConnection';
 import {
   MIN_START_ROW,
+  guessStartRow,
   sendMatchesToObs,
   syncGoogleSheet as syncGoogleSheetData,
 } from '../util/googleSheets';
@@ -376,6 +377,15 @@ const PlayerOverlayConfig = () => {
   };
 
   useEffect(loadFromLocalStorage, []);
+
+  useEffect(() => {
+    guessStartRow()
+      .then((row) => {
+        if (row === null) return;
+        setStartRow((current) => (current === String(MIN_START_ROW) ? String(row) : current));
+      })
+      .catch((error) => console.error('Could not guess the next match row.', error));
+  }, []);
 
   useEffect(() => {
     if (!confirmingReset) return;
