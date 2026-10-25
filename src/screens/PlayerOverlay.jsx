@@ -59,13 +59,17 @@ const PlayerOverlay = () => {
     }))
   );
 
+  const showScene = (name) => setScene(TRACKED_SCENES.includes(name) ? name : 'players-out');
+
+  useEffect(() => {
+    const onSceneChanged = (event) => showScene(event.detail.name);
+    window.addEventListener('obsSceneChanged', onSceneChanged);
+    return () => window.removeEventListener('obsSceneChanged', onSceneChanged);
+  }, []);
+
+  // fallback in case the event is missed
   useInterval(() => {
-    // there is no emitted event to send
-    if (window.obsstudio) {
-      window.obsstudio.getCurrentScene((data) => {
-        setScene(TRACKED_SCENES.includes(data.name) ? data.name : 'players-out');
-      });
-    }
+    window.obsstudio?.getCurrentScene((data) => showScene(data.name));
   }, 300);
 
   const loadFromLocalStorage = () => {
