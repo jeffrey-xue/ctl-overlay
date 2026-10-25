@@ -261,6 +261,17 @@ html {
   margin-top: 8px;
 }
 
+.record-game {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.record-game input {
+  width: 50px;
+}
+
 .save-button {
   align-self: center;
   width: 80%;

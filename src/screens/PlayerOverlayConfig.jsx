@@ -120,6 +120,7 @@ const PlayerOverlayConfig = () => {
   const [savedSnapshot, setSavedSnapshot] = useState(null);
   const [syncStatus, setSyncStatus] = useState('idle');
   const [confirmingReset, setConfirmingReset] = useState(false);
+  const [gameScores, setGameScores] = useState(['', '']);
   const [syncedTeams, setSyncedTeams] = useState([null, null]);
   const obsConnection = useObsConnection();
   const obsSettings = obsConnection.settings;
@@ -229,6 +230,42 @@ const PlayerOverlayConfig = () => {
     const newSelectedPlayers = [...selectedPlayerIndices];
     newSelectedPlayers[teamIndex] = playerIndex;
     setSelectedPlayerIndices(newSelectedPlayers);
+  };
+
+  const selectedNames = selectedPlayerIndices.map(
+    (playerIndex, teamIndex) => playerData[teamIndex][playerIndex]?.name?.trim() ?? ''
+  );
+  const emptyMatchupRow = matchupHistory.matchups.findIndex(
+    (matchup) => !matchup.leftPlayer && !matchup.rightPlayer
+  );
+  const canRecordGame = selectedNames.every(Boolean) && emptyMatchupRow !== -1;
+
+  const recordGame = () => {
+    if (!canRecordGame) return;
+    setMatchupHistory((history) => ({
+      ...history,
+      matchups: history.matchups.map((matchup, index) =>
+        index === emptyMatchupRow
+          ? {
+              leftPlayer: selectedNames[0],
+              leftScore: gameScores[0],
+              rightScore: gameScores[1],
+              rightPlayer: selectedNames[1],
+            }
+          : matchup
+      ),
+    }));
+    setPlayerData((players) =>
+      players.map((team, teamIndex) =>
+        team.map((player, playerIndex) =>
+          playerIndex === selectedPlayerIndices[teamIndex]
+            ? { ...player, eliminated: true }
+            : player
+        )
+      )
+    );
+    setSelectedPlayerIndices([-1, -1]);
+    setGameScores(['', '']);
   };
 
   const saveToLocalStorage = () => {
@@ -396,10 +433,13 @@ const PlayerOverlayConfig = () => {
   useEffect(() => {
     if (obsConnection.status !== 'connected') return;
 
-    setMatchupScores(matchupHistory.matchups).catch((error) => {
+    setMatchupScores([
+      ...matchupHistory.matchups,
+      { leftScore: gameScores[0], rightScore: gameScores[1] },
+    ]).catch((error) => {
       console.error('Could not update OBS scores.', error);
     });
-  }, [obsConnection.status, matchupHistory.matchups]);
+  }, [obsConnection.status, matchupHistory.matchups, gameScores]);
 
   return (
     <div className="config-container">
@@ -675,6 +715,27 @@ const PlayerOverlayConfig = () => {
           onChange={(event) => setShowBans(!event.target.checked)}
         />
       </label>
+      <div className="record-game">
+        <span>{selectedNames[0] || 'Select Team 1 player'}</span>
+        {gameScores.map((score, teamIndex) => (
+          <input
+            key={teamIndex}
+            type="number"
+            step="any"
+            placeholder="0"
+            value={score}
+            onChange={(event) =>
+              setGameScores((scores) =>
+                scores.map((current, index) => (index === teamIndex ? event.target.value : current))
+              )
+            }
+          />
+        ))}
+        <span>{selectedNames[1] || 'Select Team 2 player'}</span>
+        <button type="button" onClick={recordGame} disabled={!canRecordGame}>
+          {emptyMatchupRow === -1 ? 'Matchups full' : `Record Game ${emptyMatchupRow + 1}`}
+        </button>
+      </div>
       <MatchupHistoryConfig
         value={matchupHistory}
         onChange={setMatchupHistory}
