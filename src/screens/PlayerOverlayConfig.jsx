@@ -79,6 +79,13 @@ const addPlayerBansToHistory = (history, playerData) => ({
   }),
 });
 
+const teamFromRoster = (team, roster) =>
+  team.map((_, playerIndex) => {
+    const name = roster[playerIndex];
+    if (!name) return {};
+    return { ...team.find((player) => samePlayerName(player.name, name)), name };
+  });
+
 const configSnapshot = ({
   playerData,
   selectedPlayerIndices,
@@ -110,6 +117,7 @@ const PlayerOverlayConfig = () => {
   const [matchupHistory, setMatchupHistory] = useState(createEmptyMatchupHistory);
   const [savedSnapshot, setSavedSnapshot] = useState(null);
   const [syncStatus, setSyncStatus] = useState('idle');
+  const [syncedTeams, setSyncedTeams] = useState([null, null]);
   const [obsConnection, setObsConnection] = useState({
     ip: '127.0.0.1',
     port: '4455',
@@ -119,6 +127,7 @@ const PlayerOverlayConfig = () => {
   const [startRow, setStartRow] = useState(String(MIN_START_ROW));
   const portNumber = Number(obsConnection.port);
   const validObsPort = Number.isInteger(portNumber) && portNumber >= 1 && portNumber <= 65535;
+  const rosterPools = syncedTeams.map((team) => team?.roster ?? []);
   const currentSnapshot = configSnapshot({
     playerData,
     selectedPlayerIndices,
@@ -281,6 +290,39 @@ const PlayerOverlayConfig = () => {
     setMatchupHistory(createEmptyMatchupHistory());
   };
 
+  const fillRostersFromMatch = (match, previousMatch) => {
+    const teams = [match.team1, match.team2];
+    const previousTeams = [previousMatch?.team1, previousMatch?.team2];
+    setSyncedTeams(teams);
+
+    const newPlayers = playerData.map((team, teamIndex) => {
+      const { team: teamName, roster } = teams[teamIndex];
+      if (roster.length === 0 || teamName === previousTeams[teamIndex]?.team) return team;
+      return teamFromRoster(team, roster.length <= team.length ? roster : []);
+    });
+
+    setSelectedPlayerIndices((selected) =>
+      selected.map((playerIndex, teamIndex) => {
+        const name = playerData[teamIndex][playerIndex]?.name;
+        return name ? newPlayers[teamIndex].findIndex((p) => samePlayerName(p.name, name)) : -1;
+      })
+    );
+    const history = matchupHistoryForRoster(matchupHistory, newPlayers);
+    setPlayerData(applyBanState(newPlayers, history.bans));
+    setMatchupHistory(history);
+  };
+
+  const togglePoolPlayer = (teamIndex, name) => {
+    const team = playerData[teamIndex];
+    const slot = team.findIndex((player) => samePlayerName(player.name, name));
+    if (slot !== -1) {
+      changePlayerName(teamIndex, slot, '');
+      return;
+    }
+    const emptySlot = team.findIndex((player) => !player.name?.trim());
+    if (emptySlot !== -1) changePlayerName(teamIndex, emptySlot, name);
+  };
+
   const handleGoogleSheetSync = async () => {
     const row = normalizeStartRow(startRow);
     setStartRow(String(row));
@@ -294,6 +336,8 @@ const PlayerOverlayConfig = () => {
         'ctl-player-overlay-config',
         JSON.stringify({ ...savedConfig, matches })
       );
+
+      fillRostersFromMatch(matches[0], savedConfig.matches?.[0]);
 
       if (obsConnection.status === 'connected') {
         await sendMatchesToObs(matches);
@@ -314,7 +358,9 @@ const PlayerOverlayConfig = () => {
         presetId: newPresetId,
         showBans: newShowBans,
         matchupHistory: newMatchupHistory,
+        matches,
       } = JSON.parse(localStorage.getItem('ctl-player-overlay-config'));
+      if (matches?.[0]) setSyncedTeams([matches[0].team1, matches[0].team2]);
       const loadedPlayerData = newPlayerData ?? playerData;
       const loadedSelectedPlayers = newSelectedPlayers ?? selectedPlayerIndices;
       const loadedTeamColors = newTeamColors ?? teamColors;
@@ -464,9 +510,13 @@ const PlayerOverlayConfig = () => {
       <div className="player-config">
         {playerData.map((players, teamIndex) => (
           <div className={`player-col player-col-team-${teamIndex + 1}`}>
-            <h3>Team {teamIndex + 1}</h3>
+            <h3>
+              Team {teamIndex + 1}
+              {syncedTeams[teamIndex]?.team && ` (${syncedTeams[teamIndex].team})`}
+            </h3>
             <div className={`player-row player-row-header player-row-team-${teamIndex + 1}`}>
               <span className="player-row-checkbox-label">E</span>
+              <span className="player-slot-number"></span>
               <span className="player-row-header-spacer"></span>
               <span className="player-row-checkbox-label">S</span>
             </div>
@@ -481,11 +531,13 @@ const PlayerOverlayConfig = () => {
                   name={`team${teamIndex}`}
                   checked={player.eliminated ?? false}
                 />
+                <span className="player-slot-number">{playerIndex + 1}</span>
                 <input
                   onChange={(e) => changePlayerName(teamIndex, playerIndex, e.target.value)}
                   value={player?.name ?? ''}
                   placeholder={`Team ${teamIndex + 1} Player ${playerIndex + 1} name`}
                   className="player-row-text-input"
+                  list={`roster-pool-${teamIndex}`}
                 />
                 <input
                   type="radio"
@@ -496,6 +548,31 @@ const PlayerOverlayConfig = () => {
               </div>
             ))}
 
+            <datalist id={`roster-pool-${teamIndex}`}>
+              {rosterPools[teamIndex].map((name) => (
+                <option key={name} value={name} />
+              ))}
+            </datalist>
+            {rosterPools[teamIndex].length > 0 && (
+              <div className="roster-pool">
+                {rosterPools[teamIndex].map((name) => {
+                  const slot = players.findIndex((player) => samePlayerName(player.name, name));
+                  const picked = slot !== -1;
+                  return (
+                    <button
+                      type="button"
+                      key={name}
+                      className={`roster-pool-player${picked ? ' roster-pool-player--picked' : ''}`}
+                      onClick={() => togglePoolPlayer(teamIndex, name)}
+                      disabled={!picked && players.every((player) => player.name?.trim())}
+                    >
+                      {picked && <span className="player-slot-number">{slot + 1}</span>}
+                      {name}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
             <button
               style={{
                 marginTop: 5,
