@@ -10,6 +10,11 @@ export async function disconnectObs() {
   await obs.disconnect();
 }
 
+export function onObsConnectionClosed(callback) {
+  obs.on('ConnectionClosed', callback);
+  return () => obs.off('ConnectionClosed', callback);
+}
+
 export async function setText(inputName, text) {
   await obs.call('SetInputSettings', {
     inputName,

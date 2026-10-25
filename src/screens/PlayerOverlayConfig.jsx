@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { PRESETS } from '../config/presets';
 import MatchupHistoryConfig from '../components/shared/MatchupHistoryConfig';
-import { connectObs, disconnectObs, setMatchupScores } from '../util/obs';
+import { setMatchupScores } from '../util/obs';
+import useObsConnection from '../hooks/useObsConnection';
 import {
   MIN_START_ROW,
   sendMatchesToObs,
@@ -118,14 +119,10 @@ const PlayerOverlayConfig = () => {
   const [savedSnapshot, setSavedSnapshot] = useState(null);
   const [syncStatus, setSyncStatus] = useState('idle');
   const [syncedTeams, setSyncedTeams] = useState([null, null]);
-  const [obsConnection, setObsConnection] = useState({
-    ip: '127.0.0.1',
-    port: '4455',
-    status: 'disconnected',
-    error: '',
-  });
+  const obsConnection = useObsConnection();
+  const obsSettings = obsConnection.settings;
   const [startRow, setStartRow] = useState(String(MIN_START_ROW));
-  const portNumber = Number(obsConnection.port);
+  const portNumber = Number(obsSettings.port);
   const validObsPort = Number.isInteger(portNumber) && portNumber >= 1 && portNumber <= 65535;
   const rosterPools = syncedTeams.map((team) => team?.roster ?? []);
   const currentSnapshot = configSnapshot({
@@ -136,35 +133,6 @@ const PlayerOverlayConfig = () => {
     showBans,
     matchupHistory,
   });
-
-  const toggleObsConnection = async () => {
-    setObsConnection((connection) => ({ ...connection, error: '' }));
-
-    if (obsConnection.status === 'connected') {
-      try {
-        await disconnectObs();
-        setObsConnection((connection) => ({ ...connection, status: 'disconnected' }));
-      } catch (error) {
-        setObsConnection((connection) => ({
-          ...connection,
-          error: error.message || 'Could not disconnect from OBS.',
-        }));
-      }
-      return;
-    }
-
-    setObsConnection((connection) => ({ ...connection, status: 'connecting' }));
-    try {
-      await connectObs(`ws://${obsConnection.ip.trim()}:${obsConnection.port.trim()}`);
-      setObsConnection((connection) => ({ ...connection, status: 'connected' }));
-    } catch (error) {
-      setObsConnection((connection) => ({
-        ...connection,
-        status: 'disconnected',
-        error: error.message || 'Could not connect to OBS.',
-      }));
-    }
-  };
 
   const changePlayerName = (teamIndex, playerIndex, name) => {
     const newPlayers = [...playerData].map((e) => [...e]);
@@ -407,10 +375,7 @@ const PlayerOverlayConfig = () => {
     if (obsConnection.status !== 'connected') return;
 
     setMatchupScores(matchupHistory.matchups).catch((error) => {
-      setObsConnection((connection) => ({
-        ...connection,
-        error: error.message || 'Could not update OBS scores.',
-      }));
+      console.error('Could not update OBS scores.', error);
     });
   }, [obsConnection.status, matchupHistory.matchups]);
 
@@ -436,12 +401,10 @@ const PlayerOverlayConfig = () => {
           IP address
           <input
             type="text"
-            value={obsConnection.ip}
-            onChange={(event) =>
-              setObsConnection((connection) => ({ ...connection, ip: event.target.value }))
-            }
+            value={obsSettings.ip}
+            onChange={(event) => obsConnection.updateSettings({ ip: event.target.value })}
             placeholder="127.0.0.1"
-            disabled={obsConnection.status === 'connected' || obsConnection.status === 'connecting'}
+            disabled={obsSettings.enabled}
           />
         </label>
         <label>
@@ -450,37 +413,32 @@ const PlayerOverlayConfig = () => {
             type="number"
             min="1"
             max="65535"
-            value={obsConnection.port}
-            onChange={(event) =>
-              setObsConnection((connection) => ({ ...connection, port: event.target.value }))
-            }
+            value={obsSettings.port}
+            onChange={(event) => obsConnection.updateSettings({ port: event.target.value })}
             placeholder="4455"
-            disabled={obsConnection.status === 'connected' || obsConnection.status === 'connecting'}
+            disabled={obsSettings.enabled}
           />
         </label>
         <button
           type="button"
-          onClick={toggleObsConnection}
-          disabled={
-            obsConnection.status === 'connecting' || !obsConnection.ip.trim() || !validObsPort
-          }
+          onClick={obsSettings.enabled ? obsConnection.disconnect : obsConnection.connect}
+          disabled={!obsSettings.enabled && (!obsSettings.ip.trim() || !validObsPort)}
         >
-          {obsConnection.status === 'connecting'
-            ? 'Connecting…'
-            : obsConnection.status === 'connected'
-              ? 'Disconnect'
+          {obsConnection.status === 'connected'
+            ? 'Disconnect'
+            : obsSettings.enabled
+              ? 'Stop Connecting'
               : 'Connect to OBS'}
         </button>
         <span className="obs-connection-status">
-          {obsConnection.status === 'connected'
-            ? 'Connected'
-            : obsConnection.status === 'connecting'
-              ? 'Connecting…'
-              : 'Disconnected'}
-          <br />
-          {obsConnection.error && (
-            <span className="obs-connection-error">{obsConnection.error}</span>
-          )}
+          {
+            {
+              connected: 'Connected',
+              connecting: 'Connecting…',
+              retrying: 'Retrying…',
+              disconnected: 'Disconnected',
+            }[obsConnection.status]
+          }
         </span>
       </div>
       <div className="google-sheets-sync">
