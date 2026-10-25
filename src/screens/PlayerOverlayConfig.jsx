@@ -489,7 +489,7 @@ const PlayerOverlayConfig = () => {
       </div>
       <div className="player-config">
         {playerData.map((players, teamIndex) => (
-          <div className={`player-col player-col-team-${teamIndex + 1}`}>
+          <div className={`player-col player-col-team-${teamIndex + 1}`} key={teamIndex}>
             <h3>
               Team {teamIndex + 1}
               {syncedTeams[teamIndex]?.team && ` (${syncedTeams[teamIndex].team})`}
@@ -583,6 +583,7 @@ const PlayerOverlayConfig = () => {
             {showPlayerBlurbs[teamIndex] &&
               players.map((player, playerIndex) => (
                 <input
+                  key={playerIndex}
                   onChange={(e) => changePlayerBlurb(teamIndex, playerIndex, e.target.value)}
                   value={player?.blurb ?? ''}
                   placeholder={`Team ${teamIndex + 1} Player ${playerIndex + 1} blurb`}
