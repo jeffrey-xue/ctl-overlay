@@ -118,6 +118,7 @@ const PlayerOverlayConfig = () => {
   const [matchupHistory, setMatchupHistory] = useState(createEmptyMatchupHistory);
   const [savedSnapshot, setSavedSnapshot] = useState(null);
   const [syncStatus, setSyncStatus] = useState('idle');
+  const [confirmingReset, setConfirmingReset] = useState(false);
   const [syncedTeams, setSyncedTeams] = useState([null, null]);
   const obsConnection = useObsConnection();
   const obsSettings = obsConnection.settings;
@@ -250,6 +251,11 @@ const PlayerOverlayConfig = () => {
   };
 
   const resetToDefaults = () => {
+    if (!confirmingReset) {
+      setConfirmingReset(true);
+      return;
+    }
+    setConfirmingReset(false);
     setPlayerData(createEmptyPlayerData());
     setSelectedPlayerIndices([-1, -1]);
     setTeamColors(['', '']);
@@ -372,6 +378,12 @@ const PlayerOverlayConfig = () => {
   useEffect(loadFromLocalStorage, []);
 
   useEffect(() => {
+    if (!confirmingReset) return;
+    const timeout = setTimeout(() => setConfirmingReset(false), 3000);
+    return () => clearTimeout(timeout);
+  }, [confirmingReset]);
+
+  useEffect(() => {
     if (obsConnection.status !== 'connected') return;
 
     setMatchupScores(matchupHistory.matchups).catch((error) => {
@@ -393,7 +405,7 @@ const PlayerOverlayConfig = () => {
           </select>
         </label>
         <button type="button" onClick={resetToDefaults}>
-          Reset to Defaults
+          {confirmingReset ? 'Click again to reset' : 'Reset to Defaults'}
         </button>
       </div>
       <div className="obs-connection">
