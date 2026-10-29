@@ -136,6 +136,7 @@ const PlayerOverlayConfig = () => {
     showBans,
     matchupHistory,
   });
+  const hasUnsavedChanges = savedSnapshot !== null && currentSnapshot !== savedSnapshot;
 
   const changePlayerName = (teamIndex, playerIndex, name) => {
     const newPlayers = [...playerData].map((e) => [...e]);
@@ -743,10 +744,13 @@ const PlayerOverlayConfig = () => {
         onChange={setMatchupHistory}
         teamPlayerNames={playerData.map((team) => team.map((player) => player.name?.trim() ?? ''))}
       />
-      <button className="save-button" onClick={saveToLocalStorage}>
-        {savedSnapshot !== null && currentSnapshot !== savedSnapshot
-          ? 'Save (new unsaved changes)'
-          : 'Save'}
+      <button
+        className="save-button"
+        onClick={saveToLocalStorage}
+        disabled={!hasUnsavedChanges}
+        style={hasUnsavedChanges ? { fontWeight: 'bold' } : undefined}
+      >
+        {hasUnsavedChanges ? 'Save (new unsaved changes)' : 'Saved'}
       </button>
     </div>
   );
