@@ -5,6 +5,8 @@ const SPREADSHEET_ID = '1wiONK_ZJGG8KtwXAYbPyos_0rrVJZpzknCsn5urEe6U';
 const SHEET_NAME = 'schedule';
 export const MIN_START_ROW = 3;
 const MATCH_COUNT = 9;
+const MATCH_DELAY_MS = 60 * 60 * 1000; // 1 hour
+const DATE_PATTERN = /^Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),\d+)?\)$/;
 
 const cellText = (cell) => {
   const value = String(cell?.v ?? cell?.f ?? '').trim();
@@ -15,7 +17,7 @@ const pad = (n) => String(n).padStart(2, '0');
 
 // "Date(2026,9,29,13,0,0)" -> { date: "10-29", time: "13:00" }
 const parseDateTime = (text) => {
-  const parts = /^Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),\d+)?\)$/.exec(text);
+  const parts = DATE_PATTERN.exec(text);
   if (!parts) return { date: '', time: '' };
 
   const [, , month, day, hours, minutes] = parts;
@@ -49,6 +51,21 @@ async function fetchTable(extraParams = {}) {
   if (!table) throw new Error(errors?.[0]?.detailed_message || 'Google Sheets returned no data.');
 
   return table;
+}
+
+const toTimestamp = (text) => {
+  const parts = DATE_PATTERN.exec(text);
+  if (!parts) return NaN;
+  const [, year, month, day, hours = 0, minutes = 0] = parts;
+  return Date.UTC(year, month, day, hours, minutes);
+};
+
+export async function guessStartRow(now = Date.now()) {
+  const table = await fetchTable({ range: `A${MIN_START_ROW}:A`, headers: '0' });
+  const index = table.rows.findIndex(
+    (row) => toTimestamp(cellText(row.c?.[0])) >= now - MATCH_DELAY_MS
+  );
+  return index === -1 ? null : MIN_START_ROW + index;
 }
 
 export async function syncGoogleSheet(startRow = MIN_START_ROW) {

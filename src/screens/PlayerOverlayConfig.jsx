@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { PRESETS } from '../config/presets';
 import MatchupHistoryConfig from '../components/shared/MatchupHistoryConfig';
-import { connectObs, disconnectObs, setMatchupScores } from '../util/obs';
+import { setMatchupScores } from '../util/obs';
+import useObsConnection from '../hooks/useObsConnection';
 import {
   MIN_START_ROW,
+  guessStartRow,
   sendMatchesToObs,
   syncGoogleSheet as syncGoogleSheetData,
 } from '../util/googleSheets';
@@ -79,6 +81,13 @@ const addPlayerBansToHistory = (history, playerData) => ({
   }),
 });
 
+const teamFromRoster = (team, roster) =>
+  team.map((_, playerIndex) => {
+    const name = roster[playerIndex];
+    if (!name) return {};
+    return { ...team.find((player) => samePlayerName(player.name, name)), name };
+  });
+
 const configSnapshot = ({
   playerData,
   selectedPlayerIndices,
@@ -110,15 +119,15 @@ const PlayerOverlayConfig = () => {
   const [matchupHistory, setMatchupHistory] = useState(createEmptyMatchupHistory);
   const [savedSnapshot, setSavedSnapshot] = useState(null);
   const [syncStatus, setSyncStatus] = useState('idle');
-  const [obsConnection, setObsConnection] = useState({
-    ip: '127.0.0.1',
-    port: '4455',
-    status: 'disconnected',
-    error: '',
-  });
+  const [confirmingReset, setConfirmingReset] = useState(false);
+  const [gameScores, setGameScores] = useState(['', '']);
+  const [syncedTeams, setSyncedTeams] = useState([null, null]);
+  const obsConnection = useObsConnection();
+  const obsSettings = obsConnection.settings;
   const [startRow, setStartRow] = useState(String(MIN_START_ROW));
-  const portNumber = Number(obsConnection.port);
+  const portNumber = Number(obsSettings.port);
   const validObsPort = Number.isInteger(portNumber) && portNumber >= 1 && portNumber <= 65535;
+  const rosterPools = syncedTeams.map((team) => team?.roster ?? []);
   const currentSnapshot = configSnapshot({
     playerData,
     selectedPlayerIndices,
@@ -127,35 +136,6 @@ const PlayerOverlayConfig = () => {
     showBans,
     matchupHistory,
   });
-
-  const toggleObsConnection = async () => {
-    setObsConnection((connection) => ({ ...connection, error: '' }));
-
-    if (obsConnection.status === 'connected') {
-      try {
-        await disconnectObs();
-        setObsConnection((connection) => ({ ...connection, status: 'disconnected' }));
-      } catch (error) {
-        setObsConnection((connection) => ({
-          ...connection,
-          error: error.message || 'Could not disconnect from OBS.',
-        }));
-      }
-      return;
-    }
-
-    setObsConnection((connection) => ({ ...connection, status: 'connecting' }));
-    try {
-      await connectObs(`ws://${obsConnection.ip.trim()}:${obsConnection.port.trim()}`);
-      setObsConnection((connection) => ({ ...connection, status: 'connected' }));
-    } catch (error) {
-      setObsConnection((connection) => ({
-        ...connection,
-        status: 'disconnected',
-        error: error.message || 'Could not connect to OBS.',
-      }));
-    }
-  };
 
   const changePlayerName = (teamIndex, playerIndex, name) => {
     const newPlayers = [...playerData].map((e) => [...e]);
@@ -252,6 +232,42 @@ const PlayerOverlayConfig = () => {
     setSelectedPlayerIndices(newSelectedPlayers);
   };
 
+  const selectedNames = selectedPlayerIndices.map(
+    (playerIndex, teamIndex) => playerData[teamIndex][playerIndex]?.name?.trim() ?? ''
+  );
+  const emptyMatchupRow = matchupHistory.matchups.findIndex(
+    (matchup) => !matchup.leftPlayer && !matchup.rightPlayer
+  );
+  const canRecordGame = selectedNames.every(Boolean) && emptyMatchupRow !== -1;
+
+  const recordGame = () => {
+    if (!canRecordGame) return;
+    setMatchupHistory((history) => ({
+      ...history,
+      matchups: history.matchups.map((matchup, index) =>
+        index === emptyMatchupRow
+          ? {
+              leftPlayer: selectedNames[0],
+              leftScore: gameScores[0],
+              rightScore: gameScores[1],
+              rightPlayer: selectedNames[1],
+            }
+          : matchup
+      ),
+    }));
+    setPlayerData((players) =>
+      players.map((team, teamIndex) =>
+        team.map((player, playerIndex) =>
+          playerIndex === selectedPlayerIndices[teamIndex]
+            ? { ...player, eliminated: true }
+            : player
+        )
+      )
+    );
+    setSelectedPlayerIndices([-1, -1]);
+    setGameScores(['', '']);
+  };
+
   const saveToLocalStorage = () => {
     const savedConfig = JSON.parse(
       window.localStorage.getItem('ctl-player-overlay-config') || '{}'
@@ -273,12 +289,50 @@ const PlayerOverlayConfig = () => {
   };
 
   const resetToDefaults = () => {
+    if (!confirmingReset) {
+      setConfirmingReset(true);
+      return;
+    }
+    setConfirmingReset(false);
     setPlayerData(createEmptyPlayerData());
     setSelectedPlayerIndices([-1, -1]);
     setTeamColors(['', '']);
     setShowBans(true);
     setShowPlayerBlurbs({ 0: false, 1: false });
     setMatchupHistory(createEmptyMatchupHistory());
+  };
+
+  const fillRostersFromMatch = (match, previousMatch) => {
+    const teams = [match.team1, match.team2];
+    const previousTeams = [previousMatch?.team1, previousMatch?.team2];
+    setSyncedTeams(teams);
+
+    const newPlayers = playerData.map((team, teamIndex) => {
+      const { team: teamName, roster } = teams[teamIndex];
+      if (roster.length === 0 || teamName === previousTeams[teamIndex]?.team) return team;
+      return teamFromRoster(team, roster.length <= team.length ? roster : []);
+    });
+
+    setSelectedPlayerIndices((selected) =>
+      selected.map((playerIndex, teamIndex) => {
+        const name = playerData[teamIndex][playerIndex]?.name;
+        return name ? newPlayers[teamIndex].findIndex((p) => samePlayerName(p.name, name)) : -1;
+      })
+    );
+    const history = matchupHistoryForRoster(matchupHistory, newPlayers);
+    setPlayerData(applyBanState(newPlayers, history.bans));
+    setMatchupHistory(history);
+  };
+
+  const togglePoolPlayer = (teamIndex, name) => {
+    const team = playerData[teamIndex];
+    const slot = team.findIndex((player) => samePlayerName(player.name, name));
+    if (slot !== -1) {
+      changePlayerName(teamIndex, slot, '');
+      return;
+    }
+    const emptySlot = team.findIndex((player) => !player.name?.trim());
+    if (emptySlot !== -1) changePlayerName(teamIndex, emptySlot, name);
   };
 
   const handleGoogleSheetSync = async () => {
@@ -294,6 +348,8 @@ const PlayerOverlayConfig = () => {
         'ctl-player-overlay-config',
         JSON.stringify({ ...savedConfig, matches })
       );
+
+      fillRostersFromMatch(matches[0], savedConfig.matches?.[0]);
 
       if (obsConnection.status === 'connected') {
         await sendMatchesToObs(matches);
@@ -314,7 +370,9 @@ const PlayerOverlayConfig = () => {
         presetId: newPresetId,
         showBans: newShowBans,
         matchupHistory: newMatchupHistory,
+        matches,
       } = JSON.parse(localStorage.getItem('ctl-player-overlay-config'));
+      if (matches?.[0]) setSyncedTeams([matches[0].team1, matches[0].team2]);
       const loadedPlayerData = newPlayerData ?? playerData;
       const loadedSelectedPlayers = newSelectedPlayers ?? selectedPlayerIndices;
       const loadedTeamColors = newTeamColors ?? teamColors;
@@ -358,15 +416,30 @@ const PlayerOverlayConfig = () => {
   useEffect(loadFromLocalStorage, []);
 
   useEffect(() => {
+    guessStartRow()
+      .then((row) => {
+        if (row === null) return;
+        setStartRow((current) => (current === String(MIN_START_ROW) ? String(row) : current));
+      })
+      .catch((error) => console.error('Could not guess the next match row.', error));
+  }, []);
+
+  useEffect(() => {
+    if (!confirmingReset) return;
+    const timeout = setTimeout(() => setConfirmingReset(false), 3000);
+    return () => clearTimeout(timeout);
+  }, [confirmingReset]);
+
+  useEffect(() => {
     if (obsConnection.status !== 'connected') return;
 
-    setMatchupScores(matchupHistory.matchups).catch((error) => {
-      setObsConnection((connection) => ({
-        ...connection,
-        error: error.message || 'Could not update OBS scores.',
-      }));
+    setMatchupScores([
+      ...matchupHistory.matchups,
+      { leftScore: gameScores[0], rightScore: gameScores[1] },
+    ]).catch((error) => {
+      console.error('Could not update OBS scores.', error);
     });
-  }, [obsConnection.status, matchupHistory.matchups]);
+  }, [obsConnection.status, matchupHistory.matchups, gameScores]);
 
   return (
     <div className="config-container">
@@ -382,7 +455,7 @@ const PlayerOverlayConfig = () => {
           </select>
         </label>
         <button type="button" onClick={resetToDefaults}>
-          Reset to Defaults
+          {confirmingReset ? 'Click again to reset' : 'Reset to Defaults'}
         </button>
       </div>
       <div className="obs-connection">
@@ -390,12 +463,10 @@ const PlayerOverlayConfig = () => {
           IP address
           <input
             type="text"
-            value={obsConnection.ip}
-            onChange={(event) =>
-              setObsConnection((connection) => ({ ...connection, ip: event.target.value }))
-            }
+            value={obsSettings.ip}
+            onChange={(event) => obsConnection.updateSettings({ ip: event.target.value })}
             placeholder="127.0.0.1"
-            disabled={obsConnection.status === 'connected' || obsConnection.status === 'connecting'}
+            disabled={obsSettings.enabled}
           />
         </label>
         <label>
@@ -404,37 +475,32 @@ const PlayerOverlayConfig = () => {
             type="number"
             min="1"
             max="65535"
-            value={obsConnection.port}
-            onChange={(event) =>
-              setObsConnection((connection) => ({ ...connection, port: event.target.value }))
-            }
+            value={obsSettings.port}
+            onChange={(event) => obsConnection.updateSettings({ port: event.target.value })}
             placeholder="4455"
-            disabled={obsConnection.status === 'connected' || obsConnection.status === 'connecting'}
+            disabled={obsSettings.enabled}
           />
         </label>
         <button
           type="button"
-          onClick={toggleObsConnection}
-          disabled={
-            obsConnection.status === 'connecting' || !obsConnection.ip.trim() || !validObsPort
-          }
+          onClick={obsSettings.enabled ? obsConnection.disconnect : obsConnection.connect}
+          disabled={!obsSettings.enabled && (!obsSettings.ip.trim() || !validObsPort)}
         >
-          {obsConnection.status === 'connecting'
-            ? 'Connecting…'
-            : obsConnection.status === 'connected'
-              ? 'Disconnect'
+          {obsConnection.status === 'connected'
+            ? 'Disconnect'
+            : obsSettings.enabled
+              ? 'Stop Connecting'
               : 'Connect to OBS'}
         </button>
         <span className="obs-connection-status">
-          {obsConnection.status === 'connected'
-            ? 'Connected'
-            : obsConnection.status === 'connecting'
-              ? 'Connecting…'
-              : 'Disconnected'}
-          <br />
-          {obsConnection.error && (
-            <span className="obs-connection-error">{obsConnection.error}</span>
-          )}
+          {
+            {
+              connected: 'Connected',
+              connecting: 'Connecting…',
+              retrying: 'Retrying…',
+              disconnected: 'Disconnected',
+            }[obsConnection.status]
+          }
         </span>
       </div>
       <div className="google-sheets-sync">
@@ -463,10 +529,14 @@ const PlayerOverlayConfig = () => {
       </div>
       <div className="player-config">
         {playerData.map((players, teamIndex) => (
-          <div className={`player-col player-col-team-${teamIndex + 1}`}>
-            <h3>Team {teamIndex + 1}</h3>
+          <div className={`player-col player-col-team-${teamIndex + 1}`} key={teamIndex}>
+            <h3>
+              Team {teamIndex + 1}
+              {syncedTeams[teamIndex]?.team && ` (${syncedTeams[teamIndex].team})`}
+            </h3>
             <div className={`player-row player-row-header player-row-team-${teamIndex + 1}`}>
               <span className="player-row-checkbox-label">E</span>
+              <span className="player-slot-number"></span>
               <span className="player-row-header-spacer"></span>
               <span className="player-row-checkbox-label">S</span>
             </div>
@@ -481,11 +551,13 @@ const PlayerOverlayConfig = () => {
                   name={`team${teamIndex}`}
                   checked={player.eliminated ?? false}
                 />
+                <span className="player-slot-number">{playerIndex + 1}</span>
                 <input
                   onChange={(e) => changePlayerName(teamIndex, playerIndex, e.target.value)}
                   value={player?.name ?? ''}
                   placeholder={`Team ${teamIndex + 1} Player ${playerIndex + 1} name`}
                   className="player-row-text-input"
+                  list={`roster-pool-${teamIndex}`}
                 />
                 <input
                   type="radio"
@@ -496,6 +568,31 @@ const PlayerOverlayConfig = () => {
               </div>
             ))}
 
+            <datalist id={`roster-pool-${teamIndex}`}>
+              {rosterPools[teamIndex].map((name) => (
+                <option key={name} value={name} />
+              ))}
+            </datalist>
+            {rosterPools[teamIndex].length > 0 && (
+              <div className="roster-pool">
+                {rosterPools[teamIndex].map((name) => {
+                  const slot = players.findIndex((player) => samePlayerName(player.name, name));
+                  const picked = slot !== -1;
+                  return (
+                    <button
+                      type="button"
+                      key={name}
+                      className={`roster-pool-player${picked ? ' roster-pool-player--picked' : ''}`}
+                      onClick={() => togglePoolPlayer(teamIndex, name)}
+                      disabled={!picked && players.every((player) => player.name?.trim())}
+                    >
+                      {picked && <span className="player-slot-number">{slot + 1}</span>}
+                      {name}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
             <button
               style={{
                 marginTop: 5,
@@ -526,6 +623,7 @@ const PlayerOverlayConfig = () => {
             {showPlayerBlurbs[teamIndex] &&
               players.map((player, playerIndex) => (
                 <input
+                  key={playerIndex}
                   onChange={(e) => changePlayerBlurb(teamIndex, playerIndex, e.target.value)}
                   value={player?.blurb ?? ''}
                   placeholder={`Team ${teamIndex + 1} Player ${playerIndex + 1} blurb`}
@@ -617,6 +715,27 @@ const PlayerOverlayConfig = () => {
           onChange={(event) => setShowBans(!event.target.checked)}
         />
       </label>
+      <div className="record-game">
+        <span>{selectedNames[0] || 'Select Team 1 player'}</span>
+        {gameScores.map((score, teamIndex) => (
+          <input
+            key={teamIndex}
+            type="number"
+            step="any"
+            placeholder="0"
+            value={score}
+            onChange={(event) =>
+              setGameScores((scores) =>
+                scores.map((current, index) => (index === teamIndex ? event.target.value : current))
+              )
+            }
+          />
+        ))}
+        <span>{selectedNames[1] || 'Select Team 2 player'}</span>
+        <button type="button" onClick={recordGame} disabled={!canRecordGame}>
+          {emptyMatchupRow === -1 ? 'Matchups full' : `Record Game ${emptyMatchupRow + 1}`}
+        </button>
+      </div>
       <MatchupHistoryConfig
         value={matchupHistory}
         onChange={setMatchupHistory}
