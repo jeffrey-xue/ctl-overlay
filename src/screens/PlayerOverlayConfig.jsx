@@ -288,7 +288,7 @@ const PlayerOverlayConfig = () => {
     console.log('saved');
   };
 
-  const resetToDefaults = () => {
+  const resetToDefaults = async () => {
     if (!confirmingReset) {
       setConfirmingReset(true);
       return;
@@ -300,6 +300,12 @@ const PlayerOverlayConfig = () => {
     setShowBans(true);
     setShowPlayerBlurbs({ 0: false, 1: false });
     setMatchupHistory(createEmptyMatchupHistory());
+    try {
+      const row = await guessStartRow();
+      setStartRow(String(row ?? MIN_START_ROW));
+    } catch (error) {
+      console.error('Could not guess the next match row.', error);
+    }
   };
 
   const fillRostersFromMatch = (match, previousMatch) => {
@@ -684,9 +690,7 @@ const PlayerOverlayConfig = () => {
               onChange={(event) => {
                 const value = event.target.value;
                 setPlayerImports((imports) =>
-                  imports.map((current, index) =>
-                    index === importTeamIndex ? value : current
-                  )
+                  imports.map((current, index) => (index === importTeamIndex ? value : current))
                 );
                 setPlayerImportErrors((errors) =>
                   errors.map((error, index) => (index === importTeamIndex ? '' : error))
@@ -694,9 +698,7 @@ const PlayerOverlayConfig = () => {
               }}
             />
             {playerImportErrors[importTeamIndex] && (
-              <span className="obs-connection-error">
-                {playerImportErrors[importTeamIndex]}
-              </span>
+              <span className="obs-connection-error">{playerImportErrors[importTeamIndex]}</span>
             )}
             <div className="player-import-actions">
               <button type="button" onClick={() => closePlayerImport(importTeamIndex)}>
