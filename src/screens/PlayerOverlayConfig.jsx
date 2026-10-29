@@ -423,6 +423,16 @@ const PlayerOverlayConfig = () => {
   useEffect(loadFromLocalStorage, []);
 
   useEffect(() => {
+    const onKeyDown = (event) => {
+      if (event.key !== 'Enter' || !hasUnsavedChanges) return;
+      if (event.target.closest('button, textarea, select, a')) return;
+      saveToLocalStorage();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  });
+
+  useEffect(() => {
     guessStartRow()
       .then((row) => {
         if (row === null) return;
