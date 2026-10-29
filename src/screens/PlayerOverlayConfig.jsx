@@ -517,7 +517,7 @@ const PlayerOverlayConfig = () => {
           Start row
           <input
             type="number"
-            min={MIN_START_ROW} //min={MIN_START_ROW}
+            min={MIN_START_ROW}
             step="1"
             value={startRow}
             onChange={(event) => setStartRow(event.target.value)}
