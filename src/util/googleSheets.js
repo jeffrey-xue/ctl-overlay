@@ -1,4 +1,4 @@
-import { setText, setBrowserSourceUrl } from './obs';
+import { setText, setBrowserSourceUrl, fixTracker } from './obs';
 
 // Mastersheet: https://docs.google.com/spreadsheets/d/1wiONK_ZJGG8KtwXAYbPyos_0rrVJZpzknCsn5urEe6U/
 const SPREADSHEET_ID = '1wiONK_ZJGG8KtwXAYbPyos_0rrVJZpzknCsn5urEe6U';
@@ -102,6 +102,9 @@ export async function sendMatchesToObs(matches) {
     setText('footer-secondary', type),
     setBrowserSourceUrl('crestL', team1.flag),
     setBrowserSourceUrl('crestR', team2.flag),
+    fixTracker('righttracker', 'player-select', 1921),
+    fixTracker('righttracker', 'players-chosen', 1921),
+
     // Missing seeds and title generation
   ]);
 }

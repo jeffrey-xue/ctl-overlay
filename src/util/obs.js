@@ -22,6 +22,21 @@ export async function setText(inputName, text) {
   });
 }
 
+export async function fixTracker(sourceName, sceneName, positionX) {
+  const { sceneItemId } = await obs.call('GetSceneItemId', {
+    sceneName,
+    sourceName,
+  });
+
+  await obs.call('SetSceneItemTransform', {
+    sceneName,
+    sceneItemId,
+    sceneItemTransform: {
+      positionX,
+    },
+  });
+}
+
 export async function setBrowserSourceUrl(inputName, url) {
   await obs.call('SetInputSettings', {
     inputName,
