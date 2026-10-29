@@ -103,7 +103,7 @@ export async function sendMatchesToObs(matches) {
     setBrowserSourceUrl('crestL', team1.flag),
     setBrowserSourceUrl('crestR', team2.flag),
     fixTracker('righttracker', 'player-select', 1921),
-    fixTracker('righttracker', 'player-chosen', 1921),
+    fixTracker('righttracker', 'players-chosen', 1921),
 
     // Missing seeds and title generation
   ]);
