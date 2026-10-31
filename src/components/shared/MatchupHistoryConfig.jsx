@@ -1,28 +1,6 @@
 import { useState } from 'react';
-
-const formatMatchupHistory = (matchups, bans, currentMatch) => {
-  const rows = matchups.filter((m) => m.leftPlayer || m.rightPlayer);
-  const leftWidth = Math.max(18, ...rows.map((m) => m.leftPlayer.length));
-  const rightWidth = Math.max(13, ...rows.map((m) => m.rightPlayer.length));
-  const scoreWidth = 11;
-  const total = (side) => rows.reduce((sum, m) => sum + Number(m[`${side}Score`] || 0), 0);
-  const country = (team) =>
-    team.team.toLowerCase().replace(/\b[a-z]/g, (letter) => letter.toUpperCase());
-  const banLines = bans
-    .map((teamBans, index) => {
-      const players = teamBans.filter(Boolean).join(', ');
-      return players
-        ? `${country(currentMatch[`team${2 - index}`]).toUpperCase()} bans ${players.toUpperCase()}`
-        : '';
-    })
-    .filter(Boolean);
-  const lines = rows.map(
-    (m) =>
-      `${m.leftPlayer.toUpperCase().padEnd(leftWidth)} ${`${m.leftScore || 0} - ${m.rightScore || 0}`.padEnd(scoreWidth)}${m.rightPlayer.toUpperCase().padStart(rightWidth)}`
-  );
-
-  return `\`\`\`\n${currentMatch.type.replace(/\r?\n/g, ' ')}\n\n${banLines.join('\n')}\n\n${lines.join('\n')}\n\nFinal score: ${country(currentMatch.team1).toUpperCase()} (#${currentMatch.team1.seed || 'SEED'}) ${total('left')} - ${total('right')} ${country(currentMatch.team2).toUpperCase()} (#${currentMatch.team2.seed || 'SEED'})\n\`\`\``;
-};
+import { getMatchupScores } from '../../util/matchupScores.js';
+import { formatMatchupHistory } from '../../util/formatMatchupHistory.mjs';
 
 const MatchupHistoryConfig = ({ value, onChange, teamPlayerNames }) => {
   const [exportStatus, setExportStatus] = useState('');
@@ -54,47 +32,60 @@ const MatchupHistoryConfig = ({ value, onChange, teamPlayerNames }) => {
           Copy to Clipboard
         </button>
         {exportStatus && <span role="alert">{exportStatus}</span>}
+        <span style={{textAlign: "right", right: "13px", position: "absolute", title:"Toggle Purchase Counterpick"}}>C</span>
       </h3>
-      <div className="matchup-teams-config">
-        {Array.from({ length: 2 }, (_, teamIndex) => {
-          const side = teamIndex === 0 ? 'left' : 'right';
+      <p id="counterpick-help" className="counterpick-help">
+      </p>
+      <div className="matchup-rows-config">
+        {value.matchups.map((matchup, gameIndex) => {
+          const { canCounterpick } = getMatchupScores(matchup);
           return (
-            <div className="matchup-team-config" key={teamIndex}>
-              <div className="matchup-team-rows-config">
-                {value.matchups.map((matchup, gameIndex) => (
-                  <div className="matchup-team-row" key={gameIndex}>
-                    <label>
-                      <select
-                        name={`match-${gameIndex + 1}-${side}-player`}
-                        value={matchup[`${side}Player`]}
-                        onChange={(event) =>
-                          updateMatchup(gameIndex, `${side}Player`, event.target.value)
-                        }
-                      >
-                        <option value="">Game {gameIndex + 1} player</option>
-                        {teamPlayerNames[teamIndex].map((name, playerIndex) =>
-                          name ? (
-                            <option key={`${name}-${playerIndex}`} value={name}>
-                              {name}
-                            </option>
-                          ) : null
-                        )}
-                      </select>
-                    </label>
-                    <label>
-                      <input
-                        type="number"
-                        step="any"
-                        value={matchup[`${side}Score`]}
-                        onChange={(event) =>
-                          updateMatchup(gameIndex, `${side}Score`, event.target.value)
-                        }
-                        placeholder="0"
-                      />
-                    </label>
+            <div className="matchup-config-row" key={gameIndex}>
+              <div className="matchup-teams-config">
+                {['left', 'right'].map((side, teamIndex) => (
+                  <div className="matchup-team-row" key={side}>
+                    <select
+                      aria-label={`Game ${gameIndex + 1} Team ${teamIndex + 1} player`}
+                      name={`match-${gameIndex + 1}-${side}-player`}
+                      value={matchup[`${side}Player`]}
+                      onChange={(event) =>
+                        updateMatchup(gameIndex, `${side}Player`, event.target.value)
+                      }
+                    >
+                      <option value="">Game {gameIndex + 1} player</option>
+                      {teamPlayerNames[teamIndex].map((name, playerIndex) =>
+                        name ? (
+                          <option key={playerIndex} value={name}>
+                            {name}
+                          </option>
+                        ) : null
+                      )}
+                    </select>
+                    <input
+                      aria-label={`Game ${gameIndex + 1} Team ${teamIndex + 1} original score`}
+                      type="number"
+                      step="any"
+                      value={matchup[`${side}Score`]}
+                      onChange={(event) =>
+                        updateMatchup(gameIndex, `${side}Score`, event.target.value)
+                      }
+                      placeholder="0"
+                    />
                   </div>
                 ))}
               </div>
+              <label className="counterpick-control">
+                <input
+                  type="checkbox"
+                  aria-label={`Game ${gameIndex + 1} counterpick bought`}
+                  aria-describedby="counterpick-help"
+                  checked={matchup.counterpickBought ?? false}
+                  disabled={!canCounterpick && !matchup.counterpickBought}
+                  onChange={(event) =>
+                    updateMatchup(gameIndex, 'counterpickBought', event.target.checked)
+                  }
+                />
+              </label>
             </div>
           );
         })}

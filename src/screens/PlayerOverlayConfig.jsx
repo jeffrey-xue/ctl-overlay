@@ -20,6 +20,7 @@ const createEmptyMatchupHistory = () => ({
     leftScore: '',
     rightScore: '',
     rightPlayer: '',
+    counterpickBought: false,
   })),
 });
 
@@ -247,6 +248,7 @@ const PlayerOverlayConfig = () => {
       matchups: history.matchups.map((matchup, index) =>
         index === emptyMatchupRow
           ? {
+              counterpickBought: false,
               leftPlayer: selectedNames[0],
               leftScore: gameScores[0],
               rightScore: gameScores[1],
