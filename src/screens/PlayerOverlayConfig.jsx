@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PRESETS } from '../config/presets';
 import MatchupHistoryConfig from '../components/shared/MatchupHistoryConfig';
 import { setMatchupScores } from '../util/obs';
@@ -240,6 +240,14 @@ const PlayerOverlayConfig = () => {
     (matchup) => !matchup.leftPlayer && !matchup.rightPlayer
   );
   const canRecordGame = selectedNames.every(Boolean) && emptyMatchupRow !== -1;
+  const matchOneHasData = matchupHistory.matchups[0] &&
+    ['leftPlayer', 'rightPlayer'].every((field) => Boolean(matchupHistory.matchups[0][field]?.trim()));
+  const previousMatchOneHasData = useRef(false);
+
+  useEffect(() => {
+    if (matchOneHasData && !previousMatchOneHasData.current) setShowBans(false);
+    previousMatchOneHasData.current = matchOneHasData;
+  }, [matchOneHasData]);
 
   const recordGame = () => {
     if (!canRecordGame) return;
