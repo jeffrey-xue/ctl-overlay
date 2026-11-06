@@ -22,12 +22,25 @@ html {
 /* config styles */
 
 .config-container {
+  font-family: Arial, sans-serif;
+  color: #000;
+  background-color: #fff;
   max-width: 800px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding: 10px;
+}
+
+.config-container button,
+.config-container input,
+.config-container select,
+.config-container textarea,
+.config-container dialog {
+  font-family: Arial, sans-serif;
+  color: #000;
+  background-color: #fff;
 }
 
 .config-container h3 {

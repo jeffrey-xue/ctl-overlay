@@ -86,9 +86,7 @@ const usePlayerProfiles = (teams) => {
     const cachedProfiles = Object.fromEntries(
       uniqueUsernames.flatMap((username) => {
         const tr = cache[username];
-        return Number.isFinite(tr)
-          ? [[username, { avatarUrl: null, leagueStats: { tr } }]]
-          : [];
+        return Number.isFinite(tr) ? [[username, { avatarUrl: null, leagueStats: { tr } }]] : [];
       })
     );
     setProfiles(cachedProfiles);
