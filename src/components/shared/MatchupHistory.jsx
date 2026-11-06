@@ -43,7 +43,7 @@ const TwsMatchupHistory = ({ matchups = [] }) => {
           <div className="tws-history-column" key={index}>
             <HistoryAvatar name={matchup.leftPlayer} avatarUrl={matchup.leftAvatarUrl} />
             <div className="tws-history-score-block">
-              <div className={`tws-history-scores ${scores.adjusted && ("counterpicked")}`}>
+              <div className={`tws-history-scores ${scores.adjusted && 'counterpicked'}`}>
                 <span className="tws-history-score-num">{formatScore(scores.leftScore)}</span>
                 <span className="tws-history-divider">-</span>
                 <span className="tws-history-score-num">{formatScore(scores.rightScore)}</span>

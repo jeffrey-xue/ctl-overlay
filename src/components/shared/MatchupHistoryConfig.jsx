@@ -32,10 +32,18 @@ const MatchupHistoryConfig = ({ value, onChange, teamPlayerNames }) => {
           Copy to Clipboard
         </button>
         {exportStatus && <span role="alert">{exportStatus}</span>}
-        <span style={{textAlign: "right", right: "13px", position: "absolute", title:"Toggle Purchase Counterpick"}}>C</span>
+        <span
+          style={{
+            textAlign: 'right',
+            right: '13px',
+            position: 'absolute',
+            title: 'Toggle Purchase Counterpick',
+          }}
+        >
+          C
+        </span>
       </h3>
-      <p id="counterpick-help" className="counterpick-help">
-      </p>
+      <p id="counterpick-help" className="counterpick-help"></p>
       <div className="matchup-rows-config">
         {value.matchups.map((matchup, gameIndex) => {
           const { canCounterpick } = getMatchupScores(matchup);
@@ -64,6 +72,8 @@ const MatchupHistoryConfig = ({ value, onChange, teamPlayerNames }) => {
                     <input
                       aria-label={`Game ${gameIndex + 1} Team ${teamIndex + 1} original score`}
                       type="number"
+                      min="0"
+                      max="7"
                       step="any"
                       value={matchup[`${side}Score`]}
                       onChange={(event) =>
