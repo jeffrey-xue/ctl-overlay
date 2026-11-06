@@ -725,14 +725,16 @@ const PlayerOverlayConfig = () => {
           <input
             key={teamIndex}
             type="number"
+            min="0"
+            max="7"
             step="any"
             placeholder="0"
             value={score}
-            onChange={(event) =>
+            onChange={(event) => {
               setGameScores((scores) =>
                 scores.map((current, index) => (index === teamIndex ? event.target.value : current))
-              )
-            }
+              );
+            }}
           />
         ))}
         <span>{selectedNames[1] || 'Select Team 2 player'}</span>
