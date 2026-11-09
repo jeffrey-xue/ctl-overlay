@@ -13,6 +13,8 @@ Forked from the original [ctl-overlay](https://github.com/orznull/ctl-overlay) b
 
 ## Demo
 
+https://github.com/user-attachments/assets/437ca821-35a1-4d43-9034-f2e265f7fd13
+
 # Setup and Usage
 
 Refer to the [TWS production guide](https://docs.google.com/document/d/16U-F-b7rkEPf_xnpihTUOp_1UJcUuymPZ2UM1O43uo4/edit?usp=sharing) for additional setup and usage information.
@@ -20,6 +22,8 @@ Refer to the [TWS production guide](https://docs.google.com/document/d/16U-F-b7r
 ## Add the Overlay
 
 You can add the overlay as a **browser source** in OBS with the URL https://jeffrey-xue.github.io/ctl-overlay/#/overlay. Ensure that you set the correct page permissions ("Read access to user information") so the page can read the current scene, and that the width and height are set to 1920x1080.
+
+<img width="782" height="555" alt="obs64_nk32qR5is7" src="https://github.com/user-attachments/assets/ccfcccef-890b-49d6-9c52-e09e6b957d6b" />
 
 ## Scene Setup
 
