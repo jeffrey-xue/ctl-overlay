@@ -22,6 +22,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Grab TWS assets
+        uses: actions/checkout@v4
+        with:
+          repository: jeffrey-xue/ctl-overlay-tws-assets-private
+          token: ${{ secrets.TWS_ASSETS_PAT }}
+          path: public/tws
+
+      - name: Remove tracking on TWS assets
+        run: rm -rf public/tws/.git
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:

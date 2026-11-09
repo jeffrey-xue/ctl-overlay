@@ -1,5 +1,5 @@
 # TWS assets
-/public/tws
+/public/tws/
 
 # dependencies
 /node_modules
