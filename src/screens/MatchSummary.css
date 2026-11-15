@@ -1,0 +1,251 @@
+/* Fixed 1920x1080 stage over matchhighlight.png. Everything is in the template's native pixels
+   and never scales. The stage has no background colour, so exported PNGs stay transparent. */
+
+.ms-stage {
+  --ms-font: var(--tws-font, 'Orbitron', sans-serif);
+
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  font-family: var(--ms-font);
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ───────────── team headers (bars y 96-215) ───────────── */
+
+/* flag banners: left x 46-203, right x 1717-1874, y 64-138. 60px flag centred in each. */
+.ms-team__flag {
+  position: absolute;
+  top: 71px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.ms-team--left .ms-team__flag {
+  left: 95px;
+}
+.ms-team--right .ms-team__flag {
+  left: 1766px;
+}
+
+/* name: centred in the bar between the shield wing and the score tag, kept --name-margin clear
+   of both. Bar edges (template px): left 235-725, right 1195-1686. */
+.ms-team__name {
+  --name-margin: 10px;
+
+  position: absolute;
+  top: 96px;
+  height: 119px;
+  overflow: hidden;
+  font-size: 100px; /* max size */
+  line-height: 119px;
+  text-align: center;
+  white-space: nowrap;
+  text-transform: uppercase;
+  text-fit: shrink 25%;
+}
+.ms-team--left .ms-team__name {
+  left: calc(235px + var(--name-margin));
+  width: calc(725px - 235px - 2 * var(--name-margin));
+}
+.ms-team--right .ms-team__name {
+  left: calc(1195px + var(--name-margin));
+  width: calc(1686px - 1195px - 2 * var(--name-margin));
+}
+
+/* team score tags: left x 725-939, right x 980-1194 (zigzag edges inset ~20px) */
+.ms-team__score {
+  position: absolute;
+  top: 96px;
+  width: 175px;
+  height: 119px;
+  overflow: hidden;
+  font-size: 80px;
+  line-height: 119px;
+  text-align: center;
+  white-space: nowrap;
+  text-fit: shrink 50%;
+}
+.ms-team--left .ms-team__score {
+  left: 745px;
+}
+.ms-team--right .ms-team__score {
+  left: 1000px;
+}
+
+/* ───────────── player rows ───────────── */
+
+/* Each row box spans the avatar frame (110px tall). Tops are the template's measured rows;
+   the template's row pitch is not perfectly even (135, 132, 132, 132). */
+.ms-row {
+  position: absolute;
+  left: 0;
+  width: 1920px;
+  height: 110px;
+}
+.ms-row:nth-child(3) {
+  top: 250px;
+}
+.ms-row:nth-child(4) {
+  top: 385px;
+}
+.ms-row:nth-child(5) {
+  top: 517px;
+}
+.ms-row:nth-child(6) {
+  top: 649px;
+}
+.ms-row:nth-child(7) {
+  top: 781px;
+}
+/* (children 1 and 2 of .ms-stage are the two team headers, so rows start at nth-child(3)) */
+
+/* avatar wells: left x 53-163, right x 1757-1867 -> 96px avatar centred in each */
+.ms-player__avatar {
+  position: absolute;
+  top: 7px;
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+}
+.ms-player--left .ms-player__avatar {
+  left: 60px;
+}
+.ms-player--right .ms-player__avatar {
+  left: 1766px;
+}
+/* template quirk: the left avatar frame in row 2 sits 4px higher than the others */
+.ms-row:nth-child(4) .ms-player--left .ms-player__avatar {
+  top: 3px;
+}
+
+/* rank ribbons: left x 185-280, right x 1642-1737 -> 80px icon centred */
+.ms-player__rank {
+  position: absolute;
+  top: 11px;
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+.ms-player--left .ms-player__rank {
+  left: 193px;
+}
+.ms-player--right .ms-player__rank {
+  left: 1650px;
+}
+
+/* name bars (78px tall): centred between the ribbon and the score tag */
+.ms-player__name {
+  position: absolute;
+  top: 16px;
+  height: 78px;
+  overflow: hidden;
+  font-size: 60px; /* max size */
+  line-height: 78px;
+  text-align: center;
+  white-space: nowrap;
+  text-transform: uppercase;
+  text-fit: shrink 40%;
+}
+.ms-player--left .ms-player__name {
+  left: 292px;
+  width: 542px;
+}
+.ms-player--right .ms-player__name {
+  left: 1087px;
+  width: 543px;
+}
+
+/* Counterpick rows: keep names clear of the white box (x 836-1084). --cp-name-gap is the space
+   between a name box and the white box; raise it for more margin. */
+.ms-row--counterpick {
+  --cp-name-gap: 15px;
+}
+.ms-row--counterpick .ms-player--left .ms-player__name {
+  width: calc(836px - var(--cp-name-gap) - 292px); /* right edge = 836 - gap */
+}
+.ms-row--counterpick .ms-player--right .ms-player__name {
+  left: calc(1084px + var(--cp-name-gap)); /* left edge = 1084 + gap */
+  width: calc(1630px - 1084px - var(--cp-name-gap));
+}
+
+/* per-game score tags: left x 846-949, right x 970-1073 */
+.ms-score {
+  position: absolute;
+  top: 16px;
+  width: 79px;
+  height: 78px;
+  overflow: hidden;
+  font-size: 60px;
+  line-height: 78px;
+  text-align: center;
+  white-space: nowrap;
+  text-fit: shrink 50%;
+}
+.ms-score--left {
+  left: 858px;
+}
+.ms-score--right {
+  left: 982px;
+}
+
+/* ───────────── counterpick row ───────────── */
+
+/* White box centred on the row (covers both score tags): final left score, the original score
+   as a small superscript, final right score  ->  6 ⁷⁻⁴ 7 */
+.ms-counterpick {
+  position: absolute;
+  left: 836px;
+  top: -5px;
+  width: 248px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #fff;
+  color: #322e7c;
+  white-space: nowrap;
+}
+
+.ms-counterpick__score {
+  font-size: 60px; /* player score size */
+  line-height: 1;
+}
+
+.ms-counterpick__original {
+  align-self: flex-start;
+  margin-top: 20px;
+  font-size: 30px; /* counterpick original score size */
+  line-height: 1;
+}
+
+/* ───────────── controls (outside the stage, never exported) ───────────── */
+
+.ms-controls {
+  position: fixed;
+  left: 8px;
+  bottom: 8px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ms-controls button {
+  padding: 10px 18px;
+  cursor: pointer;
+}
+
+.ms-controls__count {
+  padding: 0 6px;
+  color: #000;
+  font:
+    600 16px/1 system-ui,
+    sans-serif;
+}

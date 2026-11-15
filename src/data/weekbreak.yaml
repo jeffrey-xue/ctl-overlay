@@ -1,0 +1,165 @@
+# Week-break matchup summaries.
+# left/right = the two sides of the graphic. Left is the team listed first on the
+# original "Final score" line, and each game row's left player belongs to the left team.
+# bans = the opposing players that team banned ("SPAIN bans X, Y" -> Spain's bans: [X, Y]).
+# counterpick = present only on a game row that had a bought counterpick. original_score is [left, right],
+# the result before the counterpick. The row's own left/right scores are the final result (shown as
+# "6 ⁷⁻⁴ 7": final left, original score as a superscript in between, final right).
+matches:
+  - week: 2
+    group: "H"
+    left:
+      country: "Norway"
+      flag: "https://hatscripts.github.io/circle-flags/flags/no.svg"
+      seed: 22
+      score: 22
+      bans: ["AGAR02", "COREBABY"]
+    right:
+      country: "Spain"
+      flag: "https://hatscripts.github.io/circle-flags/flags/es.svg"
+      seed: 31
+      score: 24
+      bans: ["ZENITH-WATER", "KITTEN"]
+    games:
+      - left:  { player: "ETHERNETCABLE", score: 7 }
+        right: { player: "DABELL", score: 1 }
+      - left:  { player: "KITTEN", score: 3 }
+        right: { player: "ARCANGEL_0", score: 7 }
+      - left:  { player: "ZENITH-WATER", score: 3 }
+        right: { player: "COREBABY", score: 7 }
+      - left:  { player: "LELERRER", score: 7 }
+        right: { player: "AGAR02", score: 2 }
+      - left:  { player: "Z2SAM", score: 2 }
+        right: { player: "INDOPOCK", score: 7 }
+
+  - week: 2
+    group: "E"
+    left:
+      country: "Argentina"
+      flag: "https://hatscripts.github.io/circle-flags/flags/ar.svg"
+      seed: 23
+      score: 23
+      bans: ["NAVARCHOFTHESKY", "C3-"]
+    right:
+      country: "Czech Republic"
+      flag: "https://hatscripts.github.io/circle-flags/flags/cz.svg"
+      seed: 25
+      score: 25
+      bans: ["JOTA-", "COCOSUS"]
+    games:
+      - left:  { player: "MOSKAUPEROESDIOS", score: 7 }
+        right: { player: "CHAPAAI", score: 5 }
+      - left:  { player: "RAIKO", score: 2 }
+        right: { player: "C3-", score: 7 }
+      - left:  { player: "COCOSUS", score: 7 }
+        right: { player: "THEKANEKI", score: 1 }
+      - left:  { player: "JOTA-", score: 0 }
+        right: { player: "NAVARCHOFTHESKY", score: 7 }
+      - left:  { player: "LAU", score: 7 }
+        right: { player: "ASRVOJTA", score: 5 }
+
+  - week: 3
+    group: "D"
+    left:
+      country: "United Kingdom"
+      flag: "https://hatscripts.github.io/circle-flags/flags/gb.svg"
+      seed: 16
+      score: 31
+      bans: ["DOREMY", "HORNET"]
+    right:
+      country: "France"
+      flag: "https://hatscripts.github.io/circle-flags/flags/fr.svg"
+      seed: 18
+      score: 15
+      bans: ["BIGBLUEP1KACHU", "FUZZYSHY"]
+    games:
+      - left:  { player: "TRACQUE", score: 7 }
+        right: { player: "MORSAY", score: 0 }
+      - left:  { player: "DRAGONITE", score: 7 }
+        right: { player: "KITCHENEST", score: 2 }
+      - left:  { player: "BIGBLUEP1KACHU", score: 3 }
+        right: { player: "HORNET", score: 7 }
+      - left:  { player: "FUZZYSHY", score: 7 }
+        right: { player: "DOREMY", score: 6 }
+      - left:  { player: "MYSTERY", score: 7 }
+        right: { player: "FELICIEN2B", score: 0 }
+
+  - week: 2
+    group: "B"
+    left:
+      country: "Taiwan"
+      flag: "https://hatscripts.github.io/circle-flags/flags/tw.svg"
+      seed: 7
+      score: 24
+      bans: ["RIDDOS", "FLANDRE"]
+    right:
+      country: "Indonesia"
+      flag: "https://hatscripts.github.io/circle-flags/flags/id.svg"
+      seed: 12
+      score: 22
+      bans: ["CYREK", "BENNXT"]
+    games:
+      - left:  { player: "JEROME69420", score: 7 }
+        right: { player: "TRAPCOAT", score: 2 }
+      - left:  { player: "BENNXT", score: 7 }
+        right: { player: "FLANDRE", score: 6 }
+        counterpick: { original_score: [6, 7] }
+      - left:  { player: "BHJ123", score: 7 }
+        right: { player: "SPLOINKYRAGA", score: 0 }
+      - left:  { player: "OLDTALL", score: 1 }
+        right: { player: "VEXSERY", score: 7 }
+      - left:  { player: "CYREK", score: 2 }
+        right: { player: "RIDDOS", score: 7 }
+
+  - week: 3
+    group: "B"
+    left:
+      country: "Indonesia"
+      flag: "https://hatscripts.github.io/circle-flags/flags/id.svg"
+      seed: 12
+      score: 27
+      bans: ["MIMI_BUNNY-BUNNY", "TOSTADA_SIBERIA"]
+    right:
+      country: "Mexico"
+      flag: "https://hatscripts.github.io/circle-flags/flags/mx.svg"
+      seed: 20
+      score: 24
+      bans: ["RIDDOS", "FLANDRE"]
+    games:
+      - left:  { player: "TRAPCOAT", score: 6 }
+        right: { player: "OSAGE-CHAN", score: 7 }
+      - left:  { player: "RIDDOS", score: 7 }
+        right: { player: "ESTEVEN", score: 3 }
+      - left:  { player: "EIKOSIMINO", score: 0 }
+        right: { player: "MORAZUL", score: 7 }
+      - left:  { player: "VEXSERY", score: 7 }
+        right: { player: "MIMI_BUNNY-BUNNY", score: 1 }
+      - left:  { player: "FLANDRE", score: 7 }
+        right: { player: "TOSTADA_SIBERIA", score: 6 }
+
+  - week: 2
+    group: "F"
+    left:
+      country: "Vietnam"
+      flag: "https://hatscripts.github.io/circle-flags/flags/vn.svg"
+      seed: 8
+      score: 26
+      bans: ["KAMIYAMA_SHIKI", "CR400AF-X_2542"]
+    right:
+      country: "China"
+      flag: "https://hatscripts.github.io/circle-flags/flags/cn.svg"
+      seed: 9
+      score: 27
+      bans: ["AZELIS", "TENSHI_HINANAWI"]
+    games:
+      - left:  { player: "OR1ENTAL", score: 4 }
+        right: { player: "MITHRAAAA", score: 7 }
+      - left:  { player: "AZELIS", score: 2 }
+        right: { player: "KAMIYAMA_SHIKI", score: 7 }
+      - left:  { player: "TENSHI_HINANAWI", score: 6 }
+        right: { player: "CR400AF-X_2542", score: 7 }
+        counterpick: { original_score: [7, 4] }
+      - left:  { player: "MIINHUYVCL", score: 7 }
+        right: { player: "KAFE11", score: 5 }
+      - left:  { player: "STEAMHAPPY", score: 7 }
+        right: { player: "02CX", score: 1 }
