@@ -1,0 +1,10 @@
+.prize-pool-page {
+  width: 100%;
+}
+
+.prize-pool-image {
+  display: block;
+  width: 100%;
+  max-width: 1920px;
+  height: auto;
+}
