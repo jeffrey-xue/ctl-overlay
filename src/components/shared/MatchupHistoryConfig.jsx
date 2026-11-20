@@ -26,20 +26,15 @@ const MatchupHistoryConfig = ({ value, onChange, teamPlayerNames }) => {
 
   return (
     <section className="matchup-history-config">
-      <h3>
-        Matchups{' '}
-        <button type="button" onClick={exportHistory}>
-          Copy to Clipboard
-        </button>
-        {exportStatus && <span role="alert">{exportStatus}</span>}
-        <span
-          style={{
-            textAlign: 'right',
-            right: '13px',
-            position: 'absolute',
-            title: 'Toggle Purchase Counterpick',
-          }}
-        >
+      <h3 className="matchup-history-config-header">
+        <span>
+          Matchups{' '}
+          <button type="button" onClick={exportHistory}>
+            Copy to Clipboard
+          </button>
+          {exportStatus && <span role="alert">{exportStatus}</span>}
+        </span>
+        <span className="counterpick-column-label" title="Toggle Purchase Counterpick">
           C
         </span>
       </h3>

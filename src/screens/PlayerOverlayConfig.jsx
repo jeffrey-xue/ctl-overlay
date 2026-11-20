@@ -10,6 +10,8 @@ import {
   syncGoogleSheet as syncGoogleSheetData,
 } from '../util/googleSheets';
 
+const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
 const createEmptyMatchupHistory = () => ({
   bans: [
     ['', ''],
@@ -112,6 +114,7 @@ const PlayerOverlayConfig = () => {
   const [teamColors, setTeamColors] = useState(['', '']);
   const [presetId, setPresetId] = useState('tws');
   const [showBans, setShowBans] = useState(true);
+  const [uiScale, setUiScale] = useState('100');
 
   const [showPlayerBlurbs, setShowPlayerBlurbs] = useState({ 0: false, 1: false });
   const [playerImports, setPlayerImports] = useState(['', '']);
@@ -128,6 +131,7 @@ const PlayerOverlayConfig = () => {
   const [startRow, setStartRow] = useState(String(MIN_START_ROW));
   const portNumber = Number(obsSettings.port);
   const validObsPort = Number.isInteger(portNumber) && portNumber >= 1 && portNumber <= 65535;
+  const appliedUiScale = clamp(uiScale === '' ? 100 : Number(uiScale), 50, 200);
   const rosterPools = syncedTeams.map((team) => team?.roster ?? []);
   const currentSnapshot = configSnapshot({
     playerData,
@@ -240,8 +244,11 @@ const PlayerOverlayConfig = () => {
     (matchup) => !matchup.leftPlayer && !matchup.rightPlayer
   );
   const canRecordGame = selectedNames.every(Boolean) && emptyMatchupRow !== -1;
-  const matchOneHasData = matchupHistory.matchups[0] &&
-    ['leftPlayer', 'rightPlayer'].every((field) => Boolean(matchupHistory.matchups[0][field]?.trim()));
+  const matchOneHasData =
+    matchupHistory.matchups[0] &&
+    ['leftPlayer', 'rightPlayer'].every((field) =>
+      Boolean(matchupHistory.matchups[0][field]?.trim())
+    );
   const previousMatchOneHasData = useRef(false);
 
   useEffect(() => {
@@ -458,7 +465,7 @@ const PlayerOverlayConfig = () => {
   }, [obsConnection.status, matchupHistory.matchups, gameScores]);
 
   return (
-    <div className="config-container">
+    <div className="config-container" style={{ zoom: `${appliedUiScale}%` }}>
       <div className="config-header">
         <label className="layout-dropdown">
           Current Layout:{' '}
@@ -470,9 +477,22 @@ const PlayerOverlayConfig = () => {
             ))}
           </select>
         </label>
-        <button type="button" onClick={resetToDefaults}>
-          {confirmingReset ? 'Click again to reset' : 'Reset to Defaults'}
-        </button>
+        <div className="config-header-actions">
+          <label className="ui-scale-control">
+            ui scale (%)
+            <input
+              type="number"
+              min="50"
+              max="200"
+              value={uiScale}
+              onChange={(event) => setUiScale(event.target.value)}
+              onBlur={() => setUiScale(String(appliedUiScale))}
+            />
+          </label>
+          <button type="button" onClick={resetToDefaults}>
+            {confirmingReset ? 'Click again to reset' : 'Reset to Defaults'}
+          </button>
+        </div>
       </div>
       <div className="obs-connection">
         <label>

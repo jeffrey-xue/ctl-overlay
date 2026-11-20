@@ -49,9 +49,29 @@ html {
 
 .config-header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
   width: 100%;
+}
+
+.config-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.config-header-actions .ui-scale-control {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.ui-scale-control input {
+  width: 60px;
 }
 
 .layout-dropdown select {
@@ -328,9 +348,20 @@ html {
 
 .matchup-config-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) 20px;
   align-items: center;
   gap: 12px;
+}
+
+.matchup-history-config-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 20px;
+  align-items: center;
+  gap: 12px;
+}
+
+.counterpick-column-label {
+  text-align: center;
 }
 
 .matchup-config-row .matchup-team-row {
@@ -339,9 +370,10 @@ html {
 
 .counterpick-control {
   display: flex;
+  justify-content: center;
   align-items: center;
   gap: 4px;
-  max-width: 105px;
+  width: 20px;
   font-size: 12px;
 }
 
