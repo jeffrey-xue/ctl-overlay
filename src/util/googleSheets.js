@@ -79,11 +79,7 @@ export async function syncGoogleSheet(startRow = MIN_START_ROW) {
     return {
       date,
       time,
-      type: cells[1]
-        .split('|')
-        .map((part) => part.trim())
-        .join('\n')
-        .toUpperCase(),
+      type: cells[1].split('|').join('\n').toUpperCase(),
       team1: parseTeam(cells.slice(2, 6)),
       team2: parseTeam(cells.slice(6)),
     };
