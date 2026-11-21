@@ -98,13 +98,12 @@ export async function sendMatchesToObs(matches) {
   await Promise.all([
     setText('teamnameleft', team1.team),
     setText('teamnameright', team2.team),
-    setText('footer-primary', `${team1.team} [${team1.seed}] vs ${team2.team} [${team2.seed}]`),
+    // setText('footer-primary', `${team1.team} [${team1.seed}] vs ${team2.team} [${team2.seed}]`),
+    setText('footer-primary', `${team1.team} vs ${team2.team}`),
     setText('footer-secondary', type),
     setBrowserSourceUrl('crestL', team1.flag),
     setBrowserSourceUrl('crestR', team2.flag),
     fixTracker('righttracker', 'player-select', 1921),
     fixTracker('righttracker', 'players-chosen', 1921),
-
-    // Missing seeds and title generation
   ]);
 }
