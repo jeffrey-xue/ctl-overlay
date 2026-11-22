@@ -44,10 +44,6 @@ const PrizePool = () => {
   return (
     <main className="prize-pool-page">
       <img className="prize-pool-image" src={PRIZE_POOL_IMAGE_URL} alt="Prize pool" />
-      <span className="pp-link">
-        https://minji.love/s/tws
-        <span className="pp-link-label">DONATE ON MATCHERINO</span>
-      </span>
       {data && (
         <>
           <div className="pp-total">
@@ -84,17 +80,21 @@ const PrizePool = () => {
             ))}
           </ol>
           {latest && (
-            <div className="pp-latest">
-              <div key={latest.id} className="pp-donor pp-latest-row">
+            <ol className="pp-donors pp-recent">
+              <li key={latest.id} className="pp-donor pp-latest-row">
                 <span
                   className="pp-donor-name"
                   data-text={latest.displayName || latest.userName || 'Anonymous'}
                 >
                   {latest.displayName || latest.userName || 'Anonymous'}
                 </span>
-                <span className="pp-latest-amount">{money(latest.amount / 100)}</span>
-              </div>
-            </div>
+                <span className="pp-donor-line" />
+                <span className="pp-donor-dash" />
+                <span className="pp-donor-dash" />
+                <span className="pp-donor-dash" />
+                <span className="pp-donor-amount">{money(latest.amount / 100)}</span>
+              </li>
+            </ol>
           )}
         </>
       )}

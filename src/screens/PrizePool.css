@@ -62,7 +62,7 @@
 .pp-donors {
   position: absolute;
   left: calc(2431 * var(--u));
-  top: calc(752 * var(--u));
+  top: calc(684 * var(--u));
   z-index: 0;
   width: calc(810 * var(--u));
   margin: 0;
@@ -76,7 +76,7 @@
   display: flex;
   align-items: center;
   gap: calc(10 * var(--u));
-  height: calc(100 * var(--u));
+  height: calc(70 * var(--u));
   --c: #fff;
   color: var(--c);
 }
@@ -125,40 +125,12 @@
   width: calc(190 * var(--u));
 }
 
-.pp-latest {
-  position: absolute;
-  left: calc(2259 * var(--u));
-  top: calc(1357 * var(--u));
-  z-index: 0;
-  width: calc(1121 * var(--u));
-  height: calc(200 * var(--u));
-  box-sizing: border-box;
-  padding: calc(59 * var(--u)) calc(40 * var(--u)) 0 calc(70 * var(--u));
-  display: flex;
-  align-items: center;
-  font-size: calc(48 * var(--u));
-  font-weight: 700;
-  white-space: nowrap;
+.pp-recent {
+  top: calc(1179 * var(--u));
 }
 
 .pp-latest-row {
-  flex: 1;
-  min-width: 0;
   animation: pp-pop 0.6s ease;
-}
-
-.pp-latest-row .pp-donor-name {
-  flex: 1;
-  max-width: none;
-}
-
-.pp-latest-amount {
-  margin-left: calc(30 * var(--u));
-  padding: calc(6 * var(--u)) calc(34 * var(--u));
-  background: #f6ef00;
-  color: #2d1c86;
-  font-size: calc(56 * var(--u));
-  font-weight: 900;
 }
 
 @keyframes pp-pop {
@@ -166,24 +138,4 @@
     opacity: 0;
     transform: translateY(calc(20 * var(--u)));
   }
-}
-
-.pp-link {
-  position: absolute;
-  left: calc(282 * var(--u));
-  top: calc(1460 * var(--u));
-  height: calc(97 * var(--u));
-  display: flex;
-  align-items: center;
-  color: #fff;
-  font-size: calc(64 * var(--u));
-  font-weight: 700;
-  text-transform: none;
-}
-
-.pp-link-label {
-  margin-left: calc(50 * var(--u));
-  color: #c9c0f0;
-  font-size: calc(46 * var(--u));
-  font-weight: 600;
 }
