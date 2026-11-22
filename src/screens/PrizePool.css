@@ -1,10 +1,141 @@
 .prize-pool-page {
+  --u: min(calc(100vw / 3413), calc(1920px / 3413));
+  position: relative;
   width: 100%;
+  max-width: 1920px;
+  font-family: 'Orbitron', sans-serif;
+  text-transform: uppercase;
 }
 
 .prize-pool-image {
   display: block;
   width: 100%;
-  max-width: 1920px;
   height: auto;
+}
+
+.pp-total {
+  position: absolute;
+  left: calc(30 * var(--u));
+  top: calc(297 * var(--u));
+  height: calc(244 * var(--u));
+  display: flex;
+  align-items: center;
+  gap: calc(36 * var(--u));
+  color: #2d1c86;
+  white-space: nowrap;
+}
+
+.pp-amount {
+  font-size: calc(275 * var(--u));
+  font-weight: 900;
+  line-height: 1;
+}
+
+.pp-goal {
+  display: flex;
+  flex-direction: column;
+  font-size: calc(56 * var(--u));
+  font-weight: 900;
+  line-height: 0.95;
+}
+
+.pp-goal-thin {
+  font-size: calc(64 * var(--u));
+  font-weight: 500;
+}
+
+.pp-bar {
+  position: absolute;
+  left: calc(346 * var(--u));
+  top: calc(904 * var(--u));
+  width: calc(1613 * var(--u));
+  height: calc(100 * var(--u));
+  background: #bab0de;
+}
+
+.pp-bar-fill {
+  height: 100%;
+  background: #fde556;
+  transition: width 1s ease;
+}
+
+.pp-donors {
+  position: absolute;
+  left: calc(2431 * var(--u));
+  top: calc(684 * var(--u));
+  z-index: 0;
+  width: calc(810 * var(--u));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: calc(36 * var(--u));
+  font-weight: 700;
+}
+
+.pp-donor {
+  display: flex;
+  align-items: center;
+  gap: calc(10 * var(--u));
+  height: calc(70 * var(--u));
+  --c: #fff;
+  color: var(--c);
+}
+
+.pp-donor-top {
+  --c: #f6ef00;
+}
+
+.pp-donor-name {
+  position: relative;
+  max-width: calc(480 * var(--u));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pp-donor-name::before {
+  content: attr(data-text);
+  position: absolute;
+  left: calc(3 * var(--u));
+  top: calc(4 * var(--u));
+  z-index: -1;
+  color: transparent;
+  -webkit-text-stroke: calc(2 * var(--u)) var(--c);
+}
+
+.pp-donor-line,
+.pp-donor-dash {
+  height: calc(11 * var(--u));
+  background: currentColor;
+  transform: skewX(-40deg);
+}
+
+.pp-donor-line {
+  flex: 1;
+  min-width: calc(30 * var(--u));
+  margin-left: calc(30 * var(--u));
+}
+
+.pp-donor-dash {
+  width: calc(26 * var(--u));
+}
+
+.pp-donor-amount {
+  margin-left: calc(40 * var(--u));
+  width: calc(190 * var(--u));
+}
+
+.pp-recent {
+  top: calc(1179 * var(--u));
+}
+
+.pp-latest-row {
+  animation: pp-pop 0.6s ease;
+}
+
+@keyframes pp-pop {
+  from {
+    opacity: 0;
+    transform: translateY(calc(20 * var(--u)));
+  }
 }
