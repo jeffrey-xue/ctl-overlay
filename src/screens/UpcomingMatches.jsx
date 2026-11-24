@@ -47,34 +47,43 @@ const TeamName = ({ name }) => {
   );
 };
 
-const UpcomingMatchCard = ({ match }) => (
-  <article className="tws-upcoming-match-card">
-    <img className="tws-upcoming-match-card-frame" src={FRAME_URL} alt="" />
-    {match.type && <div className="tws-upcoming-match-type">{match.type.replace(/\n/g, ' ')}</div>}
-    {[match.team1, match.team2].map((team, index) => {
-      const side = index === 0 ? 'left' : 'right';
-      return (
-        <div className={`tws-upcoming-team tws-upcoming-team--${side}`} key={side}>
-          <div className="tws-upcoming-seed">
-            <span>SEED</span>
-            <span>{team?.seed}</span>
-          </div>
-          {team?.flag && (
-            <img className="tws-upcoming-flag" src={team.flag} alt={team.team || ''} />
-          )}
-          {team?.team && <TeamName name={team.team} />}
+const UpcomingMatchCard = ({ match }) => {
+  const matchTypeRef = useRef(null);
+  useShrinkToFit(matchTypeRef, match.type);
+
+  return (
+    <article className="tws-upcoming-match-card">
+      <img className="tws-upcoming-match-card-frame" src={FRAME_URL} alt="" />
+      {match.type && (
+        <div className="tws-upcoming-match-type" ref={matchTypeRef}>
+          {match.type.replace(/\n/g, ' ')}
         </div>
-      );
-    })}
-    {(match.date || match.time) && (
-      <div className="tws-upcoming-time">
-        {match.date && <span className="tws-upcoming-date">{match.date}</span>}
-        {match.time && <span className="tws-upcoming-time-value">{match.time}</span>}
-        {match.time && <span className="tws-upcoming-time-zone">UTC</span>}
-      </div>
-    )}
-  </article>
-);
+      )}
+      {[match.team1, match.team2].map((team, index) => {
+        const side = index === 0 ? 'left' : 'right';
+        return (
+          <div className={`tws-upcoming-team tws-upcoming-team--${side}`} key={side}>
+            <div className="tws-upcoming-seed">
+              <span>SEED</span>
+              <span>{team?.seed}</span>
+            </div>
+            {team?.flag && (
+              <img className="tws-upcoming-flag" src={team.flag} alt={team.team || ''} />
+            )}
+            {team?.team && <TeamName name={team.team} />}
+          </div>
+        );
+      })}
+      {(match.date || match.time) && (
+        <div className="tws-upcoming-time">
+          {match.date && <span className="tws-upcoming-date">{match.date}</span>}
+          {match.time && <span className="tws-upcoming-time-value">{match.time}</span>}
+          {match.time && <span className="tws-upcoming-time-zone">UTC</span>}
+        </div>
+      )}
+    </article>
+  );
+};
 
 const UpcomingMatches = () => {
   const [matches, setMatches] = useState(readUpcomingMatches);
