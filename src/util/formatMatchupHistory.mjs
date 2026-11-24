@@ -25,5 +25,6 @@ export const formatMatchupHistory = (matchups, bans, currentMatch) => {
     return `${matchup.leftPlayer.toUpperCase().padEnd(leftWidth)} ${score.padEnd(scoreWidth)}${matchup.rightPlayer.toUpperCase().padStart(rightWidth)}${original}`;
   });
 
-  return `\`\`\`\n${currentMatch.type.replace(/\r?\n/g, ' ')}\n\n${banLines.join('\n')}\n\n${lines.join('\n')}\n\nFinal score: ${country(currentMatch.team1).toUpperCase()} (#${currentMatch.team1.seed || 'SEED'}) ${totals.left} - ${totals.right} ${country(currentMatch.team2).toUpperCase()} (#${currentMatch.team2.seed || 'SEED'})\n\`\`\``;
+  //   return `\`\`\`\n${currentMatch.type.replace(/\r?\n/g, ' ')}\n\n${banLines.join('\n')}\n\n${lines.join('\n')}\n\nFinal score: ${country(currentMatch.team1).toUpperCase()} (#${currentMatch.team1.seed || 'SEED'}) ${totals.left} - ${totals.right} ${country(currentMatch.team2).toUpperCase()} (#${currentMatch.team2.seed || 'SEED'})\n\`\`\``;
+  return `\`\`\`\n${currentMatch.type.replace(/\r?\n/g, ' ')}\n\n${banLines.join('\n')}\n\n${lines.join('\n')}\n\nFinal score: ${country(currentMatch.team1).toUpperCase()} ${totals.left} - ${totals.right} ${country(currentMatch.team2).toUpperCase()}\n\`\`\``;
 };

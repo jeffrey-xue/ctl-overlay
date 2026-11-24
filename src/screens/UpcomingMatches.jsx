@@ -65,7 +65,7 @@ const UpcomingMatchCard = ({ match }) => {
           <div className={`tws-upcoming-team tws-upcoming-team--${side}`} key={side}>
             <div className="tws-upcoming-seed">
               <span>SEED</span>
-              <span>{team?.seed}</span>
+              {/* <span>{team?.seed}</span> */}
             </div>
             {team?.flag && (
               <img className="tws-upcoming-flag" src={team.flag} alt={team.team || ''} />
