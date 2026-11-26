@@ -4,7 +4,7 @@ import { setText, setBrowserSourceUrl, fixTracker } from './obs';
 const SPREADSHEET_ID = '1wiONK_ZJGG8KtwXAYbPyos_0rrVJZpzknCsn5urEe6U';
 const SHEET_NAME = 'schedule';
 export const MIN_START_ROW = 5;
-const MATCH_COUNT = 9;
+const MATCH_COUNT = 32;
 const MATCH_DELAY_MS = 60 * 60 * 1000; // 1 hour
 const DATE_PATTERN = /^Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),\d+)?\)$/;
 
