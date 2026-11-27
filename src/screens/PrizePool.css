@@ -1,16 +1,23 @@
 .prize-pool-page {
   --u: min(calc(100vw / 3413), calc(1920px / 3413));
-  position: relative;
   width: 100%;
   max-width: 1920px;
   font-family: 'Orbitron', sans-serif;
   text-transform: uppercase;
 }
 
+.prize-pool-canvas {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3413 / 1632;
+}
+
 .prize-pool-image {
   display: block;
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
 }
 
 .pp-total {

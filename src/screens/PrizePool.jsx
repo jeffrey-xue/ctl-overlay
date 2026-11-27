@@ -4,6 +4,13 @@ import { fetchProxied } from '../util/fetchProxied';
 import './PrizePool.css';
 
 const PRIZE_POOL_IMAGE_URL = `${import.meta.env.BASE_URL}prize_pool/tws_prizepool.png`;
+const GRAPHIC_IMAGES = {
+  prizepool: PRIZE_POOL_IMAGE_URL,
+  lowerBracket: `${import.meta.env.BASE_URL}bracket_schedule/lowerplayoffbracketlayout.png`,
+  upperBracket: `${import.meta.env.BASE_URL}bracket_schedule/upperplayoffbracketlayout.png`,
+};
+const DEFAULT_GRAPHIC_VIEW = 'prizepool';
+const GRAPHIC_CHANNEL = 'ctl-overlay-graphic';
 const BOUNTY_ID = 220919;
 const START = 250;
 const GOALS = [1500, 2000];
@@ -21,19 +28,27 @@ export function prizeState(balanceCents) {
 
 const PrizePool = () => {
   const [data, setData] = useState(null);
+  const [graphicView, setGraphicView] = useState(DEFAULT_GRAPHIC_VIEW);
 
   const load = async () => {
     const json = await fetchProxied(
-      `https://api.matcherino.com/__api/bounties/clr?bountyId=${BOUNTY_ID}&pageId=0&lastDonationId=0`,
+      `https://api.matcherino.com/__api/bounties/clr?bountyId=${BOUNTY_ID}&pageId=0&lastDonationId=0`
     );
     const body = Array.isArray(json.body) ? json.body[0] : json.body;
     if (typeof body?.balance === 'number') setData(body);
   };
 
   useEffect(() => {
-    load();
+    const channel = new BroadcastChannel(GRAPHIC_CHANNEL);
+    channel.onmessage = ({ data: view }) => {
+      if (GRAPHIC_IMAGES[view]) setGraphicView(view);
+    };
+    return () => channel.close();
   }, []);
-  useInterval(load, POLL_MS);
+  useEffect(() => {
+    if (graphicView === DEFAULT_GRAPHIC_VIEW) load();
+  }, [graphicView]);
+  useInterval(load, graphicView === DEFAULT_GRAPHIC_VIEW ? POLL_MS : null);
 
   const { balance, nextGoal, fill } = prizeState(data?.balance ?? 0);
   const donors = (data?.topDonors ?? []).slice(0, 5);
@@ -43,61 +58,73 @@ const PrizePool = () => {
 
   return (
     <main className="prize-pool-page">
-      <img className="prize-pool-image" src={PRIZE_POOL_IMAGE_URL} alt="Prize pool" />
-      {data && (
-        <>
-          <div className="pp-total">
-            <span className="pp-amount">{money(balance)}</span>
-            {nextGoal ? (
-              <span className="pp-goal">
-                <span>FUNDED - {money(nextGoal - balance)}</span>
-                <span>AWAY FROM THE</span>
-                <span className="pp-goal-thin">NEXT GOAL</span>
-              </span>
-            ) : (
-              <span className="pp-goal">
-                <span>FULLY FUNDED</span>
-                <span className="pp-goal-thin">WHOA YOU ACTUALLY</span>
-                <span className="pp-goal-thin">DID IT ???</span>
-              </span>
-            )}
-          </div>
-          <div className="pp-bar">
-            <div className="pp-bar-fill" style={{ width: `${fill * 100}%` }} />
-          </div>
-          <ol className="pp-donors">
-            {donors.map((d, i) => (
-              <li key={d.display_name} className={i === 0 ? 'pp-donor pp-donor-top' : 'pp-donor'}>
-                <span className="pp-donor-name" data-text={`${i + 1}. ${d.display_name}`}>
-                  {i + 1}. {d.display_name}
+      <div className="prize-pool-canvas">
+        <img
+          className="prize-pool-image"
+          src={GRAPHIC_IMAGES[graphicView]}
+          alt={
+            graphicView === 'lowerBracket'
+              ? 'Lower bracket'
+              : graphicView === 'upperBracket'
+                ? 'Upper bracket'
+                : 'Prize pool'
+          }
+        />
+        {graphicView === DEFAULT_GRAPHIC_VIEW && data && (
+          <>
+            <div className="pp-total">
+              <span className="pp-amount">{money(balance)}</span>
+              {nextGoal ? (
+                <span className="pp-goal">
+                  <span>FUNDED - {money(nextGoal - balance)}</span>
+                  <span>AWAY FROM THE</span>
+                  <span className="pp-goal-thin">NEXT GOAL</span>
                 </span>
-                <span className="pp-donor-line" />
-                <span className="pp-donor-dash" />
-                <span className="pp-donor-dash" />
-                <span className="pp-donor-dash" />
-                <span className="pp-donor-amount">{money(d.amount / 100)}</span>
-              </li>
-            ))}
-          </ol>
-          {latest && (
-            <ol className="pp-donors pp-recent">
-              <li key={latest.id} className="pp-donor pp-latest-row">
-                <span
-                  className="pp-donor-name"
-                  data-text={latest.displayName || latest.userName || 'Anonymous'}
-                >
-                  {latest.displayName || latest.userName || 'Anonymous'}
+              ) : (
+                <span className="pp-goal">
+                  <span>FULLY FUNDED</span>
+                  <span className="pp-goal-thin">WHOA YOU ACTUALLY</span>
+                  <span className="pp-goal-thin">DID IT ???</span>
                 </span>
-                <span className="pp-donor-line" />
-                <span className="pp-donor-dash" />
-                <span className="pp-donor-dash" />
-                <span className="pp-donor-dash" />
-                <span className="pp-donor-amount">{money(latest.amount / 100)}</span>
-              </li>
+              )}
+            </div>
+            <div className="pp-bar">
+              <div className="pp-bar-fill" style={{ width: `${fill * 100}%` }} />
+            </div>
+            <ol className="pp-donors">
+              {donors.map((d, i) => (
+                <li key={d.display_name} className={i === 0 ? 'pp-donor pp-donor-top' : 'pp-donor'}>
+                  <span className="pp-donor-name" data-text={`${i + 1}. ${d.display_name}`}>
+                    {i + 1}. {d.display_name}
+                  </span>
+                  <span className="pp-donor-line" />
+                  <span className="pp-donor-dash" />
+                  <span className="pp-donor-dash" />
+                  <span className="pp-donor-dash" />
+                  <span className="pp-donor-amount">{money(d.amount / 100)}</span>
+                </li>
+              ))}
             </ol>
-          )}
-        </>
-      )}
+            {latest && (
+              <ol className="pp-donors pp-recent">
+                <li key={latest.id} className="pp-donor pp-latest-row">
+                  <span
+                    className="pp-donor-name"
+                    data-text={latest.displayName || latest.userName || 'Anonymous'}
+                  >
+                    {latest.displayName || latest.userName || 'Anonymous'}
+                  </span>
+                  <span className="pp-donor-line" />
+                  <span className="pp-donor-dash" />
+                  <span className="pp-donor-dash" />
+                  <span className="pp-donor-dash" />
+                  <span className="pp-donor-amount">{money(latest.amount / 100)}</span>
+                </li>
+              </ol>
+            )}
+          </>
+        )}
+      </div>
     </main>
   );
 };
