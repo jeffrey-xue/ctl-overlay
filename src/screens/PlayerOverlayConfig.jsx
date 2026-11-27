@@ -10,6 +10,9 @@ import {
   syncGoogleSheet as syncGoogleSheetData,
 } from '../util/googleSheets';
 
+const DEFAULT_GRAPHIC_VIEW = 'prizepool';
+const GRAPHIC_CHANNEL = 'ctl-overlay-graphic';
+
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
 const createEmptyMatchupHistory = () => ({
@@ -114,6 +117,7 @@ const PlayerOverlayConfig = () => {
   const [teamColors, setTeamColors] = useState(['', '']);
   const [presetId, setPresetId] = useState('tws');
   const [showBans, setShowBans] = useState(true);
+  const [graphicView, setGraphicView] = useState(DEFAULT_GRAPHIC_VIEW);
   const [uiScale, setUiScale] = useState('100');
 
   const [showPlayerBlurbs, setShowPlayerBlurbs] = useState({ 0: false, 1: false });
@@ -315,6 +319,7 @@ const PlayerOverlayConfig = () => {
     setSelectedPlayerIndices([-1, -1]);
     setTeamColors(['', '']);
     setShowBans(true);
+    setGraphicView(DEFAULT_GRAPHIC_VIEW);
     setShowPlayerBlurbs({ 0: false, 1: false });
     setMatchupHistory(createEmptyMatchupHistory());
     try {
@@ -439,6 +444,12 @@ const PlayerOverlayConfig = () => {
   useEffect(loadFromLocalStorage, []);
 
   useEffect(() => {
+    const channel = new BroadcastChannel(GRAPHIC_CHANNEL);
+    channel.postMessage(graphicView);
+    return () => channel.close();
+  }, [graphicView]);
+
+  useEffect(() => {
     guessStartRow()
       .then((row) => {
         if (row === null) return;
@@ -494,6 +505,14 @@ const PlayerOverlayConfig = () => {
           </button>
         </div>
       </div>
+      <label className="graphic-view-control">
+        Graphic:{' '}
+        <select value={graphicView} onChange={(event) => setGraphicView(event.target.value)}>
+          <option value="prizepool">Prizepool graphic</option>
+          <option value="lowerBracket">Lower bracket</option>
+          <option value="upperBracket">Upper bracket</option>
+        </select>
+      </label>
       <div className="obs-connection">
         <label>
           IP address

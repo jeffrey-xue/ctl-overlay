@@ -5,8 +5,6 @@ export function useShrinkToFit(ref, text) {
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
-    // Native text-fit handles it where supported.
-    if (typeof CSS !== 'undefined' && CSS.supports('text-fit', 'shrink')) return;
 
     let cancelled = false;
 

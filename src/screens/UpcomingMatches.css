@@ -68,11 +68,11 @@
   height: 15%;
   overflow: hidden;
   color: #16104b;
-  font-size: 3.6cqw;
+  font-size: calc(3.6cqw * var(--fit, 1));
   font-weight: 900;
   line-height: 0.95;
   text-align: center;
-  white-space: pre-line;
+  white-space: nowrap;
   -webkit-text-stroke: 0.05cqw currentColor;
 }
 
