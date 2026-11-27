@@ -87,8 +87,18 @@ const UpcomingMatchCard = ({ match }) => {
 
 const UpcomingMatches = () => {
   const [matches, setMatches] = useState(readUpcomingMatches);
+  const codeCounts = matches.reduce((counts, match) => {
+    const code = typeof match?.code === 'string' ? match.code.trim().toLowerCase() : '';
+    if (code) counts.set(code, (counts.get(code) ?? 0) + 1);
+    return counts;
+  }, new Map());
   const upcomingMatches = matches
     .filter((match) => match?.team1?.team || match?.team2?.team)
+    .filter((match) => {
+      const code = typeof match.code === 'string' ? match.code.trim() : '';
+      if (!code) return true;
+      return codeCounts.get(code.toLowerCase()) === 1;
+    })
     .slice(0, 6);
 
   const count = upcomingMatches.length;
