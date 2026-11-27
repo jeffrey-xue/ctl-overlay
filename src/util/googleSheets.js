@@ -70,18 +70,19 @@ export async function guessStartRow(now = Date.now()) {
 
 export async function syncGoogleSheet(startRow = MIN_START_ROW) {
   const firstRow = Math.max(MIN_START_ROW, Math.floor(Number(startRow)) || MIN_START_ROW);
-  const range = `A${firstRow}:J${firstRow + MATCH_COUNT - 1}`;
+  const range = `A${firstRow}:K${firstRow + MATCH_COUNT - 1}`;
   const matchTable = await fetchTable({ range, headers: '0' });
 
   const matches = Array.from({ length: MATCH_COUNT }, (_, row) => {
-    const cells = Array.from({ length: 10 }, (_, col) => cellText(matchTable.rows[row]?.c?.[col]));
+    const cells = Array.from({ length: 11 }, (_, col) => cellText(matchTable.rows[row]?.c?.[col]));
     const { date, time } = parseDateTime(cells[0]);
     return {
       date,
       time,
       type: cells[1].split('|').join('\n').toUpperCase(),
+      code: cells[10],
       team1: parseTeam(cells.slice(2, 6)),
-      team2: parseTeam(cells.slice(6)),
+      team2: parseTeam(cells.slice(6, 10)),
     };
   });
 
