@@ -6,8 +6,8 @@ import './PrizePool.css';
 const PRIZE_POOL_IMAGE_URL = `${import.meta.env.BASE_URL}prize_pool/tws_prizepool.png`;
 const GRAPHIC_IMAGES = {
   prizepool: PRIZE_POOL_IMAGE_URL,
-  lowerBracket: `${import.meta.env.BASE_URL}bracket_schedule/lowerplayoffbracketlayout.png`,
-  upperBracket: `${import.meta.env.BASE_URL}bracket_schedule/upperplayoffbracketlayout.png`,
+  lowerBracket: `${import.meta.env.BASE_URL}bracket_schedule/lowerplayoffbracket.png`,
+  upperBracket: `${import.meta.env.BASE_URL}bracket_schedule/upperplayoffbracket.png`,
 };
 const DEFAULT_GRAPHIC_VIEW = 'prizepool';
 const GRAPHIC_CHANNEL = 'ctl-overlay-graphic';
